@@ -1,0 +1,10 @@
+{
+  "name": "hrrr-smoke-vis",
+  "version": "0.1.0",
+  "description": "Frontend for a web application that generates vertical cross-sections of smoke concentration from NOAA's HRRR model forecasts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Evan Sheehan <evan.sheehan@noaa.gov>"
+}
