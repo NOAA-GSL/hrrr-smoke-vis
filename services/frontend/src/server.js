@@ -1,11 +1,13 @@
+const debug = require("debug")("HRRRSmoke");
 const express = require("express");
+
 const app = express();
-const port = 3000;
+const port = process.env.HTTP_PORT || 3000;
 
 app.get("/", function (req, res) {
   res.send("Hello");
 });
 
 app.listen(port, function () {
-  console.log(`Listening at http://localhost:${port}`);
+  debug(`Listening at http://localhost:${port}`);
 });
