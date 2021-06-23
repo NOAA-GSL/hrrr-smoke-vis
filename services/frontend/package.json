@@ -4,10 +4,13 @@
   "description": "Frontend for a web application that generates vertical cross-sections of smoke concentration from NOAA's HRRR model forecasts",
   "main": "index.js",
   "scripts": {
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
     "dev": "env-cmd nodemon src/server.js",
-    "test": "run-p test:*",
+    "test": "run-p test:* cy:run",
     "test:format": "prettier --check src/**/*.js",
-    "test:lint": "eslint src/**/*.js"
+    "test:lint": "eslint src/**/*.js",
+    "test:integration": "run-s dev cy:run"
   },
   "author": "Evan Sheehan <evan.sheehan@noaa.gov>",
   "dependencies": {
@@ -16,6 +19,7 @@
     "nunjucks": "^3.2.3"
   },
   "devDependencies": {
+    "cypress": "^7.5.0",
     "env-cmd": "^10.1.0",
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
