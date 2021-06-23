@@ -19,7 +19,7 @@
     "nunjucks": "^3.2.3"
   },
   "devDependencies": {
-    "cypress": "^7.5.0",
+    "cypress": "^7.6.0",
     "env-cmd": "^10.1.0",
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",

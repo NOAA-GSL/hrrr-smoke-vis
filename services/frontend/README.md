@@ -2,6 +2,8 @@
 
 The service that provides the user interface for the HRRR Smoke Vis project.
 
+Requires **[Node 14.17](https://nodejs.dev/)**
+
 ## Development
 
 To run the frontend locally, you'll need to create a `.env` file with your environment variables.
