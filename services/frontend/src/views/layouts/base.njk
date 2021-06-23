@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title></title>
+  {%- if title %}
+    {% set pageTitle %} — {{ title }}{% endset %}
+  {% endif -%}
+  <title>HRRR Smoke Vis [EXPERIMENTAL]{{ pageTitle }}</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
