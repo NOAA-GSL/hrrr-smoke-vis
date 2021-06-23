@@ -1,0 +1,19 @@
+# Local environment config
+.env
+
+# Use these directories for working files you need but shouldn't commit. Great
+# for database dumps and quick scripts.
+tmp/
+local/
+
+# Built files
+node_modules/
+*.log
+
+# OS Cruft
+.DS_Store
+
+# Text Editors / IDEs
+*.sublime-*
+.vscode
+.idea
