@@ -15,6 +15,12 @@ nunjucks.configure(path.join(__dirname, "views"), {
 
 app.set("view engine", "njk");
 
+if (process.env.NODE_ENV === "development") {
+  app.use("/css", express.static(path.join(__dirname, "static", "css")));
+  app.use("/img", express.static(path.join(__dirname, "static", "img")));
+  app.use("/js", express.static(path.join(__dirname, "static", "js")));
+}
+
 app.get("/favicon.ico", function (req, res) {
   res.sendFile(path.join(__dirname, "favicon.ico"));
 });
