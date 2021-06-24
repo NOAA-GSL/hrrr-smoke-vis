@@ -33,6 +33,11 @@ app.get("/serviceworker.js", function (req, res) {
   res.sendFile(path.join(__dirname, "serviceworker.js"));
 });
 
+// Make this a progressive web app (PWA) with a manifest.
+app.get("/manifest.json", function (req, res) {
+  res.sendFile(path.join(__dirname, "manifest.json"));
+});
+
 // Application landing page
 app.get("/", function (req, res) {
   res.render("index");

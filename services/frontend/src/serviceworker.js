@@ -1,6 +1,6 @@
 const version = "v0.01";
 const staticCacheName = `staticfiles${version}`;
-const precacheFiles = ["/css/style.css", "/favicon.ico"];
+const precacheFiles = ["/css/style.css", "/favicon.ico", "/manifest.json"];
 
 addEventListener("install", function (event) {
   event.waitUntil(
