@@ -28,6 +28,11 @@ app.get("/favicon.ico", function (req, res) {
   res.sendFile(path.join(__dirname, "favicon.ico"));
 });
 
+// Route for the service worker, which must be served from the same host.
+app.get("/serviceworker.js", function (req, res) {
+  res.sendFile(path.join(__dirname, "serviceworker.js"));
+});
+
 // Application landing page
 app.get("/", function (req, res) {
   res.render("index");

@@ -6,6 +6,9 @@
     {% set pageTitle %} — {{ title }}{% endset %}
   {% endif -%}
   <title>HRRR Smoke Vis [EXPERIMENTAL]{{ pageTitle }}</title>
+  <script>
+    if (navigator.serviceWorker) navigator.serviceWorker.register("/serviceworker.js");
+  </script>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
