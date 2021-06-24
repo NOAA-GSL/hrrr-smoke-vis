@@ -25,4 +25,4 @@ npm run dev & npm run cy:open
 
 to start both the development server and the Cypress UI.
 
-In addition to test specs in the `cypress/` directory, we lint our JavaScript with [ESLint](https://eslint.org/) and format it using [Prettier](https://prettier.io/). Cypress, ESLint, and Prettier are all run when you run `npm test`.
+In addition to test specs in the `cypress/` directory, we lint our JavaScript with [ESLint](https://eslint.org/) and format it using [Prettier](https://prettier.io/). Cypress, ESLint, and Prettier are all run when you run `npm test`. Make sure you've started the development server before running `npm test` or your integration tests will all fail.
