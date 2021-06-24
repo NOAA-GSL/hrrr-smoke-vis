@@ -1,0 +1,8 @@
+{
+  "name": "HRRR Smoke Cross-section Visualiztion",
+  "short_name": "HRRRSmoke",
+  "description": "Experimental visualization tool for cross-sections of smoke concentration forecasts from NOAA's HRRR model",
+  "lang": "en",
+  "start_url": "/",
+  "display": "minimal-ui"
+}

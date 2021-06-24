@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  {%- if title %}
+    {% set pageTitle %} — {{ title }}{% endset %}
+  {% endif -%}
+  <title>HRRR Smoke Vis [EXPERIMENTAL]{{ pageTitle }}</title>
+  <script>
+    if (navigator.serviceWorker) navigator.serviceWorker.register("/serviceworker.js");
+  </script>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  {% block content %}{% endblock %}
+</body>
+</html>
