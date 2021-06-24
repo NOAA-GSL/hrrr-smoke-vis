@@ -9,6 +9,12 @@
 }
 
 html {
+  --bg-color: white;
+  --fg-color: black;
+
+  background-color: var(--bg-color);
+
+  color: var(--fg-color);
   font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif;
   line-height: 1.5;
 }
@@ -34,3 +40,9 @@ h1 {
   line-height: 1.15;
 }
 
+@media screen and (prefers-color-scheme: dark) {
+  html {
+    --bg-color: black;
+    --fg-color: white;
+  }
+}
