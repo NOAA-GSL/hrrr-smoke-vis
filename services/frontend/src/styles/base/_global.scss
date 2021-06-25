@@ -1,9 +1,8 @@
-$fg: black;
-$bg: white;
+@use "../uswds";
 
 html {
-  --bg-color: #{$bg};
-  --fg-color: #{$fg};
+  --bg-color: #{uswds.color("base-lightest")};
+  --fg-color: #{uswds.color("ink")};
 
   background-color: var(--bg-color);
 
@@ -35,8 +34,8 @@ h1 {
 
 @media screen and (prefers-color-scheme: dark) {
   html {
-    --bg-color: #{$fg};
-    --fg-color: #{$bg};
+    --bg-color: #{uswds.color("primary-darker")};
+    --fg-color: #{uswds.color("base-lightest")};
   }
 }
 
