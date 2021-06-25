@@ -1,3 +1,6 @@
+$fg: black;
+$bg: white;
+
 * {
   margin: 0;
 }
@@ -9,8 +12,8 @@
 }
 
 html {
-  --bg-color: white;
-  --fg-color: black;
+  --bg-color: #{$bg};
+  --fg-color: #{$fg};
 
   background-color: var(--bg-color);
 
@@ -42,7 +45,7 @@ h1 {
 
 @media screen and (prefers-color-scheme: dark) {
   html {
-    --bg-color: black;
-    --fg-color: white;
+    --bg-color: #{$fg};
+    --fg-color: #{$bg};
   }
 }
