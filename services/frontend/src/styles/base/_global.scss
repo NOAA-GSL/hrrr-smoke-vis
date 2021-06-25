@@ -47,5 +47,9 @@ h1 {
     --bg-color: #{uswds.color("primary-darker")};
     --fg-color: #{uswds.color("base-lightest")};
   }
+
+  header p {
+    color: uswds.color("base-light");
+  }
 }
 
