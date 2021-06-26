@@ -1,21 +1,13 @@
-* {
-  margin: 0;
-}
-
-*,
-*::after,
-*::before {
-  box-sizing: border-box;
-}
+@use "../uswds";
 
 html {
-  --bg-color: white;
-  --fg-color: black;
+  --bg-color: #{uswds.color("base-lightest")};
+  --fg-color: #{uswds.color("ink")};
 
   background-color: var(--bg-color);
 
   color: var(--fg-color);
-  font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif;
+  font-family: uswds.family('ui');
   line-height: 1.5;
 }
 
@@ -29,20 +21,35 @@ body {
   text-align: center;
 }
 
+header {
+  display: flex;
+  flex-direction: column-reverse;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
 header p {
+  color: uswds.color("base-dark");
   font-size: clamp(0.75rem, calc(0.75rem + 3vw), 1.125rem);
   letter-spacing: 0.03em;
+  line-height: uswds.line-height("ui", 1);
   text-transform: uppercase;
 }
 
 h1 {
   font-size: clamp(2.531rem, calc(2.531rem + 3vw), 5.695rem);
-  line-height: 1.15;
+  line-height: uswds.line-height("ui", 1);
 }
 
 @media screen and (prefers-color-scheme: dark) {
   html {
-    --bg-color: black;
-    --fg-color: white;
+    --bg-color: #{uswds.color("primary-darker")};
+    --fg-color: #{uswds.color("base-lightest")};
+  }
+
+  header p {
+    color: uswds.color("base-light");
   }
 }
+

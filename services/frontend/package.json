@@ -5,17 +5,21 @@
   "main": "index.js",
   "scripts": {
     "cy:open": "cypress open",
-    "dev": "env-cmd nodemon src/server.js",
+    "dev": "run-p watch:*",
     "test": "run-p test:*",
     "test:format": "prettier --check src/**/*.js",
     "test:lint": "eslint src/**/*.js",
-    "test:integration": "cypress run"
+    "test:integration": "cypress run",
+    "watch:server": "env-cmd nodemon src/server.js",
+    "watch:styles": "sass src/styles:src/static/css --load-path=node_modules/uswds/dist/scss/ --watch --color --error-css"
   },
   "author": "Evan Sheehan <evan.sheehan@noaa.gov>",
   "dependencies": {
     "debug": "^4.3.1",
     "express": "^4.17.1",
-    "nunjucks": "^3.2.3"
+    "nunjucks": "^3.2.3",
+    "sass": "^1.35.1",
+    "uswds": "^2.12.0"
   },
   "devDependencies": {
     "cypress": "^7.6.0",
