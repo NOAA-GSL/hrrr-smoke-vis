@@ -19,6 +19,7 @@ app.set("view engine", "njk");
 // Serve static files in development.
 if (process.env.NODE_ENV === "development") {
   app.use("/css", express.static(path.join(__dirname, "static", "css")));
+  app.use("/data", express.static(path.join(__dirname, "static", "data")));
   app.use("/fonts", express.static(path.join(__dirname, "static", "fonts")));
   app.use("/img", express.static(path.join(__dirname, "static", "img")));
   app.use("/js", express.static(path.join(__dirname, "static", "js")));
