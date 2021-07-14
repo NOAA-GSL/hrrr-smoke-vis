@@ -1,20 +1,15 @@
+require("svelte/register");
+
+const App = require("./App.svelte").default;
+
 const debug = require("debug")("HRRRSmoke");
 const express = require("express");
-const nunjucks = require("nunjucks");
 
+const fs = require("fs");
 const path = require("path");
 
 const app = express();
 const port = process.env.HTTP_PORT || 3000;
-
-// Set up Nunjucks for express. Only watch files in development.
-nunjucks.configure(path.join(__dirname, "views"), {
-  autoescape: true,
-  express: app,
-  watch: process.env.NODE_ENV === "development",
-});
-
-app.set("view engine", "njk");
 
 // Serve static files in development.
 if (process.env.NODE_ENV === "development") {
@@ -40,7 +35,13 @@ app.get("/manifest.json", function (req, res) {
 
 // Application landing page
 app.get("/", function (req, res) {
-  res.render("index");
+  const {head, html, css} = App.render();
+
+  const page = fs.readFileSync(path.join(__dirname, "index.html"), 'utf-8')
+    .replace("%svelte.head%", head)
+    .replace("%svelte.body%", html);
+
+  res.send(page);
 });
 
 // Run the app. The URL is logged using debug to the HRRRSmoke namespace.
