@@ -14,6 +14,7 @@ const port = process.env.HTTP_PORT || 3000;
 // Serve static files in development.
 if (process.env.NODE_ENV === "development") {
   app.use("/css", express.static(path.join(__dirname, "static", "css")));
+  app.use("/fonts", express.static(path.join(__dirname, "static", "fonts")));
   app.use("/img", express.static(path.join(__dirname, "static", "img")));
   app.use("/js", express.static(path.join(__dirname, "static", "js")));
 }
