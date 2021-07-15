@@ -10,6 +10,7 @@
     "test:format": "prettier --check src/**/*.js",
     "test:lint": "eslint src/**/*.js",
     "test:integration": "cypress run",
+    "watch:js": "rollup -c -w",
     "watch:server": "env-cmd nodemon -w src -e \"svelte js\" src/server.js",
     "watch:styles": "sass src/styles:src/static/css --load-path=node_modules/uswds/dist/scss/ --watch --color --error-css"
   },

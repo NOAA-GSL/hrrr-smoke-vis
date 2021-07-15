@@ -1,4 +1,7 @@
-require("svelte/register");
+require("svelte/register")({
+  hydratable: true,
+  preserveComments: true,
+});
 
 const App = require("./App.svelte").default;
 
