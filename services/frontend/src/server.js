@@ -36,7 +36,9 @@ app.get("/manifest.json", function (req, res) {
 
 // Application landing page
 app.get("/", function (req, res) {
-  const {head, html, css} = App.render();
+  const {head, html, css} = App.render({
+    name: "Bullwinkle",
+  });
 
   const page = fs.readFileSync(path.join(__dirname, "index.html"), 'utf-8')
     .replace("%svelte.head%", head)
