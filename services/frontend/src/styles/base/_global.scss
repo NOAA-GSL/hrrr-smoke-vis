@@ -6,30 +6,39 @@ html {
 
   background-color: var(--bg-color);
 
-  color: var(--fg-color);
   font-family: uswds.family("ui");
   line-height: 1.5;
+  color: var(--fg-color);
 }
 
 body {
-  font-size: uswds.size("ui", "md");
   min-height: 100vh;
-}
+  font-size: uswds.size("ui", "md");
 
-header {
-  display: flex;
-}
+  > header {
+    padding: uswds.units(2) uswds.units(uswds.$theme-site-margins-width);
+    background-color: uswds.color("primary-darker");
+    line-height: uswds.line-height("ui", 1);
+    color: uswds.color("base-lightest");
 
-header p {
-  color: uswds.color("base-dark");
-  letter-spacing: 0.03em;
-  line-height: uswds.line-height("ui", 1);
-  text-transform: uppercase;
-}
+    h1 {
+      font-size: inherit;
+      font-weight: normal;
+    }
 
-h1 {
-  font-size: inherit;
-  line-height: uswds.line-height("ui", 1);
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    small {
+      font-size: uswds.size("ui", "3xs");
+      line-height: uswds.line-height("ui", 1);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: uswds.color("base-light");
+    }
+  }
 }
 
 @media screen and (prefers-color-scheme: dark) {
@@ -38,8 +47,8 @@ h1 {
     --fg-color: #{uswds.color("base-lightest")};
   }
 
-  header p {
-    color: uswds.color("base-light");
+  body > header {
+    border-bottom: uswds.units(1px) solid uswds.color("base");
   }
 }
 
