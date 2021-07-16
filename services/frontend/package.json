@@ -10,6 +10,7 @@
     "test:format": "prettier --check src/**/*.js",
     "test:lint": "eslint src/**/*.js",
     "test:integration": "cypress run",
+    "watch:js": "rollup -c -w",
     "watch:server": "env-cmd nodemon src/server.js",
     "watch:styles": "sass src/styles:src/static/css --load-path=node_modules/uswds/dist/scss/ --watch --color --error-css"
   },
@@ -25,6 +26,7 @@
     "uswds": "^2.12.0"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.0.2",
     "cypress": "^7.6.0",
     "env-cmd": "^10.1.0",
     "eslint": "^7.29.0",
@@ -33,6 +35,7 @@
     "nodemon": "^2.0.7",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.3.1",
+    "rollup": "^2.53.2",
     "shapefile": "^0.6.6",
     "topojson-server": "^3.0.1"
   }
