@@ -2,6 +2,7 @@ const d3 = require("d3");
 const debug = require("debug")("HRRRSmoke");
 const express = require("express");
 const nunjucks = require("nunjucks");
+const topoSimplify = require("topojson-simplify");
 const topojson = require("topojson-client");
 
 const fs = require("fs");
@@ -45,8 +46,14 @@ app.get("/manifest.json", function (req, res) {
 
 // Application landing page
 app.get("/", function (req, res) {
-  const us = JSON.parse(fs.readFileSync(path.join(__dirname, "static", "data", "us.json")));
-  const pather = d3.geoPath().projection(d3.geoAlbersUsa());
+  const us = topoSimplify.simplify(
+    topoSimplify.presimplify(
+      JSON.parse(
+        fs.readFileSync(path.join(__dirname, "static", "data", "us.json"))
+      )
+    )
+  );
+  const pather = d3.geoPath(d3.geoAlbersUsa());
   const countyMesh = pather(topojson.mesh(us, us.objects.counties));
   const stateMesh = pather(topojson.mesh(us, us.objects.states));
 
