@@ -1,7 +1,10 @@
+const d3 = require("d3");
 const debug = require("debug")("HRRRSmoke");
 const express = require("express");
 const nunjucks = require("nunjucks");
+const topojson = require("topojson-client");
 
+const fs = require("fs");
 const path = require("path");
 
 const app = express();
@@ -42,7 +45,15 @@ app.get("/manifest.json", function (req, res) {
 
 // Application landing page
 app.get("/", function (req, res) {
-  res.render("index");
+  const us = JSON.parse(fs.readFileSync(path.join(__dirname, "static", "data", "us.json")));
+  const pather = d3.geoPath().projection(d3.geoAlbersUsa());
+  const countyMesh = pather(topojson.mesh(us, us.objects.counties));
+  const stateMesh = pather(topojson.mesh(us, us.objects.states));
+
+  res.render("index", {
+    countyMesh,
+    stateMesh,
+  });
 });
 
 // Run the app. The URL is logged using debug to the HRRRSmoke namespace.
