@@ -1,4 +1,7 @@
 {% extends "layouts/base.njk" %}
+{% block head %}
+  <script type="module" src="/js/HrrrMap.js"></script>
+{% endblock %}
 {% block content %}
   {% include "components/hrrr-map.njk" %}
 {% endblock %}

@@ -46,21 +46,7 @@ app.get("/manifest.json", function (req, res) {
 
 // Application landing page
 app.get("/", function (req, res) {
-  const us = topoSimplify.simplify(
-    topoSimplify.presimplify(
-      JSON.parse(
-        fs.readFileSync(path.join(__dirname, "static", "data", "us.json"))
-      )
-    )
-  );
-  const pather = d3.geoPath(d3.geoAlbersUsa());
-  const countyMesh = pather(topojson.mesh(us, us.objects.counties));
-  const stateMesh = pather(topojson.mesh(us, us.objects.states));
-
-  res.render("index", {
-    countyMesh,
-    stateMesh,
-  });
+  res.render("index");
 });
 
 // Run the app. The URL is logged using debug to the HRRRSmoke namespace.
