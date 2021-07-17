@@ -1,7 +1,6 @@
 class HrrrMap extends HTMLElement {
   static resizeObserver = new ResizeObserver(function (entries) {
     for (let e of entries) {
-      console.log(e);
       if (e.target.resize) {
         const { blockSize, inlineSize } = Array.isArray(e.contentBoxSize)
           ? e.contentBoxSize[0]
