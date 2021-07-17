@@ -1,3 +1,6 @@
+import { geoPath, geoAlbers } from "d3-geo";
+import { mesh } from "topojson-client";
+
 class HrrrMap extends HTMLElement {
   static resizeObserver = new ResizeObserver(function (entries) {
     for (let e of entries) {
@@ -10,6 +13,10 @@ class HrrrMap extends HTMLElement {
       }
     }
   });
+
+  static get observedAttributes() {
+    return ["borders"];
+  }
 
   constructor() {
     super();
@@ -37,8 +44,54 @@ class HrrrMap extends HTMLElement {
     HrrrMap.resizeObserver.observe(this);
   }
 
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch (name) {
+      case "borders":
+        this.loadBorders(newValue);
+        break;
+      default:
+        break;
+    }
+  }
+
   disconnectedCallback() {
     HrrrMap.resizeObserver.unobserve(this);
+  }
+
+  loadBorders(url) {
+    fetch(url)
+      .then((res) => res.json())
+      .then((geodata) => {
+        this.borderData = geodata;
+        this.redraw();
+      });
+  }
+
+  redraw() {
+    if (!this.borderData) return;
+
+    const states = mesh(this.borderData, this.borderData.objects.states);
+    const ctx = this.basemap.getContext("2d");
+    const projection = geoAlbers().fitSize(
+      [
+        +this.basemap.getAttribute("width"),
+        +this.basemap.getAttribute("height"),
+      ],
+      states
+    );
+    const path = geoPath(projection, ctx);
+
+    ctx.strokeStyle = "#a9aeb1";
+    ctx.lineWidth = 1;
+
+    ctx.beginPath();
+    path(mesh(this.borderData, this.borderData.objects.counties));
+    ctx.stroke();
+
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    path(states);
+    ctx.stroke();
   }
 
   resize(width, height) {
@@ -46,6 +99,7 @@ class HrrrMap extends HTMLElement {
     this.basemap.setAttribute("width", width);
 
     console.log(`Resized: ${width}, ${height}`);
+    this.redraw();
   }
 }
 
