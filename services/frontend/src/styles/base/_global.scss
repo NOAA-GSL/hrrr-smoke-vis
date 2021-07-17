@@ -17,7 +17,6 @@ body {
   grid-template-rows: min-content 1fr;
   gap: uswds.units(uswds.$theme-column-gap-md);
 
-  min-height: 100vh;
   font-size: uswds.size("ui", "md");
 
   > header {
@@ -57,3 +56,8 @@ body {
   }
 }
 
+@media screen and (min-height: #{uswds.units("tablet")}) and (min-aspect-ratio: 4/3) {
+  body {
+    height: 100vh;
+  }
+}
