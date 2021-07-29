@@ -45,6 +45,11 @@ body {
   }
 }
 
+:focus {
+  outline: 2px solid #{uswds.color("primary")};
+  outline-offset: #{uswds.units(0.5)};
+}
+
 @media screen and (prefers-color-scheme: dark) {
   html {
     --bg-color: #{uswds.color("primary-darker")};
