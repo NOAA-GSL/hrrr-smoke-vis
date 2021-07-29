@@ -19,8 +19,15 @@ body {
 
   font-size: uswds.size("ui", "md");
 
+  > * {
+    padding-left: uswds.units(uswds.$theme-site-margins-width);
+    padding-right: uswds.units(uswds.$theme-site-margins-width);
+  }
+
   > header {
-    padding: uswds.units(2) uswds.units(uswds.$theme-site-margins-width);
+    padding-top: uswds.units(2);
+    padding-bottom: uswds.units(2);
+
     background-color: uswds.color("primary-darker");
     line-height: uswds.line-height("ui", 1);
     color: uswds.color("base-lightest");
