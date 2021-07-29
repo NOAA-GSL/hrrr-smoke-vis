@@ -1,8 +1,19 @@
 import { geoPath, geoAlbers } from "d3-geo";
 import { mesh } from "topojson-client";
 
+function debounce(fn, delay) {
+  let timer;
+
+  return function (...args) {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn(...args);
+    }, delay);
+  };
+}
+
 class HrrrMap extends HTMLElement {
-  static resizeObserver = new ResizeObserver(function (entries) {
+  static resizeObserver = new ResizeObserver(debounce(function (entries) {
     for (let e of entries) {
       if (e.target.resize) {
         const { blockSize, inlineSize } = Array.isArray(e.contentBoxSize)
@@ -12,10 +23,10 @@ class HrrrMap extends HTMLElement {
         e.target.resize(inlineSize, blockSize);
       }
     }
-  });
+  }, 300));
 
   static get observedAttributes() {
-    return ["borders"];
+    return ["borders", "show-counties"];
   }
 
   constructor() {
@@ -58,6 +69,18 @@ class HrrrMap extends HTMLElement {
     HrrrMap.resizeObserver.unobserve(this);
   }
 
+  get showCounties() {
+    return this.hasAttribute("show-counties");
+  }
+
+  set showCounties(show) {
+    if (show) {
+      this.setAttribute("show-counties", "");
+    } else {
+      this.removeAttribute("show-counties");
+    }
+  }
+
   loadBorders(url) {
     fetch(url)
       .then((res) => res.json())
@@ -82,11 +105,13 @@ class HrrrMap extends HTMLElement {
     const path = geoPath(projection, ctx);
 
     ctx.strokeStyle = "#a9aeb1";
-    ctx.lineWidth = 1;
 
-    ctx.beginPath();
-    path(mesh(this.borderData, this.borderData.objects.counties));
-    ctx.stroke();
+    if (this.showCounties) {
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      path(mesh(this.borderData, this.borderData.objects.counties));
+      ctx.stroke();
+    }
 
     ctx.lineWidth = 2;
     ctx.beginPath();
