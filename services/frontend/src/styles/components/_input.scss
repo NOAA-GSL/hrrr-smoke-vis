@@ -1,7 +1,7 @@
 @use "../uswds";
 
 input {
-  --space: #{uswds.units(0.5)};
+  --space: #{uswds.units(2px)};
 
   border: 1px solid uswds.color("base-light");
   border-radius: uswds.radius("sm");
