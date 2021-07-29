@@ -1,3 +1,10 @@
+{% macro input(label, name, id, value="") %}
+<div>
+  <label for="{{ id }}">{{ label }}</label>
+  <input name="{{ name }}" id="{{ id }}" type="text", value="{{ value }}">
+</div>
+{% endmacro %}
+
 {% macro checkbox(label, name, id, checked=false) %}
 <div>
   <input name="{{ name }}" id="{{ id }}" type="checkbox" value=""{% if checked %} checked{% endif %}>
