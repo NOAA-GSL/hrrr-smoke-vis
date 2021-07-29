@@ -46,7 +46,9 @@ app.get("/manifest.json", function (req, res) {
 
 // Application landing page
 app.get("/", function (req, res) {
-  res.render("index");
+  res.render("index", {
+    showCounties: "showCounties" in req.query
+  });
 });
 
 // Run the app. The URL is logged using debug to the HRRRSmoke namespace.
