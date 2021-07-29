@@ -1,0 +1,7 @@
+@use "../uswds";
+
+.stack {
+  > * + * {
+    margin-top: var(--space, #{uswds.units(2)});
+  }
+}
