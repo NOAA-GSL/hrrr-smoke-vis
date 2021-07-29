@@ -1,6 +1,9 @@
 @use "../uswds";
 
 .stack {
+  display: flex;
+  flex-direction: column;
+
   > * + * {
     margin-top: var(--space, #{uswds.units(2)});
   }
