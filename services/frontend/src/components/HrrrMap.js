@@ -169,6 +169,11 @@ class HrrrMap extends HTMLElement {
     ctx.beginPath();
     path(states);
     ctx.stroke();
+
+    ctx.strokeStyle = "#cd425b";
+    ctx.beginPath();
+    path(this.extent);
+    ctx.stroke();
   }
 
   resize(width, height) {
