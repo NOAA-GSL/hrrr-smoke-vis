@@ -26,7 +26,7 @@ class HrrrMap extends HTMLElement {
   }, 300));
 
   static get observedAttributes() {
-    return ["borders", "show-counties"];
+    return ["borders", "show-counties", "north", "east", "south", "west"];
   }
 
   constructor() {
@@ -60,6 +60,12 @@ class HrrrMap extends HTMLElement {
       case "borders":
         this.loadBorders(newValue);
         break;
+      case "north":
+      case "east":
+      case "south":
+      case "west":
+        this.redraw();
+        break;
       default:
         break;
     }
@@ -79,6 +85,52 @@ class HrrrMap extends HTMLElement {
     } else {
       this.removeAttribute("show-counties");
     }
+  }
+
+  get north() {
+    return +this.getAttribute("north");
+  }
+
+  set north(value) {
+    this.setAttribute("north", value);
+  }
+
+  get east() {
+    return +this.getAttribute("east");
+  }
+
+  set east(value) {
+    this.setAttribute("east", value);
+  }
+
+  get south() {
+    return +this.getAttribute("south");
+  }
+
+  set south(value) {
+    this.setAttribute("south", value);
+  }
+
+  get west() {
+    return +this.getAttribute("west");
+  }
+
+  set west(value) {
+    this.setAttribute("west", value);
+  }
+
+  /**
+   * Return a GeoJSON object defining the extents of the map
+   */
+  get extent() {
+    const n = this.north, e = this.east, s = this.south, w = this.west;
+
+    return {
+      type: "LineString",
+      coordinates: [
+        [w, s], [e, n]
+      ],
+    };
   }
 
   loadBorders(url) {
