@@ -152,7 +152,7 @@ class HrrrMap extends HTMLElement {
         +this.basemap.getAttribute("width"),
         +this.basemap.getAttribute("height"),
       ],
-      states
+      this.extent
     );
     const path = geoPath(projection, ctx);
 
