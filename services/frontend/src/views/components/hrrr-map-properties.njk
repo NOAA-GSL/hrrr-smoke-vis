@@ -1,0 +1,13 @@
+<form method="get" action="/" class="stack">
+  <fieldset>
+    <legend>Bounds</legend>
+    <div class="stack">
+      {{ forms.input("North", "north", "north", bounds.north) }}
+      {{ forms.input("East", "east", "east", bounds.east) }}
+      {{ forms.input("South", "south", "south", bounds.south) }}
+      {{ forms.input("West", "west", "west", bounds.west) }}
+    </div>
+  </fieldset>
+  {{ forms.checkbox("Show Counties", "showCounties", "showCounties", showCounties) }}
+  <button type="submit">Update</button>
+</form>

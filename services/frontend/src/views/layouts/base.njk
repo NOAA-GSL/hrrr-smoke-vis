@@ -1,3 +1,4 @@
+{% import "macros/forms.njk" as forms -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,8 +12,10 @@
   </script>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/style.css">
+  {% block head %}{% endblock %}
 </head>
 <body>
+  {% include "partials/site-header.njk" %}
   {% block content %}{% endblock %}
 </body>
 </html>

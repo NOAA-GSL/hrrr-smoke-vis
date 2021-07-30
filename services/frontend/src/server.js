@@ -1,7 +1,9 @@
 const debug = require("debug")("HRRRSmoke");
 const express = require("express");
 const nunjucks = require("nunjucks");
+const topojson = require("topojson-client");
 
+const fs = require("fs");
 const path = require("path");
 
 const app = express();
@@ -19,6 +21,7 @@ app.set("view engine", "njk");
 // Serve static files in development.
 if (process.env.NODE_ENV === "development") {
   app.use("/css", express.static(path.join(__dirname, "static", "css")));
+  app.use("/data", express.static(path.join(__dirname, "static", "data")));
   app.use("/fonts", express.static(path.join(__dirname, "static", "fonts")));
   app.use("/img", express.static(path.join(__dirname, "static", "img")));
   app.use("/js", express.static(path.join(__dirname, "static", "js")));
@@ -41,7 +44,18 @@ app.get("/manifest.json", function (req, res) {
 
 // Application landing page
 app.get("/", function (req, res) {
-  res.render("index");
+  const us = JSON.parse(fs.readFileSync(path.join(__dirname, "static", "data", "us.json")));
+  const [west, south, east, north] = topojson.bbox(us);
+
+  res.render("index", {
+    showCounties: "showCounties" in req.query,
+    bounds: {
+      west: +req.query.west || west,
+      north: +req.query.north || north,
+      east: +req.query.east || east,
+      south: +req.query.south || south
+    },
+  });
 });
 
 // Run the app. The URL is logged using debug to the HRRRSmoke namespace.

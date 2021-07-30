@@ -2,7 +2,7 @@
   "name": "hrrr-smoke-vis",
   "version": "0.1.0",
   "description": "Frontend for a web application that generates vertical cross-sections of smoke concentration from NOAA's HRRR model forecasts",
-  "main": "index.js",
+  "main": "src/server.js",
   "scripts": {
     "cy:open": "cypress open",
     "dev": "run-p watch:*",
@@ -10,24 +10,33 @@
     "test:format": "prettier --check src/**/*.js",
     "test:lint": "eslint src/**/*.js",
     "test:integration": "cypress run",
+    "watch:js": "rollup -c -w",
     "watch:server": "env-cmd nodemon src/server.js",
     "watch:styles": "sass src/styles:src/static/css --load-path=node_modules/uswds/dist/scss/ --watch --color --error-css"
   },
   "author": "Evan Sheehan <evan.sheehan@noaa.gov>",
   "dependencies": {
+    "d3": "^6.7.0",
     "debug": "^4.3.1",
     "express": "^4.17.1",
     "nunjucks": "^3.2.3",
     "sass": "^1.35.1",
+    "topojson-client": "^3.1.0",
+    "topojson-simplify": "^3.0.3",
     "uswds": "^2.12.0"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.0.2",
     "cypress": "^7.6.0",
     "env-cmd": "^10.1.0",
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
+    "ndjson-cli": "^0.3.1",
     "nodemon": "^2.0.7",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.3.1"
+    "prettier": "^2.3.1",
+    "rollup": "^2.53.2",
+    "shapefile": "^0.6.6",
+    "topojson-server": "^3.0.1"
   }
 }
