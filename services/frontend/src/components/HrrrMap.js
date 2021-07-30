@@ -119,16 +119,20 @@ class HrrrMap extends HTMLElement {
     this.setAttribute("west", value);
   }
 
-  /**
-   * Return a GeoJSON object defining the extents of the map
+  /** Return a GeoJSON polygon defining the extents of the map
+   *
+   * The polygon is defined using the map's north, south, east, and west
+   * attributes to place the corners of the bounding box, and includes the
+   * midpoints on each side of the polygon to help account for the distortion
+   * caused by projections like the Albers USA projection.
    */
-  get extent() {
-    const n = this.north, e = this.east, s = this.south, w = this.west;
+  get extent() { const n = this.north, e = this.east, s = this.south, w =
+      this.west; const dx = (w - e) / 2, dy = (n - s) / 2;
 
     return {
       type: "Polygon",
       coordinates: [
-        [[w, s], [w, n], [e, n], [e, s], [w, s]]
+        [[w, s], [w, s + dy], [w, n], [w - dx, n], [e, n], [e, s + dy], [e, s], [w - dx, s], [w, s]]
       ],
     };
   }
@@ -168,11 +172,6 @@ class HrrrMap extends HTMLElement {
     ctx.lineWidth = 2;
     ctx.beginPath();
     path(states);
-    ctx.stroke();
-
-    ctx.strokeStyle = "#cd425b";
-    ctx.beginPath();
-    path(this.extent);
     ctx.stroke();
   }
 
