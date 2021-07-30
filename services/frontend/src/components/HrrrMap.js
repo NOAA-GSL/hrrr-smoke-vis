@@ -126,9 +126,9 @@ class HrrrMap extends HTMLElement {
     const n = this.north, e = this.east, s = this.south, w = this.west;
 
     return {
-      type: "LineString",
+      type: "Polygon",
       coordinates: [
-        [w, s], [e, n]
+        [[w, s], [w, n], [e, n], [e, s], [w, s]]
       ],
     };
   }
