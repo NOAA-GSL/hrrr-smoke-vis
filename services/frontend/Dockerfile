@@ -4,7 +4,8 @@ WORKDIR /home/node/app/
 ENV NODE_ENV=production
 
 COPY package*.json ./
-RUN npm install
+COPY Makefile .
+RUN npm install && make
 
 COPY . .
 RUN npm run build
