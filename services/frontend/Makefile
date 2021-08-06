@@ -28,10 +28,10 @@ tmp/geo/tl_2020_us_county.zip: tmp/geo/
 	curl -o $@ 'https://www2.census.gov/geo/tiger/TIGER2020/COUNTY/tl_2020_us_county.zip'
 
 tmp/geo/tl_2020_us_state/tl_2020_us_state.shp: tmp/geo/tl_2020_us_state.zip tmp/geo/tl_2020_us_state/
-	unzip -fo $< -d tmp/geo/tl_2020_us_state/
+	unzip $< -d tmp/geo/tl_2020_us_state/
 
 tmp/geo/tl_2020_us_county/tl_2020_us_county.shp: tmp/geo/tl_2020_us_county.zip tmp/geo/tl_2020_us_county/
-	unzip -fo $< -d tmp/geo/tl_2020_us_county/
+	unzip $< -d tmp/geo/tl_2020_us_county/
 
 tmp/geo/states.ndjson: tmp/geo/tl_2020_us_state/tl_2020_us_state.shp
 	$(shp2json) -n $^ | $(ndjson-filter) $(CONUS_FILTER) > $@
