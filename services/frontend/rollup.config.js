@@ -5,7 +5,7 @@ export default {
     HrrrMap: "src/components/HrrrMap.js",
   },
   output: {
-    dir: "src/static/js/",
+    dir: "public/js/",
     format: "es"
   },
   plugins: [
