@@ -5,6 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "assets:fonts": "cpy --cwd=node_modules/uswds/dist/fonts --parents roboto-mono source-sans-pro ../../../../public/fonts/",
+    "clean": "del public/",
     "cy:open": "cypress open",
     "dev": "run-p assets:* watch:*",
     "test": "run-p test:*",
@@ -30,6 +31,7 @@
     "@rollup/plugin-node-resolve": "^13.0.2",
     "cpy-cli": "^3.1.1",
     "cypress": "^7.6.0",
+    "del-cli": "^4.0.1",
     "env-cmd": "^10.1.0",
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
