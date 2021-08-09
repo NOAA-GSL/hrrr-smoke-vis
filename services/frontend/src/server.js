@@ -40,7 +40,7 @@ app.get("/manifest.json", function (req, res) {
 
 // Application landing page
 app.get("/", function (req, res) {
-  const us = JSON.parse(fs.readFileSync(path.join(__dirname, "static", "data", "us.json")));
+  const us = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "public", "data", "us.json")));
   const [west, south, east, north] = topojson.bbox(us);
 
   res.render("index", {
