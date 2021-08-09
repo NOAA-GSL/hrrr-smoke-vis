@@ -8,6 +8,7 @@ local/
 
 # Built files
 node_modules/
+public/
 *.log
 *.pyc
 
