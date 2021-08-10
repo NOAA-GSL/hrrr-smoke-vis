@@ -7,9 +7,9 @@ simplify := $(BIN)/toposimplify
 
 CONUS_FILTER := '+d.properties.STATEFP <= 56 && !["02", "15"].includes(d.properties.STATEFP)'
 
-all: src/static/data/us.json
+all: public/data/us.json
 
-src/static/data/:
+public/data/:
 	mkdir -p $@
 
 tmp/geo/:
@@ -39,8 +39,8 @@ tmp/geo/states.ndjson: tmp/geo/tl_2020_us_state/tl_2020_us_state.shp
 tmp/geo/counties.ndjson: tmp/geo/tl_2020_us_county/tl_2020_us_county.shp
 	$(shp2json) -n $^ | $(ndjson-filter) $(CONUS_FILTER) > $@
 
-src/static/data/us.json: src/data/ tmp/geo/states.ndjson tmp/geo/counties.ndjson
+public/data/us.json: public/data/ tmp/geo/states.ndjson tmp/geo/counties.ndjson
 	$(geo2topo) -q 1e5 -n states=tmp/geo/states.ndjson counties=tmp/geo/counties.ndjson | $(simplify) -o $@
 
 clean:
-	rm -rf tmp/geo/ src/data/us.json
+	rm -rf tmp/geo/ public/data/us.json

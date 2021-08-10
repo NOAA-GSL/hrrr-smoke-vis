@@ -4,15 +4,17 @@
   "description": "Frontend for a web application that generates vertical cross-sections of smoke concentration from NOAA's HRRR model forecasts",
   "main": "src/server.js",
   "scripts": {
+    "assets:fonts": "cpy --cwd=node_modules/uswds/dist/fonts --parents roboto-mono source-sans-pro ../../../../public/fonts/",
+    "clean": "del public/",
     "cy:open": "cypress open",
-    "dev": "run-p watch:*",
+    "dev": "run-p assets:* watch:*",
     "test": "run-p test:*",
     "test:format": "prettier --check src/**/*.js",
     "test:lint": "eslint src/**/*.js",
     "test:integration": "cypress run",
     "watch:js": "rollup -c -w",
     "watch:server": "env-cmd nodemon src/server.js",
-    "watch:styles": "sass src/styles:src/static/css --load-path=node_modules/uswds/dist/scss/ --watch --color --error-css"
+    "watch:styles": "sass src/styles:public/css --load-path=node_modules/uswds/dist/scss/ --watch --color --error-css"
   },
   "author": "Evan Sheehan <evan.sheehan@noaa.gov>",
   "dependencies": {
@@ -27,7 +29,9 @@
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.0.2",
+    "cpy-cli": "^3.1.1",
     "cypress": "^7.6.0",
+    "del-cli": "^4.0.1",
     "env-cmd": "^10.1.0",
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",

@@ -20,11 +20,7 @@ app.set("view engine", "njk");
 
 // Serve static files in development.
 if (process.env.NODE_ENV === "development") {
-  app.use("/css", express.static(path.join(__dirname, "static", "css")));
-  app.use("/data", express.static(path.join(__dirname, "static", "data")));
-  app.use("/fonts", express.static(path.join(__dirname, "static", "fonts")));
-  app.use("/img", express.static(path.join(__dirname, "static", "img")));
-  app.use("/js", express.static(path.join(__dirname, "static", "js")));
+  app.use(express.static("public"));
 }
 
 // Nothing fancy, just a favicon.
@@ -44,7 +40,7 @@ app.get("/manifest.json", function (req, res) {
 
 // Application landing page
 app.get("/", function (req, res) {
-  const us = JSON.parse(fs.readFileSync(path.join(__dirname, "static", "data", "us.json")));
+  const us = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "public", "data", "us.json")));
   const [west, south, east, north] = topojson.bbox(us);
 
   res.render("index", {
