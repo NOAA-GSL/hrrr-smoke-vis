@@ -1,21 +1,14 @@
-{% import "macros/forms.njk" as forms -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  {%- if title %}
-    {% set pageTitle %} — {{ title }}{% endset %}
-  {% endif -%}
-  <title>HRRR Smoke Vis [EXPERIMENTAL]{{ pageTitle }}</title>
+  <title>HRRR Smoke Vis [EXPERIMENTAL]</title>
   <script>
     if (navigator.serviceWorker) navigator.serviceWorker.register("/serviceworker.js");
   </script>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/style.css">
-  {% block head %}{% endblock %}
 </head>
 <body>
-  {% include "partials/site-header.njk" %}
-  {% block content %}{% endblock %}
 </body>
 </html>
