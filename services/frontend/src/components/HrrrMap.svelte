@@ -1,54 +1,64 @@
 <script>
   import { geoPath, geoAlbers } from "d3-geo";
   import { mesh } from "topojson-client";
+  import { onMount } from "svelte";
 
-  let showCounties = false;
-  function loadBorders(url) {
-    fetch(url)
+  export let showCounties = false;
+
+  let width = 800;
+  let height = 500;
+  let borderData;
+  let canvas;
+  let context;
+
+  onMount(() => {
+    context = canvas.getContext("2d");
+
+    fetch("/data/us.json")
       .then((res) => res.json())
       .then((geodata) => {
-        this.borderData = geodata;
-        this.redraw();
+        borderData = geodata;
+        redraw();
       });
-  }
+  });
 
-  function redraw() {
-    if (!this.borderData) return;
+  const redraw = () => {
+    console.log('redraw');
+    if (!borderData) return;
 
-    const states = mesh(this.borderData, this.borderData.objects.states);
-    const ctx = this.basemap.getContext("2d");
-    const projection = geoAlbers().fitSize(
-      [
-        +this.basemap.getAttribute("width"),
-        +this.basemap.getAttribute("height"),
-      ],
-      this.extent
-    );
-    const path = geoPath(projection, ctx);
+    const states = mesh(borderData, borderData.objects.states);
+    const projection = geoAlbers().fitSize([width, height], states);
+    const path = geoPath(projection, context);
 
-    ctx.strokeStyle = "#a9aeb1";
+    context.strokeStyle = "#a9aeb1";
 
-    if (this.showCounties) {
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      path(mesh(this.borderData, this.borderData.objects.counties));
-      ctx.stroke();
+    if (showCounties) {
+      context.lineWidth = 1;
+      context.beginPath();
+      path(mesh(borderData, borderData.objects.counties));
+      context.stroke();
     }
 
-    ctx.lineWidth = 2;
-    ctx.beginPath();
+    context.lineWidth = 2;
+    context.beginPath();
     path(states);
-    ctx.stroke();
-  }
+    context.stroke();
+  };
 
-  function resize(width, height) {
-    this.basemap.setAttribute("height", height);
-    this.basemap.setAttribute("width", width);
+  /* function resize(width, height) { */
+  /*   this.basemap.setAttribute("height", height); */
+  /*   this.basemap.setAttribute("width", width); */
 
-    console.log(`Resized: ${width}, ${height}`);
-    this.redraw();
-  }
+  /*   console.log(`Resized: ${width}, ${height}`); */
+  /*   this.redraw(); */
+  /* } */
 </script>
+
+<canvas
+  bind:this="{canvas}"
+  width={width}
+  height={height}
+></canvas>
 
 <style>
   canvas {
@@ -56,4 +66,3 @@
   }
 </style>
 
-<canvas />
