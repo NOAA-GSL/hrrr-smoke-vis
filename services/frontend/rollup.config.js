@@ -44,7 +44,7 @@ export default {
     svelte({
       compilerOptions: {
         dev: !production,
-        hydratable: production,
+        hydratable: true,
       },
     }),
     css({ output: "app.css" }),
