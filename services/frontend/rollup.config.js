@@ -4,6 +4,8 @@ import resolve from "@rollup/plugin-node-resolve";
 import svelte from "rollup-plugin-svelte";
 import { terser } from "rollup-plugin-terser";
 
+import { writeFileSync } from "fs";
+
 const production = !process.env.ROLLUP_WATCH;
 
 function serve() {
@@ -47,7 +49,11 @@ export default {
         hydratable: true,
       },
     }),
-    css({ output: "app.css" }),
+    css({
+      output: function (styles) {
+        writeFileSync("public/css/app.css", styles);
+      }
+    }),
     resolve({
       browser: true,
       dedupe: ["svelte"]
