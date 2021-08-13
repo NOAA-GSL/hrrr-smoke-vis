@@ -1,8 +1,9 @@
 const version = "v0.01";
 const staticCacheName = `staticfiles${version}`;
 const precacheFiles = [
-  "js/main.js",
+  "/js/main.js",
   "/css/style.css",
+  "/css/app.css",
   "/favicon.ico",
   "/manifest.json",
 ];
