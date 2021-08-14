@@ -33,7 +33,6 @@
   });
 
   const redraw = () => {
-    console.log('redraw');
     if (!borderData) return;
 
     const states = mesh(borderData, borderData.objects.states);
