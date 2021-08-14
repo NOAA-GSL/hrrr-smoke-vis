@@ -1,9 +1,11 @@
 <script>
+  import HrrrControls from "./HrrrControls.svelte";
+
   import { geoPath, geoAlbers } from "d3-geo";
   import { mesh } from "topojson-client";
   import { onMount } from "svelte";
 
-  export let showCounties = false;
+  let showCounties = false;
 
   let width = 800;
   let height = 500;
@@ -11,7 +13,15 @@
   let canvas;
   let context;
 
+  $: {
+    showCounties;
+    redraw();
+  }
+
   onMount(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+
+    showCounties = searchParams.has("showCounties");
     context = canvas.getContext("2d");
 
     fetch("/data/us.json")
@@ -59,6 +69,8 @@
   width={width}
   height={height}
 ></canvas>
+
+<HrrrControls bind:showCounties={showCounties} />
 
 <style>
   canvas {
