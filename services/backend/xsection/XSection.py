@@ -62,7 +62,11 @@ def fastXSection(ds, start, end, projection, steps=1200):
 
     target_x = xr.DataArray(points[:,0], dims="index")
     target_y = xr.DataArray(points[:,1], dims="index")
-    return ds.sel(x=target_x, y=target_y, method='nearest')
+
+    data_sliced = ds.interp({'x':target_x, 'y':target_y}, method='linear')
+    data_sliced.coords['index'] = range(len(points))
+
+    return data_sliced
 
 
 def slowXSection(ds, start, end, steps=1200):
