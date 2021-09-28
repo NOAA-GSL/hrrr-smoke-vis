@@ -5,7 +5,8 @@ RUN conda install --yes \
         metpy \
         pyproj \
         rasterio \
-        xarray && \
+        xarray \
+        zarr && \
     conda clean --all --force --yes && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
