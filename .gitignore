@@ -7,10 +7,14 @@ tmp/
 local/
 
 # Built files
+.ipynb_checkpoints/
 node_modules/
 public/
 *.log
 *.pyc
+
+# Sample cross-section outputs from HRRR Smoke
+*htxssmoke*.png
 
 # OS Cruft
 .DS_Store
@@ -19,3 +23,7 @@ public/
 *.sublime-*
 .vscode
 .idea
+
+# Data Files
+*.zip
+*.grib*
