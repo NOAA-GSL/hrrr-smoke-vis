@@ -13,13 +13,15 @@
 
   let data = {
     "massden": [],
+    "potentialTemperature": [],
     "rows": 0,
     "columns": 0,
   };
 
   let thresholds = [0, 1, 2, 4, 6, 8, 12, 16, 20, 25, 30, 40, 60, 100, 200, 210];
 
-  $: smokeContours = contours().size([data.columns, data.rows]).thresholds(thresholds)(data.massden);
+  $: smoke = contours().size([data.columns, data.rows]).thresholds(thresholds)(data.massden);
+  $: potentialTemperature = contours().size([data.columns, data.rows])(data.potentialTemperature);
 
   onMount(() => {
     fetch("/data/sample.json")
@@ -29,6 +31,8 @@
       });
   });
 </script>
+
 <svg viewBox="0 0 {data.columns} {data.rows}" width="300" height="300" preserveAspectRatio="none">
-  <Contour contours={smokeContours} fill={scaleSequential(extent(thresholds), interpolateRdPu)} path={geoPath()} />
+  <Contour contours={smoke} fill={scaleSequential(extent(thresholds), interpolateRdPu)} path={geoPath()} />
+  <Contour contours={potentialTemperature} stroke={() => "black"} path={geoPath()} />
 </svg>
