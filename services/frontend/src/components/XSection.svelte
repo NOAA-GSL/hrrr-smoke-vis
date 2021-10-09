@@ -1,10 +1,10 @@
 <script>
-  import { onMount } from "svelte";
+  import Contour from "./Contour.svelte";
 
+  import { onMount } from "svelte";
   import {
     contours,
     extent,
-    geoIdentity,
     geoPath,
     interpolateRdPu,
     scaleSequential,
@@ -17,15 +17,9 @@
     "columns": 0,
   };
 
+  let thresholds = [0, 1, 2, 4, 6, 8, 12, 16, 20, 25, 30, 40, 60, 100, 200, 210];
 
-  $: smokeContours = contours().size([data.columns, data.rows])(data.massden);
-  $: smokeColor = scaleSequential(extent(data.massden), interpolateRdPu);
-
-  $: path = geoPath();
-
-  $: {
-    console.log(smokeContours[0]);
-  };
+  $: smokeContours = contours().size([data.columns, data.rows]).thresholds(thresholds)(data.massden);
 
   onMount(() => {
     fetch("/data/sample.json")
@@ -36,7 +30,5 @@
   });
 </script>
 <svg viewBox="0 0 {data.columns} {data.rows}" width="300" height="300" preserveAspectRatio="none">
-{#each smokeContours as contour}
-  <path d={path(contour)} fill={smokeColor(contour.value)}></path>
-{/each}
+  <Contour contours={smokeContours} fill={scaleSequential(extent(thresholds), interpolateRdPu)} path={geoPath()} />
 </svg>
