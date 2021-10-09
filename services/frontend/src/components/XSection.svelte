@@ -51,7 +51,7 @@
       <Contour contours={potentialTemperature} stroke={() => "black"} {path} />
     </svg>
   </div>
-  <small class="axis right">Pressure (mb, from Standard Atmosphere)</small>
+  <small class="axis left">Pressure (mb, from Standard Atmosphere)</small>
   <small class="axis bottom">Distance (km)</small>
 </div>
 
@@ -77,8 +77,17 @@
     grid-area: bottom-axis;
   }
 
+  .axis.left,
   .axis.right {
-    grid-area: left-axis;
     writing-mode: vertical-rl;
+  }
+
+  .axis.left {
+    grid-area: left-axis;
+    transform: rotate(180deg);
+  }
+
+  .axis.right {
+    grid-area: right-axis;
   }
 </style>
