@@ -20,6 +20,9 @@
 
   let thresholds = [0, 1, 2, 4, 6, 8, 12, 16, 20, 25, 30, 40, 60, 100, 200, 210];
 
+  let width = 0;
+  let height = 0;
+
   $: smoke = contours().size([data.columns, data.rows]).thresholds(thresholds)(data.massden);
   $: potentialTemperature = contours().size([data.columns, data.rows])(data.potentialTemperature);
 
@@ -32,7 +35,41 @@
   });
 </script>
 
-<svg viewBox="0 0 {data.columns} {data.rows}" width="300" height="300" preserveAspectRatio="none">
-  <Contour contours={smoke} fill={scaleSequential(extent(thresholds), interpolateRdPu)} path={geoPath()} />
-  <Contour contours={potentialTemperature} stroke={() => "black"} path={geoPath()} />
-</svg>
+<div class="container">
+  <div bind:offsetWidth={width} bind:offsetHeight={height}>
+    <svg viewBox="0 0 {width} {height}">
+      <Contour contours={smoke} fill={scaleSequential(extent(thresholds), interpolateRdPu)} path={geoPath()} />
+      <Contour contours={potentialTemperature} stroke={() => "black"} path={geoPath()} />
+    </svg>
+  </div>
+  <small class="axis right">Pressure (mb, from Standard Atmosphere)</small>
+  <small class="axis bottom">Distance (km)</small>
+</div>
+
+<style>
+  .container {
+    display: grid;
+    grid-template-columns: min-content 1fr min-content;
+    grid-template-rows: 1fr min-content;
+    grid-template-areas:
+      "left-axis chart       right-axis"
+      "......... bottom-axis ..........";
+  }
+
+  svg {
+    grid-area: chart;
+  }
+
+  .axis {
+    text-align: center;
+  }
+
+  .axis.bottom {
+    grid-area: bottom-axis;
+  }
+
+  .axis.right {
+    grid-area: left-axis;
+    writing-mode: vertical-rl;
+  }
+</style>

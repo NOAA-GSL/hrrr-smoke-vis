@@ -17,6 +17,8 @@ body {
   grid-template-rows: min-content 1fr;
   gap: uswds.units(uswds.$theme-column-gap-md);
 
+  min-height: 100vh;
+
   font-size: uswds.size("ui", "md");
 
   > * {
