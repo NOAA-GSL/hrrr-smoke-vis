@@ -1,0 +1,10 @@
+.axis {
+  .tick line {
+    stroke: var(--fg-color);
+  }
+
+  .tick text {
+    fill: var(--fg-color);
+  }
+}
+

@@ -1,7 +1,7 @@
 <script>
   import Header from "./components/Header.svelte";
-  import HrrrMap from "./components/HrrrMap.svelte";
+  import XSection from "./components/XSection.svelte";
 </script>
 
 <Header />
-<HrrrMap />
+<XSection />
