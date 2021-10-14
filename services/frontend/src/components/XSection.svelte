@@ -1,5 +1,6 @@
 <script>
   import Contour from "./Contour.svelte";
+  import AxisLeft from "./AxisLeft.svelte";
 
   import { onMount } from "svelte";
   import {
@@ -49,6 +50,9 @@
     <svg viewBox="0 0 {width} {height}">
       <Contour contours={smoke.filter((d) => d.value > 0)} fill={scaleSequentialSqrt(extent(thresholds), interpolateRdPu)} {path} />
       <Contour contours={potentialTemperature} stroke={() => "black"} {path} />
+      <g class="axis">
+        <AxisLeft scale={yScale} />
+      </g>
     </svg>
   </div>
   <small class="axis left">Pressure (mb, from Standard Atmosphere)</small>
