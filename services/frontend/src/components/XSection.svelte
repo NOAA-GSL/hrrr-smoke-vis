@@ -1,6 +1,7 @@
 <script>
-  import Contour from "./Contour.svelte";
+  import AxisBottom from "./AxisBottom.svelte";
   import AxisLeft from "./AxisLeft.svelte";
+  import Contour from "./Contour.svelte";
 
   import { onMount } from "svelte";
   import {
@@ -53,6 +54,7 @@
       <g class="axis">
         <AxisLeft scale={yScale} />
       </g>
+      <AxisBottom scale={xScale} transform="translate(0, {height})" />
     </svg>
   </div>
   <small class="axis-title left">Pressure (mb, from Standard Atmosphere)</small>
