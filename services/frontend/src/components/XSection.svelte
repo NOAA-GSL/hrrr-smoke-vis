@@ -55,8 +55,8 @@
       </g>
     </svg>
   </div>
-  <small class="axis left">Pressure (mb, from Standard Atmosphere)</small>
-  <small class="axis bottom">Distance (km)</small>
+  <small class="axis-title left">Pressure (mb, from Standard Atmosphere)</small>
+  <small class="axis-title bottom">Distance (km)</small>
 </div>
 
 <style>
@@ -73,25 +73,25 @@
     grid-area: chart;
   }
 
-  .axis {
+  .axis-title {
     text-align: center;
   }
 
-  .axis.bottom {
+  .axis-title.bottom {
     grid-area: bottom-axis;
   }
 
-  .axis.left,
-  .axis.right {
+  .axis-title.left,
+  .axis-title.right {
     writing-mode: vertical-rl;
   }
 
-  .axis.left {
+  .axis-title.left {
     grid-area: left-axis;
     transform: rotate(180deg);
   }
 
-  .axis.right {
+  .axis-title.right {
     grid-area: right-axis;
   }
 </style>
