@@ -80,7 +80,7 @@ def handler(event, context):
         "isobaricPressure": sanitize(
             [quantity.magnitude for quantity in plevs]
         ).tolist(),
-        "massden": np.ravel(sanitize(massden), order="F").tolist(),
+        "massden": np.ravel(sanitize(massden)).tolist(),
         "potentialTemperature": sanitize(
             [quantity.magnitude for quantity in np.ravel(potential_temperature)]
         ).tolist(),
