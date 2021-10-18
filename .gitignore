@@ -8,6 +8,7 @@ local/
 
 # Built files
 .ipynb_checkpoints/
+build/
 node_modules/
 *.log
 *.pyc
