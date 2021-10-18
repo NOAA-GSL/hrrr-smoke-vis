@@ -1,0 +1,20 @@
+@use "../uswds";
+
+.hrrr-map {
+
+  .hrrr-map--border {
+    fill: none;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .hrrr-map--county {
+    stroke-width: uswds.units(1px);
+    stroke: uswds.color("base-light");
+  }
+
+  .hrrr-map--state {
+    stroke-width: uswds.units(2px);
+    stroke: uswds.color("base-dark");
+  }
+
+}

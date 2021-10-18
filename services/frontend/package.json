@@ -3,8 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
+    "build": "run-p build:*",
+    "build:js": "rollup -c",
+    "build:styles": "sass src/styles:public/build --load-path=node_modules/uswds/dist/scss --color",
+    "clean": "del public/build/",
+    "dev": "run-p dev:*",
+    "dev:js": "rollup -c -w",
+    "dev:styles": "npm run build:styles -- --watch --error-css",
     "start": "sirv public --no-clear",
     "test": "run-p test:*",
     "test:format": "prettier --check src/**/*.svelte **/*.js",
@@ -14,6 +19,7 @@
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
     "d3": "^7.1.1",
+    "del-cli": "^4.0.1",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^3.2.1",
@@ -25,8 +31,10 @@
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-svelte": "^7.0.0",
     "rollup-plugin-terser": "^7.0.0",
+    "sass": "^1.43.2",
     "svelte": "^3.0.0",
-    "topojson-client": "^3.1.0"
+    "topojson-client": "^3.1.0",
+    "uswds": "^2.12.1"
   },
   "dependencies": {
     "sirv-cli": "^1.0.0"

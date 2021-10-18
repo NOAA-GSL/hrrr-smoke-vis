@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+svg {
+  display: block;
+}
+
+button {
+  font: inherit;
+}

@@ -1,0 +1,30 @@
+@use "../uswds";
+
+button {
+  --border-color: #{uswds.color("base-light")};
+  --background: #{uswds.color("base-lighter")};
+  --focus-background: #{uswds.color("base-light")};
+  --color: #{uswds.color("ink")};
+
+  border: 2px solid var(--border-color);
+  border-radius: #{uswds.border-radius(uswds.$theme-button-border-radius)};
+
+  padding: #{uswds.units(0.5)} #{uswds.units(2.5)};
+
+  background-color: var(--background);
+  color: var(--color);
+
+  transition: background-color 100ms linear;
+
+  &:focus,
+  &:hover {
+    background-color: var(--focus-background);
+  }
+
+  &[type="submit"] {
+    --border-color: #{uswds.color("primary-dark")};
+    --background: #{uswds.color("primary-vivid")};
+    --focus-background: #{uswds.color("primary-dark")};
+    --color: #{uswds.color("base-lightest")};
+  }
+}
