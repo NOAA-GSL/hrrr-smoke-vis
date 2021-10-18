@@ -9,7 +9,6 @@ local/
 # Built files
 .ipynb_checkpoints/
 node_modules/
-public/
 *.log
 *.pyc
 
