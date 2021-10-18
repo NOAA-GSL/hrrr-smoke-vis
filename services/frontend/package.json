@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "run-p build:*",
+    "assets:fonts": "cpy --cwd=node_modules/uswds/dist/fonts --parents roboto-mono source-sans-pro ../../../../public/fonts/",
+    "build": "run-p assets:* build:*",
     "build:js": "rollup -c",
     "build:styles": "sass src/styles:public/build --load-path=node_modules/uswds/dist/scss --color",
     "clean": "del public/build/",
-    "dev": "run-p dev:*",
+    "dev": "run-p assets:* dev:*",
     "dev:js": "rollup -c -w",
     "dev:styles": "npm run build:styles -- --watch --error-css",
     "start": "sirv public --no-clear",
@@ -18,6 +19,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
+    "cpy-cli": "^3.1.1",
     "d3": "^7.1.1",
     "del-cli": "^4.0.1",
     "eslint": "^8.0.1",
