@@ -1,7 +1,9 @@
 {
   "name": "hrrr-smoke-vis",
+  "description": "Frontend for a web application that generates vertical cross-sections of smoke concentration from NOAA's HRRR model forecasts",
   "version": "0.1.0",
   "private": true,
+  "author": "Evan Sheehan <evan.sheehan@noaa.gov>",
   "scripts": {
     "assets:fonts": "cpy --cwd=node_modules/uswds/dist/fonts --parents roboto-mono source-sans-pro ../../../../public/fonts/",
     "build": "run-p assets:* build:*",
