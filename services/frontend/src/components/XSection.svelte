@@ -83,17 +83,12 @@
     grid-area: bottom-axis;
   }
 
-  .axis-title.left,
-  .axis-title.right {
+  .axis-title.left {
     writing-mode: vertical-rl;
   }
 
   .axis-title.left {
     grid-area: left-axis;
     transform: rotate(180deg);
-  }
-
-  .axis-title.right {
-    grid-area: right-axis;
   }
 </style>
