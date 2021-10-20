@@ -27,9 +27,22 @@ RUN apt-get update -y \
         https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie \
     && chmod +x /usr/local/bin/aws-lambda-rie
 
-COPY requirements.txt .
-
-RUN pip install -r requirements.txt
+# Install dependencies manually instead of using the requirements.txt file as a
+# way of avoiding installing matplotlib, which is currently a dependency of
+# MetPy.
+# https://github.com/Unidata/MetPy/issues/2163#issuecomment-947944293
+RUN pip install \
+        Cartopy==0.20.1 \
+        numpy==1.21.2 \
+        Pint==0.17 \
+        pooch==1.5.2 \
+        pyproj==3.2.1 \
+        scipy==1.7.1 \
+        s3fs==2021.10.1 \
+        traitlets==5.1.0 \
+        xarray==0.19.0 \
+        zarr==2.10.1 \
+    && pip install --no-deps MetPy==1.1.0
 
 COPY entrypoint.sh /
 COPY app.py ${FUNCTION_DIR}
