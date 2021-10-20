@@ -1,8 +1,8 @@
 import os
 
-from cartopy.crs import Globe, Geodetic
 from metpy.interpolate import cross_section, log_interpolate_1d
 from metpy.units import units
+from proj import Geod
 from s3fs import S3FileSystem, S3Map
 import metpy.calc
 import numpy as np
@@ -28,9 +28,8 @@ def sanitize(arr):
 
 def distance(start, end):
     """Return the distance in kilometers between start and end on a globe"""
-    globe = Globe(ellipse="sphere", semimajor_axis=EARTH_EQUATORIAL_RADIUS_M)
-    geod = Geodetic(globe).get_geod()
-    _, _, distance = geod.inv(start[1], start[0], end[1], end[0])
+    geod = Geod(ellps="sphere", a=EARTH_EQUATORIAL_RADIUS_M)
+    distance = geod.line_length((start[1], end[1]), (start[0], end[0]))
 
     return distance
 

@@ -32,7 +32,6 @@ RUN apt-get update -y \
 # MetPy.
 # https://github.com/Unidata/MetPy/issues/2163#issuecomment-947944293
 RUN pip install \
-        Cartopy==0.20.1 \
         numpy==1.21.2 \
         Pint==0.17 \
         pooch==1.5.2 \
