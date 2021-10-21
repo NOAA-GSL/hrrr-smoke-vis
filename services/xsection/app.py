@@ -2,7 +2,7 @@ import os
 
 from metpy.interpolate import cross_section, log_interpolate_1d
 from metpy.units import units
-from proj import Geod
+from pyproj import Geod
 from s3fs import S3FileSystem, S3Map
 import metpy.calc
 import numpy as np
