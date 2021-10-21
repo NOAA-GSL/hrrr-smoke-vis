@@ -37,8 +37,8 @@ def distance(start, end):
 def handler(event, context):
     # Start and end points of the path for the cross-section (latitude,
     # longitude)
-    start = (32.55, -117.03)
-    end = (41.95, -122.87)
+    start = (event["startLat"], event["startLng"])
+    end = (event["endLat"], event["endLng"])
 
     # Number of steps taken along the path
     steps = 1200
