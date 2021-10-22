@@ -12,3 +12,10 @@ services:
             NPM_CONFIG_CACHE: /home/node/app/.npm-cache-docker
         entrypoint: ["npm"]
         command: ["run", "dev"]
+
+    xsection:
+        build: services/xsection
+        image: gsl-atd-smoke-vis:latest
+        volumes:
+            - ./services/xsection:/var/task
+        user: ${UID}:${GID}
