@@ -13,7 +13,7 @@
     "dev": "run-p assets:* dev:*",
     "dev:js": "rollup -c -w",
     "dev:styles": "npm run build:styles -- --watch --error-css",
-    "start": "sirv public --no-clear",
+    "start": "sirv public --no-clear --host",
     "test": "run-p test:*",
     "test:format": "prettier --check src/**/*.svelte **/*.js",
     "test:lint": "eslint src/**/*.js src/**/*.svelte"
