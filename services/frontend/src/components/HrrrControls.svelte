@@ -1,10 +1,16 @@
 <script>
-  export let showCounties;
+  import TextInput from "./uswds/TextInput.svelte";
 </script>
 
-<form method="get">
-  <div>
-    <input type="checkbox" name="showCounties" id="showCounties" bind:checked={showCounties}>
-    <label for="showCounties">Show Counties</label>
-  </div>
-</form>
+<section aria-label="Controls">
+  <fieldset class="usa-fieldset">
+    <legend class="usa-legend">Start</legend>
+    <TextInput id="start-latitude" label="Latitude" />
+    <TextInput id="start-longitude" label="Longitude" />
+  </fieldset>
+  <fieldset class="usa-fieldset">
+    <legend class="usa-legend">End</legend>
+    <TextInput id="end-latitude" label="Latitude" />
+    <TextInput id="end-longitude" label="Longitude" />
+  </fieldset>
+</section>
