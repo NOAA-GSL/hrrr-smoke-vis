@@ -46,7 +46,7 @@
   });
 </script>
 
-<div class="container">
+<div class="hrrr-xsection container">
   <div bind:offsetWidth={width} bind:offsetHeight={height}>
     <svg viewBox="0 0 {width} {height}">
       <Contour contours={smoke.filter((d) => d.value > 0)} fill={scaleSequentialSqrt(extent(thresholds), interpolateRdPu)} {path} />

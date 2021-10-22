@@ -2,7 +2,7 @@
   import TextInput from "./uswds/TextInput.svelte";
 </script>
 
-<section aria-label="Controls">
+<section class="hrrr-controls" aria-label="Controls">
   <fieldset class="usa-fieldset">
     <legend class="usa-legend">Start</legend>
     <TextInput id="start-latitude" label="Latitude" />
