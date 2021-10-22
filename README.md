@@ -22,7 +22,7 @@ docker-compose run --rm frontend install
 Finally, you can start all of the services.
 
 ```
-docker-compse up
+docker-compose up
 ```
 
 The frontend will be available in your browser at https://localhost:5000
