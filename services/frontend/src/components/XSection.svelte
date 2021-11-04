@@ -1,4 +1,5 @@
 <script>
+  import { xsection } from "../stores.js";
   import AxisBottom from "./AxisBottom.svelte";
   import AxisLeft from "./AxisLeft.svelte";
   import Contour from "./Contour.svelte";
@@ -20,6 +21,10 @@
     "potentialTemperature": [],
     "rows": 0,
     "columns": 0,
+  };
+
+  $: {
+    console.info($xsection);
   };
 
   let thresholds = [0, 1, 2, 4, 6, 8, 12, 16, 20, 25, 30, 40, 60, 100, 200, 210];
