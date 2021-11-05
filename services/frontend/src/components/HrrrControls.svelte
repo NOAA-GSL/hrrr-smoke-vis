@@ -1,6 +1,6 @@
 <script>
   import { path } from "../stores.js";
-  import TextInput from "./uswds/TextInput.svelte";
+  import FormGroup from "./uswds/FormGroup.svelte";
 
   let startLat = null;
   let startLng = null;
@@ -20,13 +20,22 @@
 <section class="hrrr-controls" aria-label="Controls">
   <fieldset class="usa-fieldset">
     <legend class="usa-legend">Start</legend>
-    <TextInput id="start-latitude" label="Latitude" bind:value={startLat} />
-    <TextInput id="start-longitude" label="Longitude" bind:value={startLng} />
+    <FormGroup id="start-latitude" label="Latitude">
+      <input id="start-latitude" type="number" bind:value={startLat} class="usa-input">
+    </FormGroup>
+    <FormGroup id="start-longitude" label="Longitude">
+      <input id="start-longitude" type="number" bind:value={startLng} class="usa-input">
+    </FormGroup>
   </fieldset>
+
   <fieldset class="usa-fieldset">
     <legend class="usa-legend">End</legend>
-    <TextInput id="end-latitude" label="Latitude" bind:value={endLat} />
-    <TextInput id="end-longitude" label="Longitude" bind:value={endLng} />
+    <FormGroup id="end-latitude" label="Latitude">
+      <input id="end-latitude" type="number"bind:value={endLat} class="usa-input">
+    </FormGroup>
+    <FormGroup id="end-longitude" label="Longitude">
+      <input id="end-longitude" type="number" bind:value={endLng} class="usa-input">
+    </FormGroup>
   </fieldset>
   <button class="usa-button" on:click={update}>Update</button>
 </section>
