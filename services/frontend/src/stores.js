@@ -4,26 +4,21 @@ import { derived, writable } from "svelte/store";
 // fetching cross-sections.
 const HRRR_XSECTION_API = __HRRR_XSECTION_API__;
 
-export const startLat = writable(null);
-export const startLng = writable(null);
-export const endLat = writable(null);
-export const endLng = writable(null);
+export const path = writable({
+  startLat: null,
+  startLng: null,
+  endLat: null,
+  endLng: null,
+});
 
 export const xsection = derived(
-  [startLat, startLng, endLat, endLng],
-  ([$startLat, $startLng, $endLat, $endLng], set) => {
-    console.info({ $startLat, $startLng, $endLat, $endLng });
-
-    if (!($startLat && $startLng && $endLat && $endLng)) return;
+  [path],
+  ([$path], set) => {
+    if (!($path.startLat && $path.startLng && $path.endLat && $path.endLng)) return;
 
     fetch(HRRR_XSECTION_API, {
       method: "POST",
-      body: JSON.stringify({
-        startLat: parseFloat($startLat),
-        startLng: parseFloat($startLng),
-        endLat: parseFloat($endLat),
-        endLng: parseFloat($endLng),
-      }),
+      body: JSON.stringify($path),
     })
       .then((response) => response.json())
       .then((data) => set(data));
