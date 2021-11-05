@@ -10,13 +10,20 @@ services:
         user: ${UID}:${GID}
         environment:
             NPM_CONFIG_CACHE: /home/node/app/.npm-cache-docker
-            HRRR_XSECTION_API: "http://xsection/"
+            HRRR_XSECTION_API: "http://localhost:9000/xsection/"
         entrypoint: ["npm"]
         command: ["run", "dev"]
+
+    proxy:
+        image: nginx:latest
+        ports:
+            - "9000:9000"
+        volumes:
+            - ./dev-proxy/proxy.conf:/etc/nginx/conf.d/proxy.conf:ro
 
     xsection:
         build: services/xsection
         image: gsl-atd-smoke-vis:latest
-        volumes:
-            - ./services/xsection:/var/task
         user: ${UID}:${GID}
+        environment:
+            HRRR_SMOKE_BUCKET: "gsl-atd-smoke-vis"
