@@ -5,6 +5,7 @@ services:
         working_dir: /home/node/app
         ports:
             - "5000:5000"
+            - "35729:35729"
         volumes:
             - ./services/frontend:/home/node/app
         user: ${UID}:${GID}
