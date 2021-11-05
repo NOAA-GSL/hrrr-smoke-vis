@@ -1,6 +1,6 @@
 <script>
   import { path } from "../stores.js";
-  import FormGroup from "./uswds/FormGroup.svelte";
+  import { FormGroup } from "./uswds";
 
   let startLat = null;
   let startLng = null;
