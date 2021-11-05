@@ -23,5 +23,10 @@ export const xsection = derived(
       .then((response) => response.json())
       .then((data) => set(data));
   },
-  {}
+  {
+    "massden": [],
+    "potentialTemperature": [],
+    "rows": 0,
+    "columns": 0,
+  }
 );
