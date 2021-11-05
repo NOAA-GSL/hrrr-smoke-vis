@@ -16,5 +16,4 @@
   <FormGroup id="{id}-latitude" label="Latitude">
     <input id="{id}-latitude" type="number" bind:value={coordinate.lat} class="usa-input">
   </FormGroup>
-
 </fieldset>
