@@ -14,21 +14,19 @@ export const xsection = derived(
   ([$startLat, $startLng, $endLat, $endLng], set) => {
     console.info({ $startLat, $startLng, $endLat, $endLng });
 
-    if (!($startLat && $startLng && $endLat && $endLng)) {
-      set({});
-      return;
-    }
+    if (!($startLat && $startLng && $endLat && $endLng)) return;
 
     fetch(HRRR_XSECTION_API, {
       method: "POST",
-      body: {
-        startLat: $startLat,
-        startLng: $startLng,
-        endLat: $endLat,
-        endLng: $endLng,
-      },
+      body: JSON.stringify({
+        startLat: parseFloat($startLat),
+        startLng: parseFloat($startLng),
+        endLat: parseFloat($endLat),
+        endLng: parseFloat($endLng),
+      }),
     })
       .then((response) => response.json())
       .then((data) => set(data));
-  }
+  },
+  {}
 );
