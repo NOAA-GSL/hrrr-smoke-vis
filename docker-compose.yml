@@ -14,6 +14,8 @@ services:
         entrypoint: ["npm"]
         command: ["run", "dev"]
 
+    # This proxy exists just to add the Access-Control-Allow-Origin header so
+    # that our CORS requests from the client succeed.
     proxy:
         image: nginx:latest
         ports:
