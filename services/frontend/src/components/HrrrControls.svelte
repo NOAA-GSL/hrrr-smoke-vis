@@ -1,41 +1,22 @@
 <script>
   import { path } from "../stores.js";
-  import { FormGroup } from "./uswds";
+  import CoordinateInput from "./CoordinateInput.svelte";
 
-  let startLat = null;
-  let startLng = null;
-  let endLat = null;
-  let endLng = null;
+  let start = { "lat": null, "lng": null };
+  let end = { "lat": null, "lng": null };
 
   function update() {
     path.set({
-      startLat: parseFloat(startLat),
-      startLng: parseFloat(startLng),
-      endLat: parseFloat(endLat),
-      endLng: parseFloat(endLng),
+      startLat: parseFloat(start.lat),
+      startLng: parseFloat(start.lng),
+      endLat: parseFloat(end.lat),
+      endLng: parseFloat(end.lng),
     });
   }
 </script>
 
 <section class="hrrr-controls" aria-label="Controls">
-  <fieldset class="usa-fieldset">
-    <legend class="usa-legend">Start</legend>
-    <FormGroup id="start-latitude" label="Latitude">
-      <input id="start-latitude" type="number" bind:value={startLat} class="usa-input">
-    </FormGroup>
-    <FormGroup id="start-longitude" label="Longitude">
-      <input id="start-longitude" type="number" bind:value={startLng} class="usa-input">
-    </FormGroup>
-  </fieldset>
-
-  <fieldset class="usa-fieldset">
-    <legend class="usa-legend">End</legend>
-    <FormGroup id="end-latitude" label="Latitude">
-      <input id="end-latitude" type="number"bind:value={endLat} class="usa-input">
-    </FormGroup>
-    <FormGroup id="end-longitude" label="Longitude">
-      <input id="end-longitude" type="number" bind:value={endLng} class="usa-input">
-    </FormGroup>
-  </fieldset>
+  <CoordinateInput id="start" label="Start" coordinate={start} />
+  <CoordinateInput id="end" label="End" coordinate={end} />
   <button class="usa-button" on:click={update}>Update</button>
 </section>
