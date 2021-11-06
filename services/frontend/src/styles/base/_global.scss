@@ -1,7 +1,7 @@
 @use "../uswds";
 
 html {
-  --bg-color: #{uswds.color("base-lightest")};
+  --bg-color: #{uswds.color("white")};
   --fg-color: #{uswds.color("ink")};
 
   background-color: var(--bg-color);
@@ -69,7 +69,10 @@ body {
 
 .hrrr-controls {
   grid-area: controls;
-  overflow: scroll;
+  padding-block: uswds.units(2);
+  overflow-y: auto;
+  background-color: uswds.color("primary-darker");
+  color: uswds.color("base-lightest");
 }
 
 .hrrr-xsection {
@@ -89,6 +92,7 @@ body {
 
 @media screen and (min-height: #{uswds.units("tablet")}) and (min-aspect-ratio: 4/3) {
   body {
+    row-gap: 0;
     grid-template-columns: 2fr minmax(auto, #{uswds.units("mobile-lg")});
     grid-template-rows: min-content 1fr;
     grid-template-areas:
