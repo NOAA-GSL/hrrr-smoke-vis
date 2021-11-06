@@ -58,6 +58,13 @@ body {
   }
 }
 
+label,
+legend {
+  font-family: uswds.family("ui");
+  font-size: uswds.size("ui", uswds.$theme-body-font-size);
+  line-height: uswds.line-height("ui", uswds.$theme-input-line-height);
+}
+
 :focus {
   outline: 2px solid #{uswds.color("primary")};
   outline-offset: #{uswds.units(0.5)};
