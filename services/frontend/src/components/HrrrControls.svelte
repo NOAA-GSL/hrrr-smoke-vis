@@ -16,6 +16,7 @@
 </script>
 
 <section class="hrrr-controls stack" aria-label="Controls">
+  <h2>Cross-section Path</h2>
   <CoordinateInput id="start" label="Start" coordinate={start} />
   <CoordinateInput id="end" label="End" coordinate={end} />
   <button class="usa-button" on:click={update}>Update</button>
