@@ -10,9 +10,15 @@
     min-width: 6ch;
   }
 
+  // For some reason, the row gap isn't working to create vertical space
+  // between the elements, so we have add a margin-block-start to all of this
+  // nonsense to achieve spacing between the legend and the inputs.
+  > * + * {
+    margin-block-start: uswds.units(0.5);
+  }
+
   legend {
     flex: 0 0 100%;
-    width: 100%;
   }
 
   label {
