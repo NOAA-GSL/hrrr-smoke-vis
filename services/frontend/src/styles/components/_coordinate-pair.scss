@@ -4,12 +4,21 @@
   display: flex;
   flex-wrap: wrap;
   gap: uswds.units(2);
-}
 
-.coordinate-pair > * {
-  flex: 1 0 6ch;
-}
+  > * {
+    flex: 1 0 6ch;
+    min-width: 6ch;
+  }
 
-.coordinate-pair > legend {
-  flex: 0 0 100%;
+  legend {
+    flex: 0 0 100%;
+    width: 100%;
+  }
+
+  label {
+    font-size: uswds.size("ui", "3xs");
+    font-weight: bold;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
 }
