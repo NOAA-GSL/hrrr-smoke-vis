@@ -19,7 +19,7 @@ body {
     "header"
     "controls"
     "xsection";
-  gap: uswds.units(uswds.$theme-column-gap-md);
+  gap: 0 uswds.units(uswds.$theme-column-gap-md);
 
   min-height: 100vh;
 
@@ -99,7 +99,6 @@ legend {
 
 @media screen and (min-height: #{uswds.units("tablet")}) and (min-aspect-ratio: 4/3) {
   body {
-    row-gap: 0;
     grid-template-columns: 2fr minmax(auto, #{uswds.units("mobile-lg")});
     grid-template-rows: min-content 1fr;
     grid-template-areas:
