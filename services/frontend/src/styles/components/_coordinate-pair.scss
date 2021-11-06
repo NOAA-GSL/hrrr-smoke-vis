@@ -1,0 +1,15 @@
+@use "../uswds";
+
+.coordinate-pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: uswds.units(2);
+}
+
+.coordinate-pair > * {
+  flex: 1 0 6ch;
+}
+
+.coordinate-pair > legend {
+  flex: 0 0 100%;
+}

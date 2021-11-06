@@ -6,7 +6,7 @@
   export let coordinate = { "lat": null, "lng": null };
 </script>
 
-<fieldset {id} class="usa-fieldset">
+<fieldset {id} class="usa-fieldset coordinate-pair">
   <legend class="usa-legend">{label}</legend>
 
   <FormGroup id="{id}-longitude" label="Longitude">
