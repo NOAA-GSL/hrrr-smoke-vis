@@ -15,7 +15,7 @@
   }
 </script>
 
-<section class="hrrr-controls" aria-label="Controls">
+<section class="hrrr-controls stack" aria-label="Controls">
   <CoordinateInput id="start" label="Start" coordinate={start} />
   <CoordinateInput id="end" label="End" coordinate={end} />
   <button class="usa-button" on:click={update}>Update</button>
