@@ -6,14 +6,14 @@
   export let coordinate = { "lat": null, "lng": null };
 </script>
 
-<fieldset {id} class="usa-fieldset coordinate-pair">
-  <legend class="usa-legend">{label}</legend>
+<fieldset {id} class="coordinate-pair">
+  <legend>{label}</legend>
 
   <FormGroup id="{id}-longitude" label="Longitude">
-    <input id="{id}-longitude" type="number" bind:value={coordinate.lng} class="usa-input">
+    <input id="{id}-longitude" type="number" bind:value={coordinate.lng}>
   </FormGroup>
 
   <FormGroup id="{id}-latitude" label="Latitude">
-    <input id="{id}-latitude" type="number" bind:value={coordinate.lat} class="usa-input">
+    <input id="{id}-latitude" type="number" bind:value={coordinate.lat}>
   </FormGroup>
 </fieldset>
