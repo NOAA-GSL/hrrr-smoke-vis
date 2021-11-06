@@ -1,7 +1,7 @@
 @use "../uswds";
 
 html {
-  --bg-color: #{uswds.color("base-lightest")};
+  --bg-color: #{uswds.color("white")};
   --fg-color: #{uswds.color("ink")};
 
   background-color: var(--bg-color);
@@ -14,8 +14,12 @@ html {
 body {
   display: grid;
   grid-auto-flow: row;
-  grid-template-rows: min-content 1fr;
-  gap: uswds.units(uswds.$theme-column-gap-md);
+  grid-template-rows: min-content min-content 1fr;
+  grid-template-areas:
+    "header"
+    "controls"
+    "xsection";
+  gap: 0 uswds.units(uswds.$theme-column-gap-md);
 
   min-height: 100vh;
 
@@ -54,9 +58,32 @@ body {
   }
 }
 
+label,
+legend {
+  font-family: uswds.family("ui");
+  font-size: uswds.size("ui", uswds.$theme-body-font-size);
+  line-height: uswds.line-height("ui", uswds.$theme-input-line-height);
+}
+
 :focus {
   outline: 2px solid #{uswds.color("primary")};
   outline-offset: #{uswds.units(0.5)};
+}
+
+.hrrr-header {
+  grid-area: header;
+}
+
+.hrrr-controls {
+  grid-area: controls;
+  padding-block: uswds.units(2);
+  overflow-y: auto;
+  background-color: uswds.color("primary-darker");
+  color: uswds.color("base-lightest");
+}
+
+.hrrr-xsection {
+  grid-area: xsection;
 }
 
 @media screen and (prefers-color-scheme: dark) {
@@ -72,6 +99,12 @@ body {
 
 @media screen and (min-height: #{uswds.units("tablet")}) and (min-aspect-ratio: 4/3) {
   body {
+    grid-template-columns: 2fr minmax(auto, #{uswds.units("mobile-lg")});
+    grid-template-rows: min-content 1fr;
+    grid-template-areas:
+      "xsection header"
+      "xsection controls";
+    overflow: hidden;
     height: 100vh;
   }
 }

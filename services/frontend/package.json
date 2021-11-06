@@ -13,7 +13,7 @@
     "dev": "run-p assets:* dev:*",
     "dev:js": "rollup -c -w",
     "dev:styles": "npm run build:styles -- --watch --error-css",
-    "start": "sirv public --no-clear",
+    "start": "sirv public --no-clear --host",
     "test": "run-p test:*",
     "test:format": "prettier --check src/**/*.svelte **/*.js",
     "test:lint": "eslint src/**/*.js src/**/*.svelte"
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
+    "@rollup/plugin-replace": "^3.0.0",
     "cpy-cli": "^3.1.1",
     "d3": "^7.1.1",
     "del-cli": "^4.0.1",

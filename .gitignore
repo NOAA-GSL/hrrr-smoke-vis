@@ -14,6 +14,9 @@ node_modules/
 *.log
 *.pyc
 
+# Created by npm in the Docker container
+services/frontend/.npm-cache-docker/
+
 # Sample cross-section outputs from HRRR Smoke
 *htxssmoke*.png
 

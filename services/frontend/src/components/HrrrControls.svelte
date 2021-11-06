@@ -1,10 +1,23 @@
 <script>
-  export let showCounties;
+  import { path } from "../stores.js";
+  import CoordinateInput from "./CoordinateInput.svelte";
+
+  let start = { "lat": null, "lng": null };
+  let end = { "lat": null, "lng": null };
+
+  function update() {
+    path.set({
+      startLat: parseFloat(start.lat),
+      startLng: parseFloat(start.lng),
+      endLat: parseFloat(end.lat),
+      endLng: parseFloat(end.lng),
+    });
+  }
 </script>
 
-<form method="get">
-  <div>
-    <input type="checkbox" name="showCounties" id="showCounties" bind:checked={showCounties}>
-    <label for="showCounties">Show Counties</label>
-  </div>
-</form>
+<section class="hrrr-controls stack" aria-label="Controls">
+  <h2>Cross-section Path</h2>
+  <CoordinateInput id="start" label="Start" coordinate={start} />
+  <CoordinateInput id="end" label="End" coordinate={end} />
+  <button class="usa-button" on:click={update}>Update</button>
+</section>

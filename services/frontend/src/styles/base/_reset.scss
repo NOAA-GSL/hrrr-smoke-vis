@@ -12,6 +12,18 @@ svg {
   display: block;
 }
 
+fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+label,
+legend {
+  display: block;
+  padding: 0;
+}
+
 button {
   font: inherit;
 }
