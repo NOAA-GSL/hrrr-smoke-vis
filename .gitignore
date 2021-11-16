@@ -29,5 +29,4 @@ services/frontend/.npm-cache-docker/
 .idea
 
 # Data Files
-*.zip
-*.grib*
+notebooks/data
