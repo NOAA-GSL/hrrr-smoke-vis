@@ -1,8 +1,12 @@
-FROM public.ecr.aws/lambda/python:3.8
+FROM python:3.7
 
-COPY requirements.txt  .
-RUN  pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
+WORKDIR /usr/src/app
 
-COPY app.py ${LAMBDA_TASK_ROOT}
+RUN pip3 install poetry gunicorn \
+    && poetry config virtualenvs.create false
 
-CMD [ "app.handler" ]
+COPY . .
+RUN poetry install --no-interaction --no-ansi
+
+EXPOSE 8000
+CMD ["gunicorn", "hrrr_smoke.wsgi:app", "--bind=0.0.0.0:8000"]

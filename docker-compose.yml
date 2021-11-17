@@ -24,9 +24,13 @@ services:
         volumes:
             - ./dev-proxy/proxy.conf:/etc/nginx/conf.d/proxy.conf:ro
 
-    xsection:
+    api:
         build: services/xsection
-        image: gsl-atd-smoke-vis:latest
+        image: api
         user: ${UID}:${GID}
+        ports:
+            - "8000:8000"
+        volumes:
+            - ./services/xsection:/usr/src/app
         environment:
             HRRR_SMOKE_BUCKET: "gsl-atd-smoke-vis"
