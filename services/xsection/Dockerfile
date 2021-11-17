@@ -12,4 +12,4 @@ COPY . .
 RUN poetry install --no-interaction --no-ansi
 
 EXPOSE 8000
-CMD ["gunicorn", "hrrr_smoke.wsgi:app", "--bind=0.0.0.0:8000", "--reload"]
+CMD ["gunicorn", "hrrr_smoke.wsgi:app", "--bind=0.0.0.0:8000", "--reload", "--timeout", "600"]
