@@ -16,10 +16,8 @@ export const xsection = derived(
   ([$path], set) => {
     if (!($path.startLat && $path.startLng && $path.endLat && $path.endLng)) return;
 
-    fetch(HRRR_XSECTION_API, {
-      method: "POST",
-      body: JSON.stringify($path),
-    })
+    const query = new URLSearchParams($path);
+    fetch(`${HRRR_XSECTION_API}?${query.toString()}`)
       .then((response) => response.json())
       .then((data) => set(data));
   },

@@ -11,7 +11,7 @@ services:
         user: ${UID}:${GID}
         environment:
             NPM_CONFIG_CACHE: /home/node/app/.npm-cache-docker
-            HRRR_XSECTION_API: "http://localhost:9000/xsection/"
+            HRRR_XSECTION_API: "http://localhost:8000/api/xsection/"
         entrypoint: ["npm"]
         command: ["run", "dev"]
 
