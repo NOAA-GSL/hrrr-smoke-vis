@@ -15,15 +15,6 @@ services:
         entrypoint: ["npm"]
         command: ["run", "dev"]
 
-    # This proxy exists just to add the Access-Control-Allow-Origin header so
-    # that our CORS requests from the client succeed.
-    proxy:
-        image: nginx:latest
-        ports:
-            - "9000:9000"
-        volumes:
-            - ./dev-proxy/proxy.conf:/etc/nginx/conf.d/proxy.conf:ro
-
     api:
         build: services/xsection
         image: api
