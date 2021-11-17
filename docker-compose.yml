@@ -25,3 +25,4 @@ services:
             - ./services/xsection:/usr/src/app
         environment:
             HRRR_SMOKE_BUCKET: "gsl-atd-smoke-vis"
+            FLASK_ENV: "development"

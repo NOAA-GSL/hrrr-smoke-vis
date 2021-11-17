@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint, jsonify, make_response, request
+from flask import Blueprint, jsonify, request
 from metpy.interpolate import cross_section, log_interpolate_1d
 from metpy.units import units
 from pyproj import Geod
@@ -77,20 +77,13 @@ def xsection():
 
     rows, columns = massden.shape
 
-    response = make_response(
-        jsonify(
-            columns=columns,
-            distance=distance(start, end),
-            isobaricPressure=sanitize(
-                [quantity.magnitude for quantity in plevs]
-            ).tolist(),
-            massden=np.ravel(sanitize(massden)).tolist(),
-            potentialTemperature=sanitize(
-                [quantity.magnitude for quantity in np.ravel(potential_temperature)]
-            ).tolist(),
-            rows=rows,
-        )
+    return jsonify(
+        columns=columns,
+        distance=distance(start, end),
+        isobaricPressure=sanitize([quantity.magnitude for quantity in plevs]).tolist(),
+        massden=np.ravel(sanitize(massden)).tolist(),
+        potentialTemperature=sanitize(
+            [quantity.magnitude for quantity in np.ravel(potential_temperature)]
+        ).tolist(),
+        rows=rows,
     )
-
-    response.access_control_allow_origin = "*"
-    return response
