@@ -1,6 +1,6 @@
 import os
 
-import flask
+from flask import Flask
 
 
 def index():
@@ -9,5 +9,5 @@ def index():
 
 def create_app(config=None):
     app = Flask(__name__)
-    app.add_url_rule("/", index)
+    app.add_url_rule("/", view_func=index)
     return app
