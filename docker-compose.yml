@@ -23,6 +23,7 @@ services:
             - "8000:8000"
         volumes:
             - ./services/xsection:/usr/src/app
+            - ./notebooks/data/grib2/:/data:ro
         environment:
-            HRRR_SMOKE_BUCKET: "gsl-atd-smoke-vis"
+            HRRR_DATA_DIR: "/data/"
             FLASK_ENV: "development"
