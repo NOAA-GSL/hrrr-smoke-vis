@@ -1,6 +1,8 @@
+from datetime import datetime, timedelta
+from itertools import groupby
 import os
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, current_app, jsonify, request
 from metpy.interpolate import cross_section, log_interpolate_1d
 from metpy.units import units
 from pyproj import Geod
@@ -35,6 +37,35 @@ def distance(start, end):
     distance = geod.line_length((start[1], end[1]), (start[0], end[0]))
 
     return distance
+
+
+@bp.route("/forecasts/")
+def forecasts():
+    forecast_list = []
+
+    for filename in os.listdir(current_app.config.hrrr_data_dir):
+        run_date = datetime.strptime(filename[:-4], "%y%j%H%M")
+        forecast_hour = int(filename[-4:])
+        valid_time = run_date + timedelta(hours=forecast_hour)
+
+        forecast_list.append(
+            (run_date.isoformat(), forecast_hour, valid_time.isoformat(), filename)
+        )
+
+    forecast_list.sort()
+
+    forecast_dict = {}
+    for run_date, runs in groupby(forecast_list, lambda x: x[0]):
+        forecast_dict[run_date] = [
+            {
+                "forecastHour": h,
+                "validTime": t,
+                "forecast": f,
+            }
+            for (_, h, t, f) in runs
+        ]
+
+    return jsonify(forecast_dict)
 
 
 @bp.route("/xsection/")

@@ -19,4 +19,6 @@ def create_app(config=None):
     if app.env == "development":
         app.after_request(cors)
 
+    app.config.hrrr_data_dir = os.environ.get("HRRR_DATA_DIR", None)
+
     return app
