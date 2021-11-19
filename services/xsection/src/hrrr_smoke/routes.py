@@ -1,5 +1,6 @@
 import os
 
+from flask import Blueprint, jsonify, request
 from metpy.interpolate import cross_section, log_interpolate_1d
 from metpy.units import units
 from pyproj import Geod
@@ -7,6 +8,8 @@ from s3fs import S3FileSystem, S3Map
 import metpy.calc
 import numpy as np
 import xarray as xr
+
+bp = Blueprint("api", __name__, url_prefix="/api")
 
 # Projection information
 CF_ATTRS = {
@@ -34,11 +37,12 @@ def distance(start, end):
     return distance
 
 
-def handler(event, context):
+@bp.route("/xsection/")
+def xsection():
     # Start and end points of the path for the cross-section (latitude,
     # longitude)
-    start = (event["startLat"], event["startLng"])
-    end = (event["endLat"], event["endLng"])
+    start = (float(request.args["startLat"]), float(request.args["startLng"]))
+    end = (float(request.args["endLat"]), float(request.args["endLng"]))
 
     # Number of steps taken along the path
     steps = 1200
@@ -73,15 +77,13 @@ def handler(event, context):
 
     rows, columns = massden.shape
 
-    return {
-        "columns": columns,
-        "distance": distance(start, end),
-        "isobaricPressure": sanitize(
-            [quantity.magnitude for quantity in plevs]
-        ).tolist(),
-        "massden": np.ravel(sanitize(massden)).tolist(),
-        "potentialTemperature": sanitize(
+    return jsonify(
+        columns=columns,
+        distance=distance(start, end),
+        isobaricPressure=sanitize([quantity.magnitude for quantity in plevs]).tolist(),
+        massden=np.ravel(sanitize(massden)).tolist(),
+        potentialTemperature=sanitize(
             [quantity.magnitude for quantity in np.ravel(potential_temperature)]
         ).tolist(),
-        "rows": rows,
-    }
+        rows=rows,
+    )

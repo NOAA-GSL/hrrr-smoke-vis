@@ -11,22 +11,18 @@ services:
         user: ${UID}:${GID}
         environment:
             NPM_CONFIG_CACHE: /home/node/app/.npm-cache-docker
-            HRRR_XSECTION_API: "http://localhost:9000/xsection/"
+            HRRR_XSECTION_API: "http://localhost:8000/api/xsection/"
         entrypoint: ["npm"]
         command: ["run", "dev"]
 
-    # This proxy exists just to add the Access-Control-Allow-Origin header so
-    # that our CORS requests from the client succeed.
-    proxy:
-        image: nginx:latest
-        ports:
-            - "9000:9000"
-        volumes:
-            - ./dev-proxy/proxy.conf:/etc/nginx/conf.d/proxy.conf:ro
-
-    xsection:
+    api:
         build: services/xsection
-        image: gsl-atd-smoke-vis:latest
+        image: api
         user: ${UID}:${GID}
+        ports:
+            - "8000:8000"
+        volumes:
+            - ./services/xsection:/usr/src/app
         environment:
             HRRR_SMOKE_BUCKET: "gsl-atd-smoke-vis"
+            FLASK_ENV: "development"
