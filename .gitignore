@@ -9,6 +9,7 @@ local/
 # Built files
 .ipynb_checkpoints/
 build/
+dist/
 fonts/
 node_modules/
 *.log
