@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
 
-  import { path, HRRR_XSECTION_API } from "../stores.js";
+  import { forecast, path, HRRR_XSECTION_API } from "../stores.js";
   import CoordinateInput from "./CoordinateInput.svelte";
   import { Dropdown } from "./uswds";
 
@@ -17,8 +17,6 @@
   $: forecastHours = (forecasts[run] || []).map(function (f) {
     return { value: f.forecast, text: `${f.forecastHour} (${f.validTime})` };
   });
-
-  let forecast;
 
   onMount(async function () {
     forecasts = await fetch(`${HRRR_XSECTION_API}/forecasts/`)
@@ -38,7 +36,7 @@
 <section class="hrrr-controls stack" aria-label="Controls">
   <h2>Forecast</h2>
   <Dropdown id="run-time" label="Run Time" options={runTimes} bind:selected={run} />
-  <Dropdown id="forecast-hour" label="Forecast Hour" options={forecastHours} bind:selected={forecast} />
+  <Dropdown id="forecast-hour" label="Forecast Hour" options={forecastHours} bind:selected={$forecast} />
 
   <h2>Cross-section Path</h2>
   <CoordinateInput id="start" label="Start" coordinate={start} />

@@ -4,6 +4,8 @@ import { derived, writable } from "svelte/store";
 // fetching cross-sections.
 export const HRRR_XSECTION_API = __HRRR_XSECTION_API__;
 
+export const forecast = writable("");
+
 export const path = writable({
   startLat: null,
   startLng: null,
@@ -12,11 +14,12 @@ export const path = writable({
 });
 
 export const xsection = derived(
-  [path],
-  ([$path], set) => {
+  [forecast, path],
+  ([$forecast, $path], set) => {
+    if (!$forecast) return;
     if (!($path.startLat && $path.startLng && $path.endLat && $path.endLng)) return;
 
-    const query = new URLSearchParams($path);
+    const query = new URLSearchParams({forecast: $forecast, ...$path});
     fetch(`${HRRR_XSECTION_API}/xsection/?${query.toString()}`)
       .then((response) => response.json())
       .then((data) => set(data));
