@@ -81,7 +81,7 @@ def xsection():
     # Number of steps taken along the path
     steps = 1200
 
-    with pygrib.open(os.path.join(os.environ["HRRR_DATA_DIR"], forecast)) as grib:
+    with pygrib.open(os.path.join(current_app.config.hrrr_data_dir, forecast)) as grib:
         dataset = hrrr.read_grib(
             grib.select(typeOfLevel="hybrid"),
             ["pres", "gh", "massden", "t"],
