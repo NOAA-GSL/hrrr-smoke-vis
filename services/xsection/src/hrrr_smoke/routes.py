@@ -9,7 +9,10 @@ from pyproj import Geod
 from s3fs import S3FileSystem, S3Map
 import metpy.calc
 import numpy as np
+import pygrib
 import xarray as xr
+
+from . import hrrr
 
 bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -70,6 +73,8 @@ def forecasts():
 
 @bp.route("/xsection/")
 def xsection():
+    forecast = request.args["forecast"]
+
     # Start and end points of the path for the cross-section (latitude,
     # longitude)
     start = (float(request.args["startLat"]), float(request.args["startLng"]))
@@ -78,30 +83,28 @@ def xsection():
     # Number of steps taken along the path
     steps = 1200
 
-    region = os.environ.get("AWS_REGION", "us-east-1")
-    s3 = S3FileSystem(anon=True, client_kwargs={"region_name": region})
+    with pygrib.open(os.path.join(os.environ["HRRR_DATA_DIR"], forecast)) as grib:
+        dataset = hrrr.read_grib(
+            grib.select(typeOfLevel="hybrid"),
+            ["pres", "gh", "massden", "t"],
+            {"Mass density": "massden"},
+        )
 
-    bucket = os.environ["HRRR_SMOKE_BUCKET"]
-    file_path = "sample.zarr"
-
-    store = S3Map(root=f"{bucket}/{file_path}", s3=s3, check=False)
-
-    dataset = xr.open_zarr(store)
     dataset = dataset.metpy.assign_crs(CF_ATTRS).metpy.parse_cf().squeeze()
 
     cross = cross_section(dataset, start, end, steps).set_coords(
         ("latitude", "longitude")
     )
     plevs = np.arange(1000.0, 100, -20.0, dtype=np.float32) * units.hPa
-    temperature = units.Quantity(cross["t_hybrid"].values, "degK")
-    pressure = units.Quantity(cross["pres_hybrid"].values, "Pa")
+    temperature = units.Quantity(cross["t"].values, "degK")
+    pressure = units.Quantity(cross["pres"].values, "Pa")
     potential_temperature = metpy.calc.potential_temperature(pressure, temperature)
 
     potential_temperature, massden, temperature = log_interpolate_1d(
         plevs,
         pressure,
         potential_temperature,
-        cross["massden_hybrid"].values,
+        cross["massden"].values,
         temperature,
         axis=0,
     )
