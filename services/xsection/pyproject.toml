@@ -13,6 +13,8 @@ pyproj = "^3.2.1"
 s3fs = "*"
 xarray = "^0.20.1"
 zarr = "2.10.2"
+pygrib = "^2.1.4"
+Cartopy = "^0.20.1"
 
 [tool.poetry.dev-dependencies]
 
