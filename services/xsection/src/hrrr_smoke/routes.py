@@ -6,11 +6,9 @@ from flask import Blueprint, current_app, jsonify, request
 from metpy.interpolate import cross_section, log_interpolate_1d
 from metpy.units import units
 from pyproj import Geod
-from s3fs import S3FileSystem, S3Map
 import metpy.calc
 import numpy as np
 import pygrib
-import xarray as xr
 
 from . import hrrr
 
