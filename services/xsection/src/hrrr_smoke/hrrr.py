@@ -66,7 +66,7 @@ def to_data_array(grib_msg):
         },
         dims=["forecast_time", "level", "y", "x"],
         attrs={
-            "analysis_date": grib_msg.analDate.isoformat(),
+            "analysis_date": grib_msg.analDate.strftime("%Y%j%H%M%S"),
         },
     )
 
@@ -80,6 +80,7 @@ def read_grib(grib_msgs, variable_names=[], short_names={}):
     (temperature in K), pres (pressure), and gh (geopotential height).
     """
     variables = {}
+    analysis_date = None
 
     for msg in grib_msgs:
         name = (
@@ -92,11 +93,11 @@ def read_grib(grib_msgs, variable_names=[], short_names={}):
             continue
 
         data_array = to_data_array(msg)
+        analysis_date = data_array.attrs["analysis_date"]
 
         if name not in variables:
             variables[name] = data_array
-            continue
+        else:
+            variables[name] = xr.combine_by_coords([variables[name], data_array])
 
-        variables[name] = xr.combine_by_coords([variables[name], data_array])
-
-    return xr.Dataset(variables)
+    return xr.Dataset(variables, attrs={"analysis_date": analysis_date})

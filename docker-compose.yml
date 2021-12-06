@@ -23,7 +23,7 @@ services:
             - "8000:8000"
         volumes:
             - ./services/xsection:/usr/src/app
-            - ./notebooks/data/grib2/:/data:ro
+            - ./notebooks/data/:/data
         environment:
-            HRRR_DATA_DIR: "/data/"
+            HRRR_DATA_DIR: "/data/grib2/"
             FLASK_ENV: "development"
