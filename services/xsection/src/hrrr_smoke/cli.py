@@ -30,11 +30,7 @@ def convert(grib_filename, zarr_filename):
         )
     print("done")
 
-    group = f"/{dataset.attrs['analysis_date']}"
-    if os.path.exists(f"{zarr_filename}{group}"):
-        print(f"Writing to {zarr_filename}: {group}")
-        dataset.to_zarr(zarr_filename, group=group, append_dim="forecast_time")
-    else:
-        print(f"Creating {zarr_filename}: {group}")
-        dataset.to_zarr(zarr_filename, group=group)
+    group = f"/{dataset.attrs['valid_date']}"
+    print(f"Writing to {zarr_filename}{group}")
+    dataset.to_zarr(zarr_filename, group=group, mode="w")
     print("done")

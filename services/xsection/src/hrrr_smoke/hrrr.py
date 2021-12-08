@@ -54,19 +54,19 @@ def to_data_array(grib_msg):
     lats, lons = grib_msg.latlons()
 
     data_array = xr.DataArray(
-        np.array([[grib_msg.values]]),
+        np.array([grib_msg.values]),
         coords={
             "latitude": (["y", "x"], lats),
             "longitude": (["y", "x"], lons),
-            "valid_date": (["forecast_time"], [grib_msg.validDate]),
-            "forecast_time": [grib_msg.forecastTime],
             "level": [grib_msg.level],
             "x": x,
             "y": y,
         },
-        dims=["forecast_time", "level", "y", "x"],
+        dims=["level", "y", "x"],
         attrs={
             "analysis_date": grib_msg.analDate.strftime("%Y%j%H%M%S"),
+            "forecast_time": grib_msg.forecastTime,
+            "valid_date": grib_msg.validDate.strftime("%Y%j%H%M%S"),
         },
     )
 
@@ -81,6 +81,7 @@ def read_grib(grib_msgs, variable_names=[], short_names={}):
     """
     variables = {}
     analysis_date = None
+    valid_date = None
 
     for msg in grib_msgs:
         name = (
@@ -94,10 +95,17 @@ def read_grib(grib_msgs, variable_names=[], short_names={}):
 
         data_array = to_data_array(msg)
         analysis_date = data_array.attrs["analysis_date"]
+        valid_date = data_array.attrs["valid_date"]
 
         if name not in variables:
             variables[name] = data_array
         else:
             variables[name] = xr.combine_by_coords([variables[name], data_array])
 
-    return xr.Dataset(variables, attrs={"analysis_date": analysis_date})
+    return xr.Dataset(
+        variables,
+        attrs={
+            "analysis_date": analysis_date,
+            "valid_date": valid_date,
+        },
+    )
