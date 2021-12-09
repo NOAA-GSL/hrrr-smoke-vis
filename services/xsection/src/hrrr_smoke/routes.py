@@ -56,7 +56,7 @@ def forecasts():
             {
                 "iso": dt.isoformat(),
                 "forecast": dt.strftime(forecast_format),
-                "display": dt.strftime("%d/%m/%Y %H:%M:%S"),
+                "display": dt.strftime("%d %b %Y %H:%M:%S"),
             }
             for dt in forecast_list
         ]
