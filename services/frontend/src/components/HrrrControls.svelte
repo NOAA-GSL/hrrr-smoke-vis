@@ -8,19 +8,17 @@
   let start = { "lat": null, "lng": null };
   let end = { "lat": null, "lng": null };
 
-  let forecasts = {};
-  $: runTimes = Object.keys(forecasts).map(function (k) {
-    return { value: k, text: k };
-  });
-
-  let run = "";
-  $: forecastHours = (forecasts[run] || []).map(function (f) {
-    return { value: f.forecast, text: `${f.forecastHour} (${f.validTime})` };
-  });
+  let forecasts = [];
 
   onMount(async function () {
     forecasts = await fetch(`${HRRR_XSECTION_API}/forecasts/`)
-      .then((response) => response.json());
+      .then((response) => response.json())
+      .then((dates) => dates.map((dt) => {
+        return {
+          value: dt.forecast,
+          text: dt.display,
+        };
+      }));
   });
 
   function update() {
@@ -35,8 +33,7 @@
 
 <section class="hrrr-controls stack" aria-label="Controls">
   <h2>Forecast</h2>
-  <Dropdown id="run-time" label="Run Time" options={runTimes} bind:selected={run} />
-  <Dropdown id="forecast-hour" label="Forecast Hour" options={forecastHours} bind:selected={$forecast} />
+  <Dropdown id="forecast-hour" label="Forecast Hour" options={forecasts} bind:selected={$forecast} />
 
   <h2>Cross-section Path</h2>
   <CoordinateInput id="start" label="Start" coordinate={start} />

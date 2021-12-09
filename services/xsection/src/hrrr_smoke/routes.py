@@ -8,7 +8,8 @@ from metpy.units import units
 from pyproj import Geod
 import metpy.calc
 import numpy as np
-import pygrib
+import xarray as xr
+import zarr
 
 from . import hrrr
 
@@ -42,31 +43,24 @@ def distance(start, end):
 
 @bp.route("/forecasts/")
 def forecasts():
-    forecast_list = []
-
-    for filename in os.listdir(current_app.config.hrrr_data_dir):
-        run_date = datetime.strptime(filename[:-4], "%y%j%H%M")
-        forecast_hour = int(filename[-4:])
-        valid_time = run_date + timedelta(hours=forecast_hour)
-
-        forecast_list.append(
-            (run_date.isoformat(), forecast_hour, valid_time.isoformat(), filename)
-        )
+    forecast_format = "%Y%j%H%M%S"
+    z = zarr.open(current_app.config.forecasts_array)
+    forecast_list = [
+        datetime.strptime(forecast, forecast_format) for forecast, _ in z.groups()
+    ]
 
     forecast_list.sort()
 
-    forecast_dict = {}
-    for run_date, runs in groupby(forecast_list, lambda x: x[0]):
-        forecast_dict[run_date] = [
+    return jsonify(
+        [
             {
-                "forecastHour": h,
-                "validTime": t,
-                "forecast": f,
+                "iso": dt.isoformat(),
+                "forecast": dt.strftime(forecast_format),
+                "display": dt.strftime("%d/%m/%Y %H:%M:%S"),
             }
-            for (_, h, t, f) in runs
+            for dt in forecast_list
         ]
-
-    return jsonify(forecast_dict)
+    )
 
 
 @bp.route("/xsection/")
@@ -81,13 +75,7 @@ def xsection():
     # Number of steps taken along the path
     steps = 1200
 
-    with pygrib.open(os.path.join(current_app.config.hrrr_data_dir, forecast)) as grib:
-        dataset = hrrr.read_grib(
-            grib.select(typeOfLevel="hybrid"),
-            ["pres", "gh", "massden", "t"],
-            {"Mass density": "massden"},
-        )
-
+    dataset = xr.open_zarr(current_app.config.forecasts_array, group=forecast)
     dataset = dataset.metpy.assign_crs(CF_ATTRS).metpy.parse_cf().squeeze()
 
     cross = cross_section(dataset, start, end, steps).set_coords(
