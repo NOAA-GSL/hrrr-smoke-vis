@@ -1,6 +1,7 @@
 @use "../uswds";
 
-input {
+input,
+select {
   --space: #{uswds.units(2px)};
 
   border: 1px solid uswds.color("base-light");

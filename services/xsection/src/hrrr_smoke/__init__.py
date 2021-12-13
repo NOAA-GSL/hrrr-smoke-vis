@@ -19,4 +19,7 @@ def create_app(config=None):
     if app.env == "development":
         app.after_request(cors)
 
+    app.config.hrrr_data_dir = os.environ.get("HRRR_DATA_DIR", None)
+    app.config.forecasts_array = os.environ.get("FORECASTS_ARRAY", None)
+
     return app

@@ -10,11 +10,14 @@ flask = "*"
 MetPy = "1.1.0"
 numpy = "^1.21.4"
 pyproj = "^3.2.1"
-s3fs = "*"
 xarray = "^0.20.1"
-zarr = "2.10.2"
+pygrib = "^2.1.4"
+Cartopy = "^0.20.1"
+zarr = "^2.10.3"
+numcodecs = "^0.9.1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.scripts]
+hrrrsmoke = "hrrr_smoke.cli:cli"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

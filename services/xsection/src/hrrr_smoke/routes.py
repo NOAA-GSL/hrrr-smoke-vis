@@ -1,13 +1,17 @@
+from datetime import datetime, timedelta
+from itertools import groupby
 import os
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, current_app, jsonify, request
 from metpy.interpolate import cross_section, log_interpolate_1d
 from metpy.units import units
 from pyproj import Geod
-from s3fs import S3FileSystem, S3Map
 import metpy.calc
 import numpy as np
 import xarray as xr
+import zarr
+
+from . import hrrr
 
 bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -37,8 +41,32 @@ def distance(start, end):
     return distance
 
 
+@bp.route("/forecasts/")
+def forecasts():
+    forecast_format = "%Y%j%H%M%S"
+    z = zarr.open(current_app.config.forecasts_array)
+    forecast_list = [
+        datetime.strptime(forecast, forecast_format) for forecast, _ in z.groups()
+    ]
+
+    forecast_list.sort()
+
+    return jsonify(
+        [
+            {
+                "iso": dt.isoformat(),
+                "forecast": dt.strftime(forecast_format),
+                "display": dt.strftime("%d %b %Y %H:%M:%S"),
+            }
+            for dt in forecast_list
+        ]
+    )
+
+
 @bp.route("/xsection/")
 def xsection():
+    forecast = request.args["forecast"]
+
     # Start and end points of the path for the cross-section (latitude,
     # longitude)
     start = (float(request.args["startLat"]), float(request.args["startLng"]))
@@ -47,30 +75,22 @@ def xsection():
     # Number of steps taken along the path
     steps = 1200
 
-    region = os.environ.get("AWS_REGION", "us-east-1")
-    s3 = S3FileSystem(anon=True, client_kwargs={"region_name": region})
-
-    bucket = os.environ["HRRR_SMOKE_BUCKET"]
-    file_path = "sample.zarr"
-
-    store = S3Map(root=f"{bucket}/{file_path}", s3=s3, check=False)
-
-    dataset = xr.open_zarr(store)
+    dataset = xr.open_zarr(current_app.config.forecasts_array, group=forecast)
     dataset = dataset.metpy.assign_crs(CF_ATTRS).metpy.parse_cf().squeeze()
 
     cross = cross_section(dataset, start, end, steps).set_coords(
         ("latitude", "longitude")
     )
     plevs = np.arange(1000.0, 100, -20.0, dtype=np.float32) * units.hPa
-    temperature = units.Quantity(cross["t_hybrid"].values, "degK")
-    pressure = units.Quantity(cross["pres_hybrid"].values, "Pa")
+    temperature = units.Quantity(cross["t"].values, "degK")
+    pressure = units.Quantity(cross["pres"].values, "Pa")
     potential_temperature = metpy.calc.potential_temperature(pressure, temperature)
 
     potential_temperature, massden, temperature = log_interpolate_1d(
         plevs,
         pressure,
         potential_temperature,
-        cross["massden_hybrid"].values,
+        cross["massden"].values,
         temperature,
         axis=0,
     )

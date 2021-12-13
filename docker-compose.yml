@@ -11,7 +11,7 @@ services:
         user: ${UID}:${GID}
         environment:
             NPM_CONFIG_CACHE: /home/node/app/.npm-cache-docker
-            HRRR_XSECTION_API: "http://localhost:8000/api/xsection/"
+            HRRR_XSECTION_API: "http://localhost:8000/api"
         entrypoint: ["npm"]
         command: ["run", "dev"]
 
@@ -23,6 +23,8 @@ services:
             - "8000:8000"
         volumes:
             - ./services/xsection:/usr/src/app
+            - ./notebooks/data/:/data
         environment:
-            HRRR_SMOKE_BUCKET: "gsl-atd-smoke-vis"
+            HRRR_DATA_DIR: "/data/grib2/"
+            FORECASTS_ARRAY: "/data/smoke.zarr"
             FLASK_ENV: "development"

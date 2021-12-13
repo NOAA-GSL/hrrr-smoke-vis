@@ -3,6 +3,7 @@ FROM jupyter/scipy-notebook
 RUN conda install --yes \
         gdal \
         metpy \
+        pygrib \
         pyproj \
         rasterio \
         xarray \
