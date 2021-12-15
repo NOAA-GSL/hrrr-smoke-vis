@@ -1,18 +1,19 @@
 <script>
   import { onMount } from "svelte";
 
-  import { forecast, path, HRRR_XSECTION_API } from "../stores.js";
+  import * as api from "../api.js";
+  import * as stores from "../stores.js";
   import CoordinateInput from "./CoordinateInput.svelte";
   import { Dropdown } from "./uswds";
 
   let start = { "lat": null, "lng": null };
   let end = { "lat": null, "lng": null };
+  let forecast = {};
 
   let forecasts = [];
 
   onMount(async function () {
-    forecasts = await fetch(`${HRRR_XSECTION_API}/forecasts/`)
-      .then((response) => response.json())
+    forecasts = await api.forecasts()
       .then((dates) => dates.map((dt) => {
         return {
           value: dt.forecast,
@@ -22,18 +23,24 @@
   });
 
   function update() {
-    path.set({
+    const path = {
       startLat: parseFloat(start.lat),
       startLng: parseFloat(start.lng),
       endLat: parseFloat(end.lat),
       endLng: parseFloat(end.lng),
+    };
+
+    stores.forecast.set(forecast);
+    stores.path.set(path);
+    api.xsection(forecast, path).then((data) => {
+      stores.xsection.set(data);
     });
   }
 </script>
 
 <section class="hrrr-controls stack" aria-label="Controls">
   <h2>Forecast</h2>
-  <Dropdown id="forecast-hour" label="Forecast Hour" options={forecasts} bind:selected={$forecast} />
+  <Dropdown id="forecast-hour" label="Forecast Hour" options={forecasts} bind:selected={forecast} />
 
   <h2>Cross-section Path</h2>
   <CoordinateInput id="start" label="Start" coordinate={start} />

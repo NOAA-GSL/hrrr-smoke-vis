@@ -16,13 +16,13 @@ services:
         command: ["run", "dev"]
 
     api:
-        build: services/xsection
+        build: services/api
         image: api
         user: ${UID}:${GID}
         ports:
             - "8000:8000"
         volumes:
-            - ./services/xsection:/usr/src/app
+            - ./services/api:/usr/src/app
             - ./notebooks/data/:/data
         environment:
             HRRR_DATA_DIR: "/data/grib2/"
