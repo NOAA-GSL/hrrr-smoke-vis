@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+dependencies="geo2topo ndjson-filter shp2json toposimplify"
+
+help() {
+    printf "Usage: %s COUNTY.shp STATE.shp\n\n" "$0"
+    printf "    Convert shapefiles for states and counties in the continental\n"
+    printf "    United States into a single TopoJSON file.\n"
+
+    exit 2
+}
+
+check_deps() {
+    local missing=0
+
+    for cmd in $dependencies; do
+        if ! hash "$cmd" >/dev/null 2>&1; then
+            printf "Command not found in PATH: %s\n" "$cmd" >&2
+            ((missing++))
+        fi
+    done
+
+    if ((missing > 0)); then
+        printf "Missing %d commands, aborting\n" "$missing" >&2
+        printf "Try running:\n"
+        printf "    npm install --global ndjson-cli shapefile topojson-server topojson-simplify\n"
+        exit 1
+    fi
+}
+
+conusgeo() {
+    local conus='+d.properties.STATEFP <= 56 && !["02", "15"].includes(d.properties.STATEFP)'
+    shp2json -n "$@" | ndjson-filter "$conus"
+}
+
+check_deps
+
+# Set error handling after checking our dependencies, otherwise we don't get
+# the full report of missing dependencies.
+set -eu -o pipefail
+
+if [[ "$#" < 2 ]]; then
+    help
+fi
+
+state=$(conusgeo "$1")
+
+echo $state
