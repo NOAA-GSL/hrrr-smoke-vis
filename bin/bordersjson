@@ -43,6 +43,19 @@ if [[ "$#" < 2 ]]; then
     help
 fi
 
-state=$(conusgeo "$1")
+workdir=/tmp/bordersjson-$(date +'%Y%m%d%H%M%S')
+county="$workdir"/county.ndjson
+state="$workdir"/states.ndjson
 
-echo $state
+mkdir "$workdir"
+
+trap "rm -rf $workdir; exit 1" INT TERM EXIT
+
+conusgeo "$1" > "$county"
+conusgeo "$2" > "$state"
+
+geo2topo -q 1e5 -n counties=$county states=$state | toposimplify
+
+trap - INT TERM EXIT
+
+rm -rf $workdir
