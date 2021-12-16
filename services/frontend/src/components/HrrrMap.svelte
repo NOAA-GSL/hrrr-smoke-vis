@@ -1,11 +1,10 @@
 <script>
-  import HrrrControls from "./HrrrControls.svelte";
+  import { path } from "../stores.js";
 
   import { geoPath, geoAlbers } from "d3-geo";
   import { mesh } from "topojson-client";
+  import { filter as topoFilter } from "topojson-simplify";
   import { onMount } from "svelte";
-
-  let showCounties = false;
 
   let width = 800;
   let height = 500;
@@ -13,54 +12,55 @@
   let canvas;
   let context;
 
-  $: {
-    showCounties;
-    redraw();
-  }
+  $: xsectionPath = {
+    type: "LineString",
+    coordinates: [
+      [$path.startLng, $path.startLat],
+      [$path.endLng, $path.endLat],
+    ],
+  };
+
+  $: ready = !!borderData
+    && $path.startLng !== null
+    && $path.startLat !== null
+    && $path.endLng !== null
+    && $path.endLat !== null;
 
   onMount(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-
-    showCounties = searchParams.has("showCounties");
     context = canvas.getContext("2d");
 
     fetch("/data/us.json")
       .then((res) => res.json())
       .then((geodata) => {
         borderData = geodata;
-        redraw();
+        console.log({ geodata });
       });
   });
 
-  const redraw = () => {
-    if (!borderData) return;
-
+  $: if (ready) {
+    const counties = mesh(borderData, borderData.objects.counties);
     const states = mesh(borderData, borderData.objects.states);
-    const projection = geoAlbers().fitSize([width, height], states);
-    const path = geoPath(projection, context);
+
+    const projection = geoAlbers().fitExtent([[20, 20], [width - 40, height - 40]], xsectionPath);
+    const p = geoPath(projection, context);
+
+    console.log({ xsectionPath });
+
+    context.clearRect(0, 0, width, height);
 
     context.strokeStyle = "#a9aeb1";
 
-    if (showCounties) {
-      context.lineWidth = 1;
-      context.beginPath();
-      path(mesh(borderData, borderData.objects.counties));
-      context.stroke();
-    }
+    context.lineWidth = 1;
+    context.beginPath();
+    p(counties);
+    context.stroke();
 
     context.lineWidth = 2;
     context.beginPath();
-    path(states);
+    p(states);
     context.stroke();
   };
 
-  /* function resize(width, height) { */
-  /*   this.basemap.setAttribute("height", height); */
-  /*   this.basemap.setAttribute("width", width); */
-
-  /*   console.log(`Resized: ${width}, ${height}`); */
-  /*   this.redraw(); */
-  /* } */
 </script>
 
 <canvas
@@ -69,10 +69,9 @@
   height={height}
 ></canvas>
 
-<HrrrControls bind:showCounties={showCounties} />
-
 <style>
   canvas {
+    background-color: white;
     width: 100%;
   }
 </style>

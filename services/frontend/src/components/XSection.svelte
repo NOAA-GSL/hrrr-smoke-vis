@@ -3,6 +3,7 @@
   import AxisBottom from "./AxisBottom.svelte";
   import AxisLeft from "./AxisLeft.svelte";
   import Contour from "./Contour.svelte";
+  import HrrrMap from "./HrrrMap.svelte";
 
   import { onMount } from "svelte";
   import {
@@ -33,8 +34,8 @@
 </script>
 
 <div class="hrrr-xsection container">
-  <div bind:offsetWidth={width} bind:offsetHeight={height}>
-    <svg viewBox="0 0 {width} {height}">
+  <div class="chart-container" bind:offsetWidth={width} bind:offsetHeight={height}>
+    <svg class="x-section" viewBox="0 0 {width} {height}">
       <Contour contours={smoke.filter((d) => d.value > 0)} fill={scaleSequentialSqrt(extent(thresholds), interpolateRdPu)} {path} />
       <Contour contours={potentialTemperature} stroke={() => "black"} {path} />
       <g class="axis">
@@ -42,6 +43,9 @@
       </g>
       <AxisBottom scale={xScale} transform="translate(0, {height})" />
     </svg>
+    <div class="map">
+      <HrrrMap />
+    </div>
   </div>
   <small class="axis-title left">Pressure (mb, from Standard Atmosphere)</small>
   <small class="axis-title bottom">Distance (km)</small>
@@ -57,8 +61,19 @@
       "......... bottom-axis ..........";
   }
 
-  svg {
+  .chart-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     grid-area: chart;
+  }
+
+  .chart-container .x-section {
+    grid-area: 1 / 1 / -1 / -1;
+  }
+
+  .chart-container .map {
+    grid-area: 1 / -2 / 2 / -1;
   }
 
   .axis-title {
