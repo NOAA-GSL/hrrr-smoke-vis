@@ -1,7 +1,7 @@
 <script>
   import { path } from "../stores.js";
 
-  import { geoPath, geoAlbers } from "d3-geo";
+  import { geoPath, geoAlbers, geoCircle } from "d3-geo";
   import { mesh } from "topojson-client";
   import { filter as topoFilter } from "topojson-simplify";
   import { onMount } from "svelte";
@@ -40,7 +40,7 @@
     const counties = mesh(borderData, borderData.objects.counties);
     const states = mesh(borderData, borderData.objects.states);
 
-    const projection = geoAlbers().fitExtent([[20, 20], [width - 40, height - 40]], xsectionPath);
+    const projection = geoAlbers().fitExtent([[5, 5], [width - 10, height - 10]], xsectionPath);
     const p = geoPath(projection, context);
 
     context.clearRect(0, 0, width, height);
@@ -56,6 +56,25 @@
     context.beginPath();
     p(states);
     context.stroke();
+
+    context.lineWidth = 1;
+    context.strokeStyle = "#000000";
+    context.beginPath();
+    p(xsectionPath);
+    context.stroke();
+
+    const c = geoCircle().radius(Math.max(
+      Math.abs($path.startLng - $path.endLng) / width * 5,
+      Math.abs($path.startLat - $path.endLat) / height * 5
+    ));
+    context.fillStyle = "#000000"
+    context.beginPath();
+    c.center(xsectionPath.coordinates[0]);
+    p(c());
+    c.center(xsectionPath.coordinates[1]);
+    p(c());
+    context.fill();
+    context.stroke();
   };
 </script>
 
@@ -65,3 +84,9 @@
   height={height}
 ></canvas>
 
+<style>
+canvas {
+  border: 1px solid var(--fg-color);
+  background-color: white;
+}
+</style>
