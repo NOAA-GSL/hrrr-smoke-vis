@@ -43,29 +43,34 @@
     const projection = geoAlbers().fitExtent([[5, 5], [width - 10, height - 10]], xsectionPath);
     const p = geoPath(projection, context);
 
+    const style = getComputedStyle(canvas);
+
     context.clearRect(0, 0, width, height);
 
-    context.strokeStyle = "#a9aeb1";
+    context.strokeStyle = style.getPropertyValue("--county-border-color");
+    context.lineWidth = +style.getPropertyValue("--county-border-width");
 
-    context.lineWidth = 1;
     context.beginPath();
     p(counties);
     context.stroke();
 
-    context.lineWidth = 2;
+    context.strokeStyle = style.getPropertyValue("--state-border-color");
+    context.lineWidth = +style.getPropertyValue("--state-border-width");
+
     context.beginPath();
     p(states);
     context.stroke();
 
-    context.lineWidth = 1;
-    context.strokeStyle = "#000000";
+    context.strokeStyle = style.getPropertyValue("--path-color");
+    context.lineWidth = +style.getPropertyValue("--path-width");
+
     context.beginPath();
     p(xsectionPath);
     context.stroke();
 
     const c = geoCircle().radius(Math.max(
-      Math.abs($path.startLng - $path.endLng) / width * 5,
-      Math.abs($path.startLat - $path.endLat) / height * 5
+      Math.abs($path.startLng - $path.endLng) / width * 4,
+      Math.abs($path.startLat - $path.endLat) / height * 4
     ));
     context.fillStyle = "#000000"
     context.beginPath();
@@ -80,6 +85,7 @@
 
 <canvas
   bind:this="{canvas}"
+  class="hrrr-map"
   width={width}
   height={height}
 ></canvas>
