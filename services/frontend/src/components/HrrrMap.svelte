@@ -33,7 +33,6 @@
       .then((res) => res.json())
       .then((geodata) => {
         borderData = geodata;
-        console.log({ geodata });
       });
   });
 
@@ -43,8 +42,6 @@
 
     const projection = geoAlbers().fitExtent([[20, 20], [width - 40, height - 40]], xsectionPath);
     const p = geoPath(projection, context);
-
-    console.log({ xsectionPath });
 
     context.clearRect(0, 0, width, height);
 
