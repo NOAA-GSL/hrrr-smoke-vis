@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+dependencies="geo2topo ndjson-filter shp2json toposimplify"
+quantization="1e5"
+county_shp=
+state_shp=
+
+help() {
+    printf "Usage: %s [ -q QUANTIZATION ] COUNTY.shp STATE.shp\n\n" "$0"
+    printf "    Convert shapefiles for states and counties in the continental\n"
+    printf "    United States into a single TopoJSON file.\n\n"
+    printf "OPTIONS\n"
+    printf "    -q QUANTIZATION a number representing the maximum number of\n"
+    printf "                    points allowed in any dimensions of the\n"
+    printf "                    geography. Smaller numbers create lower\n"
+    printf "                    resolution borders. (default: 1e5)\n"
+
+    exit 2
+}
+
+check_deps() {
+    local missing=0
+
+    for cmd in $dependencies; do
+        if ! hash "$cmd" >/dev/null 2>&1; then
+            printf "Command not found in PATH: %s\n" "$cmd" >&2
+            ((missing++))
+        fi
+    done
+
+    if ((missing > 0)); then
+        printf "Missing %d commands, aborting\n" "$missing" >&2
+        printf "Try running:\n"
+        printf "    npm install --global ndjson-cli shapefile topojson-server topojson-simplify\n"
+        exit 1
+    fi
+}
+
+conusgeo() {
+    local conus='+d.properties.STATEFP <= 56 && !["02", "15"].includes(d.properties.STATEFP)'
+    shp2json -n "$@" | ndjson-filter "$conus"
+}
+
+check_deps
+
+while getopts "q:" name; do
+    case "$name" in
+        q)  quantization="$OPTARG";;
+        *)  help
+            exit 1
+            ;;
+    esac
+done
+
+county_shp=${@:$OPTIND:1}
+state_shp=${@:$OPTIND+1:1}
+
+# Set error handling after checking our dependencies, otherwise we don't get
+# the full report of missing dependencies.
+set -eu -o pipefail
+
+if [[ "$#" < 2 ]]; then
+    help
+fi
+
+workdir=/tmp/bordersjson-$(date +'%Y%m%d%H%M%S')
+county="$workdir"/county.ndjson
+state="$workdir"/states.ndjson
+
+mkdir "$workdir"
+
+trap "rm -rf $workdir; exit 1" INT TERM EXIT
+
+conusgeo "$county_shp" > "$county"
+conusgeo "$state_shp" > "$state"
+
+geo2topo -q "$quantization" -n counties=$county states=$state | toposimplify
+
+trap - INT TERM EXIT
+
+rm -rf $workdir

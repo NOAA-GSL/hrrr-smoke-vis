@@ -3,6 +3,7 @@
   import AxisBottom from "./AxisBottom.svelte";
   import AxisLeft from "./AxisLeft.svelte";
   import Contour from "./Contour.svelte";
+  import HrrrMap from "./HrrrMap.svelte";
 
   import { onMount } from "svelte";
   import {
@@ -20,6 +21,7 @@
 
   let width = 0;
   let height = 0;
+  let mapSize = 0;
 
   $: smoke = contours().size([$xsection.columns, $xsection.rows]).thresholds(thresholds)($xsection.massden);
   $: potentialTemperature = contours().size([$xsection.columns, $xsection.rows])($xsection.potentialTemperature);
@@ -33,9 +35,9 @@
 </script>
 
 <div class="hrrr-xsection container">
-  <div bind:offsetWidth={width} bind:offsetHeight={height}>
-    <svg viewBox="0 0 {width} {height}">
-      <Contour contours={smoke.filter((d) => d.value > 0)} fill={scaleSequentialSqrt(extent(thresholds), interpolateRdPu)} {path} />
+  <div class="chart" bind:offsetWidth={width} bind:offsetHeight={height}>
+    <svg class="x-section" viewBox="0 0 {width} {height}">
+      <Contour contours={smoke} fill={scaleSequentialSqrt(extent(thresholds), interpolateRdPu)} {path} />
       <Contour contours={potentialTemperature} stroke={() => "black"} {path} />
       <g class="axis">
         <AxisLeft scale={yScale} />
@@ -43,6 +45,11 @@
       <AxisBottom scale={xScale} transform="translate(0, {height})" />
     </svg>
   </div>
+
+  <div class="map" bind:offsetWidth={mapSize}>
+    <HrrrMap width={mapSize} height={mapSize} />
+  </div>
+
   <small class="axis-title left">Pressure (mb, from Standard Atmosphere)</small>
   <small class="axis-title bottom">Distance (km)</small>
 </div>
@@ -57,8 +64,17 @@
       "......... bottom-axis ..........";
   }
 
-  svg {
+  .chart,
+  .map {
     grid-area: chart;
+    overflow: hidden;
+  }
+
+  .map {
+    width: 25%;
+    border: 1px solid var(--fg-color, black);
+    aspect-ratio: 1 / 1;
+    justify-self: end;
   }
 
   .axis-title {

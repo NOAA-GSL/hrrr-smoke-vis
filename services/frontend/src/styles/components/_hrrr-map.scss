@@ -1,20 +1,12 @@
 @use "../uswds";
 
 .hrrr-map {
+  --county-border-color: #{uswds.color("base-light")};
+  --county-border-width: 1;
+  --state-border-color: #{uswds.color("base")};
+  --state-border-width: 1;
+  --path-color: #{uswds.color("ink")};
+  --path-width: 2;
 
-  .hrrr-map--border {
-    fill: none;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .hrrr-map--county {
-    stroke-width: uswds.units(1px);
-    stroke: uswds.color("base-light");
-  }
-
-  .hrrr-map--state {
-    stroke-width: uswds.units(2px);
-    stroke: uswds.color("base-dark");
-  }
-
+  background-color: var(--bg-color);
 }

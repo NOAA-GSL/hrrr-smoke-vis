@@ -1,79 +1,110 @@
 <script>
-  import HrrrControls from "./HrrrControls.svelte";
+  import { path } from "../stores.js";
 
-  import { geoPath, geoAlbers } from "d3-geo";
+  import { geoPath, geoAlbers, geoCircle } from "d3-geo";
   import { mesh } from "topojson-client";
-  import { onMount } from "svelte";
+  import { filter as topoFilter } from "topojson-simplify";
+  import { afterUpdate, onMount } from "svelte";
 
-  let showCounties = false;
-
-  let width = 800;
-  let height = 500;
+  export let width = 0;
+  export let height = 0;
   let borderData;
   let canvas;
   let context;
 
-  $: {
-    showCounties;
-    redraw();
-  }
+  $: xsectionPath = {
+    type: "LineString",
+    coordinates: [
+      [$path.startLng, $path.startLat],
+      [$path.endLng, $path.endLat],
+    ],
+  };
+
+  $: ready = !!borderData
+    && $path.startLng !== null
+    && $path.startLat !== null
+    && $path.endLng !== null
+    && $path.endLat !== null;
 
   onMount(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-
-    showCounties = searchParams.has("showCounties");
-    context = canvas.getContext("2d");
-
     fetch("/data/us.json")
       .then((res) => res.json())
       .then((geodata) => {
         borderData = geodata;
-        redraw();
       });
   });
 
-  const redraw = () => {
-    if (!borderData) return;
+  function drawPath(color, width, radius, p) {
+    const c = geoCircle().radius(radius);
 
-    const states = mesh(borderData, borderData.objects.states);
-    const projection = geoAlbers().fitSize([width, height], states);
-    const path = geoPath(projection, context);
+    context.strokeStyle = color;
+    context.fillStyle = color;
+    context.lineWidth = width;
 
-    context.strokeStyle = "#a9aeb1";
-
-    if (showCounties) {
-      context.lineWidth = 1;
-      context.beginPath();
-      path(mesh(borderData, borderData.objects.counties));
-      context.stroke();
-    }
-
-    context.lineWidth = 2;
     context.beginPath();
-    path(states);
+    p(xsectionPath);
     context.stroke();
-  };
 
-  /* function resize(width, height) { */
-  /*   this.basemap.setAttribute("height", height); */
-  /*   this.basemap.setAttribute("width", width); */
+    context.beginPath();
+    c.center(xsectionPath.coordinates[0]);
+    p(c());
+    c.center(xsectionPath.coordinates[1]);
+    p(c());
+    context.fill();
+  }
 
-  /*   console.log(`Resized: ${width}, ${height}`); */
-  /*   this.redraw(); */
-  /* } */
+  afterUpdate(() => {
+    if (!ready) return;
+
+    context = canvas.getContext("2d");
+
+    const counties = mesh(borderData, borderData.objects.counties);
+    const states = mesh(borderData, borderData.objects.states);
+
+    const projection = geoAlbers().fitExtent([[5, 5], [width - 10, height - 10]], xsectionPath);
+    const p = geoPath(projection, context);
+
+    const style = getComputedStyle(canvas);
+
+    context.clearRect(0, 0, width, height);
+
+    context.strokeStyle = style.getPropertyValue("--county-border-color");
+    context.lineWidth = +style.getPropertyValue("--county-border-width");
+
+    context.beginPath();
+    p(counties);
+    context.stroke();
+
+    context.strokeStyle = style.getPropertyValue("--state-border-color");
+    context.lineWidth = +style.getPropertyValue("--state-border-width");
+
+    context.beginPath();
+    p(states);
+    context.stroke();
+
+    const degPerPx = Math.max(
+      Math.abs($path.startLng - $path.endLng) / width,
+      Math.abs($path.startLat - $path.endLat) / height
+    );
+
+    drawPath(
+      style.getPropertyValue("background-color"),
+      +style.getPropertyValue("--path-width") + 6,
+      7 * degPerPx,
+      p,
+    );
+    drawPath(
+      style.getPropertyValue("--path-color"),
+      +style.getPropertyValue("--path-width"),
+      4 * degPerPx,
+      p,
+    );
+  });
 </script>
 
 <canvas
   bind:this="{canvas}"
+  class="hrrr-map"
   width={width}
   height={height}
 ></canvas>
-
-<HrrrControls bind:showCounties={showCounties} />
-
-<style>
-  canvas {
-    width: 100%;
-  }
-</style>
-
