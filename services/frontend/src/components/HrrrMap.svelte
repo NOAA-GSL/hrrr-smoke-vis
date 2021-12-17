@@ -83,10 +83,3 @@
   width={width}
   height={height}
 ></canvas>
-
-<style>
-canvas {
-  border: 1px solid var(--fg-color);
-  background-color: white;
-}
-</style>

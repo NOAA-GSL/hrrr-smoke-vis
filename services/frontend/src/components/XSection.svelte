@@ -35,7 +35,7 @@
 </script>
 
 <div class="hrrr-xsection container">
-  <div class="chart-container" bind:offsetWidth={width} bind:offsetHeight={height}>
+  <div class="chart" bind:offsetWidth={width} bind:offsetHeight={height}>
     <svg class="x-section" viewBox="0 0 {width} {height}">
       <Contour contours={smoke} fill={scaleSequentialSqrt(extent(thresholds), interpolateRdPu)} {path} />
       <Contour contours={potentialTemperature} stroke={() => "black"} {path} />
@@ -44,10 +44,12 @@
       </g>
       <AxisBottom scale={xScale} transform="translate(0, {height})" />
     </svg>
-    <div class="map" bind:offsetWidth={mapSize}>
-      <HrrrMap width={mapSize} height={mapSize} />
-    </div>
   </div>
+
+  <div class="map" bind:offsetWidth={mapSize}>
+    <HrrrMap width={mapSize} height={mapSize} />
+  </div>
+
   <small class="axis-title left">Pressure (mb, from Standard Atmosphere)</small>
   <small class="axis-title bottom">Distance (km)</small>
 </div>
@@ -62,21 +64,18 @@
       "......... bottom-axis ..........";
   }
 
-  .chart-container {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
+  .chart,
+  .map {
     grid-area: chart;
     overflow: hidden;
   }
 
-  .chart-container .x-section {
-    grid-area: 1 / 1 / -1 / -1;
-  }
-
-  .chart-container .map {
-    grid-area: 1 / -2 / 2 / -1;
-    overflow: hidden;
+  .map {
+    width: 25%;
+    border: 1px solid var(--fg-color, black);
+    aspect-ratio: 1 / 1;
+    justify-self: end;
+    background-color: var(--bg-color, white);
   }
 
   .axis-title {
