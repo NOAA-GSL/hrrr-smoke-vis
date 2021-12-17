@@ -36,6 +36,25 @@
       });
   });
 
+  function drawPath(color, width, radius, p) {
+    const c = geoCircle().radius(radius);
+
+    context.strokeStyle = color;
+    context.fillStyle = color;
+    context.lineWidth = width;
+
+    context.beginPath();
+    p(xsectionPath);
+    context.stroke();
+
+    context.beginPath();
+    c.center(xsectionPath.coordinates[0]);
+    p(c());
+    c.center(xsectionPath.coordinates[1]);
+    p(c());
+    context.fill();
+  }
+
   $: if (ready) {
     const counties = mesh(borderData, borderData.objects.counties);
     const states = mesh(borderData, borderData.objects.states);
@@ -61,25 +80,23 @@
     p(states);
     context.stroke();
 
-    context.strokeStyle = style.getPropertyValue("--path-color");
-    context.lineWidth = +style.getPropertyValue("--path-width");
+    const degPerPx = Math.max(
+      Math.abs($path.startLng - $path.endLng) / width,
+      Math.abs($path.startLat - $path.endLat) / height
+    );
 
-    context.beginPath();
-    p(xsectionPath);
-    context.stroke();
-
-    const c = geoCircle().radius(Math.max(
-      Math.abs($path.startLng - $path.endLng) / width * 4,
-      Math.abs($path.startLat - $path.endLat) / height * 4
-    ));
-    context.fillStyle = "#000000"
-    context.beginPath();
-    c.center(xsectionPath.coordinates[0]);
-    p(c());
-    c.center(xsectionPath.coordinates[1]);
-    p(c());
-    context.fill();
-    context.stroke();
+    drawPath(
+      style.getPropertyValue("background-color"),
+      +style.getPropertyValue("--path-width") + 6,
+      7 * degPerPx,
+      p,
+    );
+    drawPath(
+      style.getPropertyValue("--path-color"),
+      +style.getPropertyValue("--path-width"),
+      4 * degPerPx,
+      p,
+    );
   };
 </script>
 

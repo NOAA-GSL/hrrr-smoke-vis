@@ -75,7 +75,6 @@
     border: 1px solid var(--fg-color, black);
     aspect-ratio: 1 / 1;
     justify-self: end;
-    background-color: var(--bg-color, white);
   }
 
   .axis-title {
