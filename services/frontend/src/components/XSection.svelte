@@ -67,6 +67,7 @@
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(5, 1fr);
     grid-area: chart;
+    overflow: hidden;
   }
 
   .chart-container .x-section {
@@ -75,6 +76,7 @@
 
   .chart-container .map {
     grid-area: 1 / -2 / 2 / -1;
+    overflow: hidden;
   }
 
   .axis-title {
