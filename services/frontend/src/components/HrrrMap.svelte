@@ -6,8 +6,8 @@
   import { filter as topoFilter } from "topojson-simplify";
   import { onMount } from "svelte";
 
-  let width = 800;
-  let height = 500;
+  export let width = 0;
+  export let height = 0;
   let borderData;
   let canvas;
   let context;
@@ -57,7 +57,6 @@
     p(states);
     context.stroke();
   };
-
 </script>
 
 <canvas
@@ -65,11 +64,4 @@
   width={width}
   height={height}
 ></canvas>
-
-<style>
-  canvas {
-    background-color: white;
-    width: 100%;
-  }
-</style>
 

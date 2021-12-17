@@ -21,6 +21,7 @@
 
   let width = 0;
   let height = 0;
+  let mapSize = 0;
 
   $: smoke = contours().size([$xsection.columns, $xsection.rows]).thresholds(thresholds)($xsection.massden);
   $: potentialTemperature = contours().size([$xsection.columns, $xsection.rows])($xsection.potentialTemperature);
@@ -43,8 +44,8 @@
       </g>
       <AxisBottom scale={xScale} transform="translate(0, {height})" />
     </svg>
-    <div class="map">
-      <HrrrMap />
+    <div class="map" bind:offsetWidth={mapSize}>
+      <HrrrMap width={mapSize} height={mapSize} />
     </div>
   </div>
   <small class="axis-title left">Pressure (mb, from Standard Atmosphere)</small>
