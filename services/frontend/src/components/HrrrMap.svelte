@@ -4,7 +4,7 @@
   import { geoPath, geoAlbers, geoCircle } from "d3-geo";
   import { mesh } from "topojson-client";
   import { filter as topoFilter } from "topojson-simplify";
-  import { onMount } from "svelte";
+  import { afterUpdate, onMount } from "svelte";
 
   export let width = 0;
   export let height = 0;
@@ -27,8 +27,6 @@
     && $path.endLat !== null;
 
   onMount(() => {
-    context = canvas.getContext("2d");
-
     fetch("/data/us.json")
       .then((res) => res.json())
       .then((geodata) => {
@@ -55,7 +53,11 @@
     context.fill();
   }
 
-  $: if (ready) {
+  afterUpdate(() => {
+    if (!ready) return;
+
+    context = canvas.getContext("2d");
+
     const counties = mesh(borderData, borderData.objects.counties);
     const states = mesh(borderData, borderData.objects.states);
 
@@ -97,7 +99,7 @@
       4 * degPerPx,
       p,
     );
-  };
+  });
 </script>
 
 <canvas
