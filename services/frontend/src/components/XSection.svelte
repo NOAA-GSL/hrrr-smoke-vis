@@ -37,7 +37,7 @@
 <div class="hrrr-xsection container">
   <div class="chart-container" bind:offsetWidth={width} bind:offsetHeight={height}>
     <svg class="x-section" viewBox="0 0 {width} {height}">
-      <Contour contours={smoke.filter((d) => d.value > 0)} fill={scaleSequentialSqrt(extent(thresholds), interpolateRdPu)} {path} />
+      <Contour contours={smoke} fill={scaleSequentialSqrt(extent(thresholds), interpolateRdPu)} {path} />
       <Contour contours={potentialTemperature} stroke={() => "black"} {path} />
       <g class="axis">
         <AxisLeft scale={yScale} />
