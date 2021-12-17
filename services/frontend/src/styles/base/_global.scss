@@ -21,8 +21,6 @@ body {
     "xsection";
   gap: 0 uswds.units(uswds.$theme-column-gap-md);
 
-  min-height: 100vh;
-
   font-size: uswds.size("ui", "md");
 
   > * {
@@ -105,6 +103,5 @@ legend {
       "xsection header"
       "xsection controls";
     overflow: hidden;
-    height: 100vh;
   }
 }
