@@ -5,6 +5,16 @@
   import HrrrControls from "./components/HrrrControls.svelte";
   import XSection from "./components/XSection.svelte";
 
+  $: start = {
+    lat: $path.startLat,
+    lng: $path.startLng,
+  };
+
+  $: end = {
+    lat: $path.endLat,
+    lng: $path.endLng,
+  };
+
   onMount(function () {
     const params = new URLSearchParams(window.location.search);
     let pth = {};
@@ -33,5 +43,5 @@
 </script>
 
 <Header />
-<HrrrControls />
+<HrrrControls forecast={$forecast} {start} {end} />
 <XSection />

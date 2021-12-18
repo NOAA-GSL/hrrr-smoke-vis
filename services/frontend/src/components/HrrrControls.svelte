@@ -6,9 +6,9 @@
   import CoordinateInput from "./CoordinateInput.svelte";
   import { Dropdown } from "./uswds";
 
-  let start = { "lat": null, "lng": null };
-  let end = { "lat": null, "lng": null };
-  let forecast = {};
+  export let start = { "lat": null, "lng": null };
+  export let end = { "lat": null, "lng": null };
+  export let forecast = {};
 
   let forecasts = [];
 
