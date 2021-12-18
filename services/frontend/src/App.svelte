@@ -1,5 +1,6 @@
 <script>
   import { forecast } from "./stores.js";
+  import Footer from "./components/Footer.svelte";
   import Header from "./components/Header.svelte";
   import HrrrControls from "./components/HrrrControls.svelte";
   import XSection from "./components/XSection.svelte";
@@ -69,3 +70,4 @@
 <Header />
 <HrrrControls validTime={$forecast.forecast} {start} {end} />
 <XSection />
+<Footer />
