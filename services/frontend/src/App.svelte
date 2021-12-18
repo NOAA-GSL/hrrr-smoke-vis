@@ -52,7 +52,7 @@
   };
 
   function handlePopState(event) {
-    const state = event.state;
+    const state = event.state || {};
 
     forecast.set(state.forecast || null);
     path.set({

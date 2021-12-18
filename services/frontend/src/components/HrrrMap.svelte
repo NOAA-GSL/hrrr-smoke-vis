@@ -54,9 +54,10 @@
   }
 
   afterUpdate(() => {
-    if (!ready) return;
-
     context = canvas.getContext("2d");
+    context.clearRect(0, 0, width, height);
+
+    if (!ready) return;
 
     const counties = mesh(borderData, borderData.objects.counties);
     const states = mesh(borderData, borderData.objects.states);
@@ -65,8 +66,6 @@
     const p = geoPath(projection, context);
 
     const style = getComputedStyle(canvas);
-
-    context.clearRect(0, 0, width, height);
 
     context.strokeStyle = style.getPropertyValue("--county-border-color");
     context.lineWidth = +style.getPropertyValue("--county-border-width");
