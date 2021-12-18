@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from "svelte";
   import { forecast, path } from "./stores.js";
   import Header from "./components/Header.svelte";
   import HrrrControls from "./components/HrrrControls.svelte";
@@ -15,31 +14,42 @@
     lng: $path.endLng,
   };
 
-  onMount(function () {
-    const params = new URLSearchParams(window.location.search);
-    let pth = {};
+  $: {
+    // Initialize the state from our stores
+    let state = {
+      forecast: $forecast,
+      startLat: $path.startLat,
+      startLng: $path.startLng,
+      endLat: $path.endLat,
+      endLng: $path.endLng,
+    };
 
-    for (let [k, v] of params.entries()) {
-      switch (k) {
-        case "forecast":
-          forecast.set(v);
-          break;
-        case "startLat":
-        case "startLng":
-        case "endLat":
-        case "endLng":
-          pth[k] = v;
-          break;
-        default:
-          console.warn(`Unknown URL parameter: ${k}`);
-          break;
-      }
-    }
+    // Filter out any null state so we don't include those params in the URL
+    state = Object.keys(state).reduce(function (o, key) {
+      if (state[key] !== null) o[key] = state[key];
+      return o;
+    }, {});
 
-    if (Object.keys(pth).length > 0) {
-      path.set(pth);
+    // If the new state differs from the current state, update the browser
+    // history.
+    const currentState = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(state);
+    const keys = new Set([...params.keys(), ...currentState.keys()]);
+
+    const stateDiffers = Array.from(keys).some(function (k) {
+      return params.get(k) !== currentState.get(k);
+    });
+
+    if (stateDiffers) {
+      let url = new URL(window.location.href);
+
+      url.search = params.toString();
+
+      console.info(`Navigating to ${url.toString()}`);
+
+      history.pushState(state, "", url.toString());
     }
-  });
+  };
 </script>
 
 <Header />
