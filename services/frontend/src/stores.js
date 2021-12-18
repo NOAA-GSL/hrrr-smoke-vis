@@ -10,6 +10,13 @@ export const path = writable({
   endLng: null,
 });
 
+const emptyXSection = {
+  massden: [],
+  potentialTemperature: [],
+  rows: 0,
+  columns: 0,
+};
+
 export const xsection = derived(
   [forecast, path],
   ([$forecast, $path], set) => {
@@ -20,14 +27,12 @@ export const xsection = derived(
       $path.endLat &&
       $path.endLng;
 
-    if (!ready) return;
+    if (!ready) {
+      set(emptyXSection);
+      return;
+    }
 
     api.xsection($forecast, $path).then((data) => set(data));
   },
-  {
-    massden: [],
-    potentialTemperature: [],
-    rows: 0,
-    columns: 0,
-  }
+  emptyXSection
 );
