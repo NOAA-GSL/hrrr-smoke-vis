@@ -32,9 +32,6 @@
 
     stores.forecast.set(forecast);
     stores.path.set(path);
-    api.xsection(forecast, path).then((data) => {
-      stores.xsection.set(data);
-    });
   }
 </script>
 

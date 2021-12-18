@@ -1,4 +1,5 @@
-import { writable } from "svelte/store";
+import { derived, writable } from "svelte/store";
+import * as api from "./api.js";
 
 export const forecast = writable(null);
 
@@ -9,11 +10,24 @@ export const path = writable({
   endLng: null,
 });
 
-export const xsection = writable(
+export const xsection = derived(
+  [forecast, path],
+  ([$forecast, $path], set) => {
+    const ready =
+      $forecast &&
+      $path.startLat &&
+      $path.startLng &&
+      $path.endLat &&
+      $path.endLng;
+
+    if (!ready) return;
+
+    api.xsection($forecast, $path).then((data) => set(data));
+  },
   {
-    "massden": [],
-    "potentialTemperature": [],
-    "rows": 0,
-    "columns": 0,
+    massden: [],
+    potentialTemperature: [],
+    rows: 0,
+    columns: 0,
   }
 );
