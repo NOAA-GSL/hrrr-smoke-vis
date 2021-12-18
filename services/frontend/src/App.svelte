@@ -50,7 +50,21 @@
       history.pushState(state, "", url.toString());
     }
   };
+
+  function handlePopState(event) {
+    const state = event.state;
+
+    forecast.set(state.forecast || null);
+    path.set({
+      startLat: state.startLat || null,
+      startLng: state.startLng || null,
+      endLat: state.endLat || null,
+      endLng: state.endLng || null,
+    });
+  }
 </script>
+
+<svelte:window on:popstate={handlePopState} />
 
 <Header />
 <HrrrControls forecast={$forecast} {start} {end} />
