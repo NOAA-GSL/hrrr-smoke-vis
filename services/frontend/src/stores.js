@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 
-export const forecast = writable("");
+export const forecast = writable(null);
 
 export const path = writable({
   startLat: null,
