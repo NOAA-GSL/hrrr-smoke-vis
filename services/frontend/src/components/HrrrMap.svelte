@@ -1,5 +1,5 @@
 <script>
-  import { path } from "../stores.js";
+  import { forecast } from "../stores.js";
 
   import { geoPath, geoAlbers, geoCircle } from "d3-geo";
   import { mesh } from "topojson-client";
@@ -15,16 +15,16 @@
   $: xsectionPath = {
     type: "LineString",
     coordinates: [
-      [$path.startLng, $path.startLat],
-      [$path.endLng, $path.endLat],
+      [$forecast.startLng, $forecast.startLat],
+      [$forecast.endLng, $forecast.endLat],
     ],
   };
 
   $: ready = !!borderData
-    && $path.startLng !== null
-    && $path.startLat !== null
-    && $path.endLng !== null
-    && $path.endLat !== null;
+    && $forecast.startLng !== null
+    && $forecast.startLat !== null
+    && $forecast.endLng !== null
+    && $forecast.endLat !== null;
 
   onMount(() => {
     fetch("/data/us.json")
@@ -82,8 +82,8 @@
     context.stroke();
 
     const degPerPx = Math.max(
-      Math.abs($path.startLng - $path.endLng) / width,
-      Math.abs($path.startLat - $path.endLat) / height
+      Math.abs($forecast.startLng - $forecast.endLng) / width,
+      Math.abs($forecast.startLat - $forecast.endLat) / height
     );
 
     drawPath(

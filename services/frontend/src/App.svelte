@@ -1,27 +1,27 @@
 <script>
-  import { forecast, path } from "./stores.js";
+  import { forecast } from "./stores.js";
   import Header from "./components/Header.svelte";
   import HrrrControls from "./components/HrrrControls.svelte";
   import XSection from "./components/XSection.svelte";
 
   $: start = {
-    lat: $path.startLat,
-    lng: $path.startLng,
+    lat: $forecast.startLat,
+    lng: $forecast.startLng,
   };
 
   $: end = {
-    lat: $path.endLat,
-    lng: $path.endLng,
+    lat: $forecast.endLat,
+    lng: $forecast.endLng,
   };
 
   $: {
     // Initialize the state from our stores
     let state = {
-      forecast: $forecast,
-      startLat: $path.startLat,
-      startLng: $path.startLng,
-      endLat: $path.endLat,
-      endLng: $path.endLng,
+      forecast: $forecast.forecast,
+      startLat: $forecast.startLat,
+      startLng: $forecast.startLng,
+      endLat: $forecast.endLat,
+      endLng: $forecast.endLng,
     };
 
     // Filter out any null state so we don't include those params in the URL
@@ -54,8 +54,8 @@
   function handlePopState(event) {
     const state = event.state || {};
 
-    forecast.set(state.forecast || null);
-    path.set({
+    forecast.set({
+      forecast: state.forecast || null,
       startLat: state.startLat || null,
       startLng: state.startLng || null,
       endLat: state.endLat || null,
@@ -67,5 +67,5 @@
 <svelte:window on:popstate={handlePopState} />
 
 <Header />
-<HrrrControls forecast={$forecast} {start} {end} />
+<HrrrControls validTime={$forecast.forecast} {start} {end} />
 <XSection />
