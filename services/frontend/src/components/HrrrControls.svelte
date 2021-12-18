@@ -2,13 +2,13 @@
   import { onMount } from "svelte";
 
   import * as api from "../api.js";
-  import * as stores from "../stores.js";
+  import { forecast } from "../stores.js";
   import CoordinateInput from "./CoordinateInput.svelte";
   import { Dropdown } from "./uswds";
 
-  let start = { "lat": null, "lng": null };
-  let end = { "lat": null, "lng": null };
-  let forecast = {};
+  export let start = { "lat": null, "lng": null };
+  export let end = { "lat": null, "lng": null };
+  export let validTime = {};
 
   let forecasts = [];
 
@@ -23,24 +23,19 @@
   });
 
   function update() {
-    const path = {
+    forecast.set({
+      forecast: validTime,
       startLat: parseFloat(start.lat),
       startLng: parseFloat(start.lng),
       endLat: parseFloat(end.lat),
       endLng: parseFloat(end.lng),
-    };
-
-    stores.forecast.set(forecast);
-    stores.path.set(path);
-    api.xsection(forecast, path).then((data) => {
-      stores.xsection.set(data);
     });
   }
 </script>
 
 <section class="hrrr-controls stack" aria-label="Controls">
   <h2>Forecast</h2>
-  <Dropdown id="forecast-hour" label="Forecast Hour" options={forecasts} bind:selected={forecast} />
+  <Dropdown id="forecast-hour" label="Forecast Hour" options={forecasts} bind:selected={validTime} />
 
   <h2>Cross-section Path</h2>
   <CoordinateInput id="start" label="Start" coordinate={start} />

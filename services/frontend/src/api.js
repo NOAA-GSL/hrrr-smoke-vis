@@ -7,8 +7,8 @@ export function forecasts() {
     .then((response) => response.json());
 }
 
-export function xsection(forecast, path) {
-  const query = new URLSearchParams({ forecast, ...path });
+export function xsection(forecast) {
+  const query = new URLSearchParams(forecast);
 
   return fetch(`${HRRR_XSECTION_API}/xsection/?${query.toString()}`)
     .then((response) => response.json());
