@@ -4,6 +4,7 @@ from flask.cli import FlaskGroup
 import click
 import pygrib
 import xarray as xr
+import zarr
 
 from . import hrrr
 import hrrr_smoke
@@ -16,10 +17,32 @@ def cli():
 
 
 @cli.command()
-@click.argument("grib_filename")
-@click.argument("zarr_filename")
+@click.argument(
+    "grib_filename",
+    nargs=-1,
+    type=click.Path(exists=True, readable=True, dir_okay=False, resolve_path=True),
+)
+@click.argument("zarr_filename", click.Path(resolve_path=True))
 def convert(grib_filename, zarr_filename):
     """Convert a GRIB2 file into a compressed Zarr array"""
+
+    # Map the valid dates to the analysis dates so that we can determine which
+    # forecasts have more recent model runs and should be updated in our Zarr.
+    extant_forecasts = {}
+    if os.path.exists(zarr_filename):
+        z_array = zarr.convenience.open(zarr_filename, "r")
+
+        for (_, group) in z_array.groups():
+            analysis_date = group.attrs["analysis_date"]
+            valid_date = group.attrs["valid_date"]
+
+            # Data is grouped in the zarr by the valid date, so there should
+            # only ever be one analysis available for any given valid date.
+            assert (
+                valid_date not in extant_forecasts
+            ), f"Found multiple forecasts for same valid date: {valid_date}"
+
+            extant_forecasts[valid_date] = analysis_date
 
     print(f"Reading {grib_filename}")
     with pygrib.open(grib_filename) as grib:
