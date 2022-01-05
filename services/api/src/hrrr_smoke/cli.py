@@ -1,5 +1,7 @@
+from datetime import datetime, timedelta
 import os
 
+from flask import current_app
 from flask.cli import FlaskGroup
 import click
 import pygrib
@@ -17,43 +19,58 @@ def cli():
 
 
 @cli.command()
+@click.option("--skip-old-forecasts/--no-skip-old-forecasts", default=True)
 @click.argument(
-    "grib_filename",
+    "grib_paths",
     nargs=-1,
     type=click.Path(exists=True, readable=True, dir_okay=False, resolve_path=True),
 )
-@click.argument("zarr_filename", click.Path(resolve_path=True))
-def convert(grib_filename, zarr_filename):
+@click.argument("zarr_path", type=click.Path(resolve_path=True))
+def convert(skip_old_forecasts, grib_paths, zarr_path):
     """Convert a GRIB2 file into a compressed Zarr array"""
 
-    # Map the valid dates to the analysis dates so that we can determine which
-    # forecasts have more recent model runs and should be updated in our Zarr.
-    extant_forecasts = {}
-    if os.path.exists(zarr_filename):
-        z_array = zarr.convenience.open(zarr_filename, "r")
+    grib_queue = {}
+    now = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
 
-        for (_, group) in z_array.groups():
-            analysis_date = group.attrs["analysis_date"]
-            valid_date = group.attrs["valid_date"]
+    for grib_path in grib_paths:
+        _, filename = os.path.split(grib_path)
+        forecast_date = hrrr.parse_grib_filename(filename)
+        group_name = forecast_date.valid_date.strftime("%Y%j%H%M%S")
 
-            # Data is grouped in the zarr by the valid date, so there should
-            # only ever be one analysis available for any given valid date.
-            assert (
-                valid_date not in extant_forecasts
-            ), f"Found multiple forecasts for same valid date: {valid_date}"
+        # Skip old forecasts
+        if skip_old_forecasts and forecast_date.valid_date < now:
+            current_app.logger.debug(f"{filename} is in the past, skipping")
+            continue
 
-            extant_forecasts[valid_date] = analysis_date
+        grib_queue[group_name] = max(grib_path, grib_queue.get(group_name, ""))
 
-    print(f"Reading {grib_filename}")
-    with pygrib.open(grib_filename) as grib:
-        dataset = hrrr.read_grib(
-            grib.select(typeOfLevel="hybrid"),
-            ["pres", "gh", "massden", "t"],
-            {"Mass density": "massden"},
-        )
-    print("done")
+    if len(grib_queue) < 1:
+        current_app.logger.info("No forecasts to update, exiting")
+        return 0
 
-    group = f"/{dataset.attrs['valid_date']}"
-    print(f"Writing to {zarr_filename}{group}")
-    dataset.to_zarr(zarr_filename, group=group, mode="w")
-    print("done")
+    z_array = None
+    if os.path.exists(zarr_path):
+        current_app.logger.info(f"Updating Zarr file {zarr_path}")
+        z_array = zarr.convenience.open(zarr_path, mode="r")
+    else:
+        current_app.logger.info(f"Creating new Zarr file {zarr_path}")
+
+    for group_name, grib_path in grib_queue.items():
+        _, filename = os.path.split(grib_path)
+
+        if z_array and z_array[group_name].attrs["source_filename"] >= filename:
+            continue
+
+        current_app.logger.info(f"Parsing {grib_path}")
+        with pygrib.open(grib_path) as grib:
+            dataset = hrrr.read_grib(
+                grib.select(typeOfLevel="hybrid"),
+                ["pres", "gh", "massden", "t"],
+                {"Mass density": "massden"},
+            )
+
+        current_app.logger.info(f"Writing to {zarr_path}/{group_name}")
+
+        group = f"/{group_name}"
+        dataset.attrs["source_filename"] = filename
+        dataset.to_zarr(zarr_path, group=group, mode="w")
