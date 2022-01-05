@@ -58,7 +58,11 @@ def convert(skip_old_forecasts, grib_paths, zarr_path):
     for group_name, grib_path in grib_queue.items():
         _, filename = os.path.split(grib_path)
 
-        if z_array and z_array[group_name].attrs["source_filename"] >= filename:
+        group_exists = z_array and group_name in z_array
+        if group_exists and z_array[group_name].attrs["source_filename"] >= filename:
+            current_app.logger.debug(
+                f"Forecast for {group_name} exists, skipping {filename}"
+            )
             continue
 
         current_app.logger.info(f"Parsing {grib_path}")
