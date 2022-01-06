@@ -19,15 +19,19 @@ def cli():
 
 
 @cli.command()
-@click.option("--skip-old-forecasts/--no-skip-old-forecasts", default=True)
+@click.option(
+    "--skip-old-forecasts/--no-skip-old-forecasts",
+    default=True,
+    help="Skip forecasts for any time in the past (default: skip)",
+)
 @click.argument(
     "grib_paths",
     nargs=-1,
     type=click.Path(exists=True, readable=True, dir_okay=False, resolve_path=True),
 )
 @click.argument("zarr_path", type=click.Path(resolve_path=True))
-def convert(skip_old_forecasts, grib_paths, zarr_path):
-    """Convert a GRIB2 file into a compressed Zarr array"""
+def update(skip_old_forecasts, grib_paths, zarr_path):
+    """Update a Zarr array with new forecasts from GRIB files"""
 
     grib_queue = {}
     now = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
@@ -81,9 +85,17 @@ def convert(skip_old_forecasts, grib_paths, zarr_path):
 
 
 @cli.command()
-@click.option("-k", "--keep", type=int, default=6)
+@click.option(
+    "--keep",
+    "-k",
+    type=int,
+    default=6,
+    help="How many hours into the past to keep forecasts (default: 6)",
+)
 @click.argument("zarr_path", type=click.Path(resolve_path=True))
 def clean(keep, zarr_path):
+    """Remove old forecasts from the Zarr array"""
+
     if not os.path.exists(zarr_path):
         current_app.logger.info(f"{zarr_path} does not exist, exiting")
         return 0
