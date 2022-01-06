@@ -78,3 +78,27 @@ def convert(skip_old_forecasts, grib_paths, zarr_path):
         group = f"/{group_name}"
         dataset.attrs["source_filename"] = filename
         dataset.to_zarr(zarr_path, group=group, mode="w")
+
+
+@cli.command()
+@click.option("-k", "--keep", type=int, default=6)
+@click.argument("zarr_path", type=click.Path(resolve_path=True))
+def clean(keep, zarr_path):
+    if not os.path.exists(zarr_path):
+        current_app.logger.info(f"{zarr_path} does not exist, exiting")
+        return 0
+
+    now = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+    z_array = zarr.convenience.open(zarr_path, "rw")
+    window = timedelta(hours=keep)
+
+    expired = []
+
+    for group_name, group in z_array.groups():
+        valid_date = datetime.strptime(group.attrs["valid_date"], "%Y%j%H%M%S")
+        if now - valid_date > window:
+            expired.append(group_name)
+
+    for group_name in expired:
+        current_app.logger.info(f"{group_name} has expired, deleting")
+        del z_array[group_name]
