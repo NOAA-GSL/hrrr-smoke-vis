@@ -1,5 +1,8 @@
 """Utilities for working with HRRR output"""
 
+from collections import namedtuple
+from datetime import datetime, timedelta
+
 import cartopy.crs as ccrs
 import numpy as np
 import xarray as xr
@@ -9,6 +12,21 @@ __all__ = ["read_grib"]
 
 
 EARTH_EQUATORIAL_RADIUS_M = 6371229.0
+
+
+ForecastDate = namedtuple("ForecastDate", ["analysis_date", "valid_date"])
+
+
+def parse_grib_filename(filename):
+    """Return the analysis and valid dates encoded in GRIB2 filenames."""
+
+    analysis_date = filename[:-2]
+    forecast_hour = int(filename[-2:])
+
+    analysis_date = datetime.strptime(analysis_date, "%y%j%H%M%S")
+    valid_date = analysis_date + timedelta(hours=forecast_hour)
+
+    return ForecastDate(analysis_date, valid_date)
 
 
 def grid(grib_msg):
