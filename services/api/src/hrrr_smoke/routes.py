@@ -11,8 +11,6 @@ import numpy as np
 import xarray as xr
 import zarr
 
-from . import hrrr
-
 bp = Blueprint("api", __name__, url_prefix="/api")
 
 # Projection information
