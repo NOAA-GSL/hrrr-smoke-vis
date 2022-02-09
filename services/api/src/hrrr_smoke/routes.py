@@ -41,24 +41,35 @@ def distance(start, end):
 
 @bp.route("/forecasts/")
 def forecasts():
+    current_app.logger.debug("GET /forecasts/")
+
     forecast_format = "%Y%j%H%M%S"
     z = zarr.open(current_app.config.forecasts_array)
     forecast_list = [
-        datetime.strptime(forecast, forecast_format) for forecast, _ in z.groups()
+        (datetime.strptime(run_hour, forecast_format), list(map(int, forecast.valid_time)))
+        for run_hour, forecast in z.groups()
     ]
 
-    forecast_list.sort()
-
-    return jsonify(
-        [
-            {
-                "iso": dt.isoformat(),
-                "forecast": dt.strftime(forecast_format),
-                "display": dt.strftime("%d %b %Y %H:%M:%S"),
-            }
-            for dt in forecast_list
-        ]
+    current_app.logger.debug(
+        f"Loaded {len(forecast_list)} runs from {current_app.config.forecasts_array}"
     )
+
+    forecast_list.sort(key=lambda t: t[0])
+
+    response = [
+            {
+                "run_hour": run_hour.isoformat(),
+                "valid_times": valid_times,
+            }
+            for run_hour, valid_times in forecast_list
+        ]
+
+    try:
+        return jsonify(response)
+    except Exception as e:
+        current_app.logger.exception("Unable to serialize response")
+        raise e
+
 
 
 @bp.route("/xsection/")
