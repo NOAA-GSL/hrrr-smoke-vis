@@ -74,45 +74,57 @@ def forecasts():
 
 @bp.route("/xsection/")
 def xsection():
-    forecast = request.args["forecast"]
+    current_app.logger.debug("GET /xsection/")
+
+    run_hour = datetime.strptime(request.args["runHour"], "%Y-%m-%dT%H:%M:%S")
+    valid_time = int(request.args["validTime"])
+
+    current_app.logger.debug(f"runHour: {run_hour}")
+    current_app.logger.debug(f"validTime: {valid_time}")
 
     # Start and end points of the path for the cross-section (latitude,
     # longitude)
     start = (float(request.args["startLat"]), float(request.args["startLng"]))
     end = (float(request.args["endLat"]), float(request.args["endLng"]))
 
+    current_app.logger.debug(f"start: {start}")
+    current_app.logger.debug(f"end: {end}")
+
     # Number of steps taken along the path
     steps = 1200
 
-    dataset = xr.open_zarr(current_app.config.forecasts_array, group=forecast)
-    dataset = dataset.metpy.assign_crs(CF_ATTRS).metpy.parse_cf().squeeze()
+    dataset = xr.open_zarr(
+        f"{current_app.config.forecasts_array}/{run_hour.strftime('%Y%j%H%M%S')}"
+    )
+    dataset = dataset.isel(valid_time=valid_time).metpy.assign_crs(CF_ATTRS).metpy.parse_cf().squeeze()
+
+    current_app.logger.debug(f"dataset: {dataset}")
 
     cross = cross_section(dataset, start, end, steps).set_coords(
         ("latitude", "longitude")
     )
     plevs = np.arange(1000.0, 100, -20.0, dtype=np.float32) * units.hPa
-    temperature = units.Quantity(cross["t"].values, "degK")
-    pressure = units.Quantity(cross["pres"].values, "Pa")
-    potential_temperature = metpy.calc.potential_temperature(pressure, temperature)
+    pressure = units.Quantity(cross["isobaric"].values, "Pa")
 
-    potential_temperature, massden, temperature = log_interpolate_1d(
-        plevs,
-        pressure,
-        potential_temperature,
-        cross["massden"].values,
-        temperature,
-        axis=0,
-    )
+    try:
+        massden = log_interpolate_1d(
+            plevs,
+            pressure,
+            cross["massden_isobaric"].values,
+            axis=0,
+        )
+    except Exception as e:
+        current_app.logger.exception("log_interpolate_1d failed")
+        raise e
 
     rows, columns = massden.shape
+
+    current_app.logger.debug(f"massden shape: {rows}, {columns}")
 
     return jsonify(
         columns=columns,
         distance=distance(start, end),
         isobaricPressure=sanitize([quantity.magnitude for quantity in plevs]).tolist(),
         massden=np.ravel(sanitize(massden)).tolist(),
-        potentialTemperature=sanitize(
-            [quantity.magnitude for quantity in np.ravel(potential_temperature)]
-        ).tolist(),
         rows=rows,
     )
