@@ -22,7 +22,7 @@ export const xsection = derived(
   ([$runHour, $validTime, $path], set) => {
     const ready =
       $runHour &&
-      $validTime !== null &&
+      $validTime !== null &&  // 0 is a possible validTime
       $path.startLat &&
       $path.startLng &&
       $path.endLat &&
