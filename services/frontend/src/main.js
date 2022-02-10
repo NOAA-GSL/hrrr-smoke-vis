@@ -1,19 +1,22 @@
-import { forecast } from "./stores.js";
+import { runHour, validTime, path } from "./stores.js";
 import App from "./App.svelte";
 
 const params = new URLSearchParams(window.location.search);
-let fcst = {};
+let initPath = {};
 
 for (let [k, v] of params.entries()) {
   switch (k) {
-    case "forecast":
-      fcst.forecast = v;
+    case "runHour":
+      runHour.set(v);
+      break;
+    case "validTime":
+      validTime.set(v);
       break;
     case "startLat":
     case "startLng":
     case "endLat":
     case "endLng":
-      fcst[k] = +v;
+      initPath[k] = +v;
       break;
     default:
       console.warn(`Unknown URL parameter: ${k}`);
@@ -21,8 +24,8 @@ for (let [k, v] of params.entries()) {
   }
 }
 
-if (Object.keys(fcst).length > 0) {
-  forecast.set(fcst);
+if (Object.keys(initPath).length > 0) {
+  path.set(initPath);
 }
 
 const app = new App({

@@ -1,9 +1,10 @@
 import { derived, writable } from "svelte/store";
 import * as api from "./api.js";
 
-export const forecast = writable({
-  runHour: null,
-  validTime: null,
+export const runHour = writable(null);
+export const validTime = writable(null);
+
+export const path = writable({
   startLat: null,
   startLng: null,
   endLat: null,
@@ -17,23 +18,26 @@ const emptyXSection = {
 };
 
 export const xsection = derived(
-  forecast,
-  ($forecast, set) => {
-    console.info("xsection store");
+  [runHour, validTime, path],
+  ([$runHour, $validTime, $path], set) => {
     const ready =
-      $forecast.runHour &&
-      $forecast.validTime &&
-      $forecast.startLat &&
-      $forecast.startLng &&
-      $forecast.endLat &&
-      $forecast.endLng;
+      $runHour &&
+      $validTime !== null &&
+      $path.startLat &&
+      $path.startLng &&
+      $path.endLat &&
+      $path.endLng;
 
     if (!ready) {
       set(emptyXSection);
       return;
     }
 
-    api.xsection($forecast).then((data) => set(data));
+    api.xsection({
+      runHour: $runHour,
+      validTime: $validTime,
+      ...$path
+    }).then((data) => set(data));
   },
   emptyXSection
 );

@@ -2,26 +2,25 @@
   import { onMount } from "svelte";
 
   import * as api from "../api.js";
-  import { forecast } from "../stores.js";
+  import { runHour, validTime, path } from "../stores.js";
   import { readableDate, addTime } from "../utils.js";
   import CoordinateInput from "./CoordinateInput.svelte";
   import { Dropdown } from "./uswds";
 
   export let start = { "lat": null, "lng": null };
   export let end = { "lat": null, "lng": null };
-  export let validTime = {};
 
   let forecasts = [];
   let forecastIdx;
   let forecastHour;
 
-  $: forecastHours = forecasts[forecastIdx]?.validTimes.map((validTime) => {
+  $: forecastHours = forecasts[forecastIdx]?.validTimes.map((forecastOffset) => {
     const forecast = forecasts[forecastIdx];
-    const forecastHour = addTime(forecast.date, validTime);
+    const forecastHour = addTime(forecast.date, forecastOffset);
 
     return {
-      value: validTime,
-      text: `${readableDate(forecastHour)} (+${validTime})`,
+      value: forecastOffset,
+      text: `${readableDate(forecastHour)} (+${forecastOffset})`,
     };
   });
 
@@ -40,9 +39,9 @@
   });
 
   function update() {
-    forecast.set({
-      runHour: forecasts[forecastIdx].dateStr,
-      validTime: forecastHour,
+    runHour.set(forecasts[forecastIdx].dateStr);
+    validTime.set(forecastHour);
+    path.set({
       startLat: parseFloat(start.lat),
       startLng: parseFloat(start.lng),
       endLat: parseFloat(end.lat),
