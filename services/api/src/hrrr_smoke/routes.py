@@ -103,23 +103,7 @@ def xsection():
     cross = cross_section(dataset, start, end, steps).set_coords(
         ("latitude", "longitude")
     )
-    plevs = np.arange(1000.0, 100, -20.0, dtype=np.float32) * units.hPa
-    pressure = units.Quantity(cross["isobaric"].values, "Pa")
 
-    try:
-        massden = log_interpolate_1d(
-            plevs,
-            pressure,
-            cross["massden_isobaric"].values,
-            axis=0,
-        )
-    except Exception as e:
-        current_app.logger.exception("log_interpolate_1d failed")
-        raise e
-
-    rows, columns = massden.shape
-
-    current_app.logger.debug(f"massden shape: {rows}, {columns}")
 
     return jsonify(
         columns=columns,
