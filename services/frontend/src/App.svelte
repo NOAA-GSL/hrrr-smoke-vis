@@ -18,7 +18,8 @@
   $: {
     // Initialize the state from our stores
     let state = {
-      forecast: $forecast.forecast,
+      runHour: $forecast.runHour,
+      validTime: $forecast.validTime,
       startLat: $forecast.startLat,
       startLng: $forecast.startLng,
       endLat: $forecast.endLat,
@@ -56,7 +57,8 @@
     const state = event.state || {};
 
     forecast.set({
-      forecast: state.forecast || null,
+      runHour: state.runHour || null,
+      validTime: state.validTime || null,
       startLat: state.startLat || null,
       startLng: state.startLng || null,
       endLat: state.endLat || null,

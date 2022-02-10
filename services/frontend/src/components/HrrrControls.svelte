@@ -41,7 +41,8 @@
 
   function update() {
     forecast.set({
-      forecast: validTime,
+      runHour: forecasts[forecastIdx].dateStr,
+      validTime: forecastHour,
       startLat: parseFloat(start.lat),
       startLng: parseFloat(start.lng),
       endLat: parseFloat(end.lat),

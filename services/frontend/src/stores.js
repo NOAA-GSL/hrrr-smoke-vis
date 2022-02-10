@@ -2,7 +2,8 @@ import { derived, writable } from "svelte/store";
 import * as api from "./api.js";
 
 export const forecast = writable({
-  forecast: null,
+  runHour: null,
+  validTime: null,
   startLat: null,
   startLng: null,
   endLat: null,
@@ -20,7 +21,8 @@ export const xsection = derived(
   ($forecast, set) => {
     console.info("xsection store");
     const ready =
-      $forecast.forecast &&
+      $forecast.runHour &&
+      $forecast.validTime &&
       $forecast.startLat &&
       $forecast.startLng &&
       $forecast.endLat &&
