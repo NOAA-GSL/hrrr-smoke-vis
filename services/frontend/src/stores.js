@@ -11,7 +11,6 @@ export const forecast = writable({
 
 const emptyXSection = {
   massden: [],
-  potentialTemperature: [],
   rows: 0,
   columns: 0,
 };
