@@ -3,6 +3,7 @@
 
   import * as api from "../api.js";
   import { forecast } from "../stores.js";
+  import { readableDate, addTime } from "../utils.js";
   import CoordinateInput from "./CoordinateInput.svelte";
   import { Dropdown } from "./uswds";
 
@@ -15,9 +16,12 @@
   let forecastHour;
 
   $: forecastHours = forecasts[forecastIdx]?.validTimes.map((validTime) => {
+    const forecast = forecasts[forecastIdx];
+    const forecastHour = addTime(forecast.date, validTime);
+
     return {
       value: validTime,
-      text: validTime,
+      text: `${readableDate(forecastHour)} (+${validTime})`,
     };
   });
 
@@ -27,16 +31,7 @@
         let runHour = new Date(forecast.runHour);
         return {
           value: idx,
-          text: runHour.toLocaleString([], {
-            year: "numeric",
-            month: "short",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false,
-            timeZoneName: "short"
-          }),
+          text: readableDate(runHour),
           date: runHour,
           dateStr: forecast.runHour,
           validTimes: forecast.validTimes,
