@@ -11,13 +11,35 @@
   export let validTime = {};
 
   let forecasts = [];
+  let forecastIdx;
+  let forecastHour;
+
+  $: forecastHours = forecasts[forecastIdx]?.validTimes.map((validTime) => {
+    return {
+      value: validTime,
+      text: validTime,
+    };
+  });
 
   onMount(async function () {
     forecasts = await api.forecasts()
-      .then((dates) => dates.map((dt) => {
+      .then((dates) => dates.map((forecast, idx) => {
+        let runHour = new Date(forecast.runHour);
         return {
-          value: dt.forecast,
-          text: dt.display,
+          value: idx,
+          text: runHour.toLocaleString([], {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+            timeZoneName: "short"
+          }),
+          date: runHour,
+          dateStr: forecast.runHour,
+          validTimes: forecast.validTimes,
         };
       }));
   });
@@ -35,7 +57,8 @@
 
 <section class="hrrr-controls stack" aria-label="Controls">
   <h2>Forecast</h2>
-  <Dropdown id="forecast-hour" label="Forecast Hour" options={forecasts} bind:selected={validTime} />
+  <Dropdown id="run-hour" label="Run Hour" options={forecasts} bind:selected={forecastIdx} />
+  <Dropdown id="forecast-hour" label="Forecast Hour" options={forecastHours} bind:selected={forecastHour} />
 
   <h2>Cross-section Path</h2>
   <CoordinateInput id="start" label="Start" coordinate={start} />
