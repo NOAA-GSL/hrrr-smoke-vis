@@ -58,8 +58,8 @@ def forecasts():
 
     response = [
             {
-                "run_hour": run_hour.isoformat(),
-                "valid_times": valid_times,
+                "runHour": run_hour.isoformat() + "Z",
+                "validTimes": valid_times,
             }
             for run_hour, valid_times in forecast_list
         ]
