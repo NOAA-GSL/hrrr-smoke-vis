@@ -6,13 +6,13 @@
   import XSection from "./components/XSection.svelte";
 
   $: start = {
-    lat: $path.startLat,
-    lng: $path.startLng,
+    lat: $path?.startLat,
+    lng: $path?.startLng,
   };
 
   $: end = {
-    lat: $path.endLat,
-    lng: $path.endLng,
+    lat: $path?.endLat,
+    lng: $path?.endLng,
   };
 
   $: {
@@ -53,14 +53,28 @@
   function handlePopState(event) {
     const state = event.state || {};
 
-    forecast.set({
-      runHour: state.runHour || null,
-      validTime: state.validTime || null,
-      startLat: state.startLat || null,
-      startLng: state.startLng || null,
-      endLat: state.endLat || null,
-      endLng: state.endLng || null,
-    });
+    if (state.runHour) {
+      runHour.set(state.runHour);
+    }
+
+    if (Number.isFinite(state.validTime)) {
+      validTime.set(state.validTime);
+    }
+
+    let pth = {};
+    let coordProps = [
+      'startLat', 'startLng', 'endLat', 'endLng',
+    ];
+
+    for (let coord of coordProps) {
+      if (Number.isFinite(state[coord])) {
+        pth[coord] = state[coord];
+      }
+    }
+
+    if (Object.keys(pth).length > 0) {
+      path.set(pth);
+    }
   }
 </script>
 
@@ -68,5 +82,11 @@
 
 <Header />
 <HrrrControls {start} {end} />
-<XSection />
+{#if $path}
+  <XSection />
+{:else}
+  <div class="main" bind:offsetWidth={mapWidth} bind:offsetHeight={mapHeight}>
+    <HrrrMap width={mapWidth} height={mapHeight} />
+  </div>
+{/if}
 <Footer />
