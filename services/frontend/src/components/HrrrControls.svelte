@@ -26,16 +26,27 @@
 
   onMount(async function () {
     forecasts = await api.forecasts()
-      .then((dates) => dates.map((forecast, idx) => {
-        let runHour = new Date(forecast.runHour);
-        return {
-          value: idx,
-          text: readableDate(runHour),
-          date: runHour,
-          dateStr: forecast.runHour,
-          validTimes: forecast.validTimes,
-        };
-      }));
+      .then((dates) => dates.sort((a, b) => {
+          // Sort in reverse chronological order so that recent forecast runs
+          // are at the top of the dropdown.
+          if (a.runHour < b.runHour) return 1;
+          return -1;
+        }).map((forecast, idx) => {
+          let runHour = new Date(forecast.runHour);
+          return {
+            value: idx,
+            text: readableDate(runHour),
+            date: runHour,
+            dateStr: forecast.runHour,
+            validTimes: forecast.validTimes,
+          };
+        }));
+
+    // Default to the most recent forecast run
+    if (forecasts.length > 0) {
+      forecastIdx = 0;
+      forecastHour = 0;
+    }
   });
 
   function update() {
