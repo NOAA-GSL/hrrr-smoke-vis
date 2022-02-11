@@ -71,6 +71,32 @@ def forecasts():
         raise e
 
 
+@bp.route("/vertical/")
+def vertical():
+    current_app.logger.debug("GET /vertical/")
+
+    run_hour = datetime.strptime(request.args["runHour"], "%Y-%m-%dT%H:%M:%S")
+    current_app.logger.debug(f"runHour: {run_hour}")
+
+    valid_time = int(request.args["validTime"])
+    current_app.logger.debug(f"validTime: {valid_time}")
+
+    dataset = xr.open_zarr(
+        f"{current_app.config.forecasts_array}/{run_hour.strftime('%Y%j%H%M%S')}"
+    )
+    dataset = dataset.isel(valid_time=valid_time).metpy.assign_crs(CF_ATTRS).metpy.parse_cf().squeeze()
+
+    current_app.logger.debug(f"dataset: {dataset}")
+
+    rows, columns = dataset.massden.shape
+    return jsonify(
+        columns=columns,
+        latitude=np.ravel(dataset.latitude).tolist(),
+        longitude=np.ravel(dataset.longitude).tolist(),
+        massden=np.ravel(sanitize(dataset.massden)).tolist(),
+        rows=rows,
+    )
+
 
 @bp.route("/xsection/")
 def xsection():
