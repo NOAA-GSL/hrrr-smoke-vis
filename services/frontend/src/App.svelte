@@ -3,7 +3,11 @@
   import Footer from "./components/Footer.svelte";
   import Header from "./components/Header.svelte";
   import HrrrControls from "./components/HrrrControls.svelte";
+  import HrrrMap from "./components/HrrrMap.svelte";
   import XSection from "./components/XSection.svelte";
+
+  let mapWidth = 0;
+  let mapHeight = 0;
 
   $: start = {
     lat: $path?.startLat,
