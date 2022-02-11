@@ -4,12 +4,7 @@ import * as api from "./api.js";
 export const runHour = writable(null);
 export const validTime = writable(null);
 
-export const path = writable({
-  startLat: null,
-  startLng: null,
-  endLat: null,
-  endLng: null,
-});
+export const path = writable(null);
 
 const emptyXSection = {
   massden: [],
