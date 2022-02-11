@@ -12,19 +12,13 @@
   let canvas;
   let context;
 
-  $: xsectionPath = {
+  $: xsectionPath = $path ? {
     type: "LineString",
     coordinates: [
       [$path.startLng, $path.startLat],
       [$path.endLng, $path.endLat],
     ],
-  };
-
-  $: ready = !!borderData
-    && $path.startLng !== null
-    && $path.startLat !== null
-    && $path.endLng !== null
-    && $path.endLat !== null;
+  } : null;
 
   onMount(() => {
     fetch("/data/us.json")
@@ -57,12 +51,17 @@
     context = canvas.getContext("2d");
     context.clearRect(0, 0, width, height);
 
-    if (!ready) return;
+    if (!borderData) return;
 
     const counties = mesh(borderData, borderData.objects.counties);
     const states = mesh(borderData, borderData.objects.states);
 
-    const projection = geoAlbers().fitExtent([[5, 5], [width - 10, height - 10]], xsectionPath);
+    const projection = geoAlbers();
+
+    if (xsectionPath) {
+      projection.fitExtent([[5, 5], [width - 10, height - 10]], xsectionPath);
+    }
+
     const p = geoPath(projection, context);
 
     const style = getComputedStyle(canvas);
@@ -85,6 +84,8 @@
       Math.abs($path.startLng - $path.endLng) / width,
       Math.abs($path.startLat - $path.endLat) / height
     );
+
+    if (!xsectionPath) return;
 
     drawPath(
       style.getPropertyValue("background-color"),
