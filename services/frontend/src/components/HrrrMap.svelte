@@ -25,6 +25,7 @@
       .then((res) => res.json())
       .then((geodata) => {
         borderData = geodata;
+        render();
       });
   });
 
@@ -47,7 +48,7 @@
     context.fill();
   }
 
-  afterUpdate(() => {
+  function render() {
     context = canvas.getContext("2d");
     context.clearRect(0, 0, width, height);
 
@@ -56,11 +57,11 @@
     const counties = mesh(borderData, borderData.objects.counties);
     const states = mesh(borderData, borderData.objects.states);
 
-    const projection = geoAlbers();
-
-    if (xsectionPath) {
-      projection.fitExtent([[5, 5], [width - 10, height - 10]], xsectionPath);
-    }
+    const projection = geoAlbers()
+      .fitExtent(
+        [[5, 5], [width - 10, height - 10]],
+        xsectionPath || states
+      );
 
     const p = geoPath(projection, context);
 
@@ -99,7 +100,9 @@
       4 * degPerPx,
       p,
     );
-  });
+  }
+
+  afterUpdate(render);
 </script>
 
 <canvas
