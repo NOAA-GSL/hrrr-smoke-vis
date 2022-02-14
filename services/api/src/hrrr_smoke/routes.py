@@ -75,7 +75,7 @@ def forecasts():
 def vertical():
     current_app.logger.debug("GET /vertical/")
 
-    run_hour = datetime.strptime(request.args["runHour"], "%Y-%m-%dT%H:%M:%S")
+    run_hour = datetime.strptime(request.args["runHour"], "%Y-%m-%dT%H:%M:%SZ")
     current_app.logger.debug(f"runHour: {run_hour}")
 
     valid_time = int(request.args["validTime"])
