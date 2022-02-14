@@ -81,12 +81,12 @@
     p(states);
     context.stroke();
 
+    if (!xsectionPath) return;
+
     const degPerPx = Math.max(
       Math.abs($path.startLng - $path.endLng) / width,
       Math.abs($path.startLat - $path.endLat) / height
     );
-
-    if (!xsectionPath) return;
 
     drawPath(
       style.getPropertyValue("background-color"),
