@@ -21,7 +21,8 @@ export function readableDate(dt) {
     minute: "2-digit",
     second: "2-digit",
     hour12: false,
-    timeZoneName: "short"
+    timeZoneName: "short",
+    timeZone: "UTC",
   };
 
   return dt.toLocaleString(locales, formatOptions);
