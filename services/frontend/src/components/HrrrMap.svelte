@@ -1,7 +1,12 @@
 <script>
-  import { path } from "../stores.js";
+  import { path, verticallyIntegrated } from "../stores.js";
+  import * as api from "../api.js";
 
-  import { geoPath, geoAlbers, geoCircle } from "d3-geo";
+  import { extent } from "d3-array";
+  import { contours } from "d3-contour";
+  import { geoPath, geoAlbers, geoCircle, geoStream, geoTransform } from "d3-geo";
+  import { scaleLinear, scaleSqrt, scaleThreshold } from "d3-scale";
+  import { interpolateRdPu } from "d3-scale-chromatic";
   import { mesh } from "topojson-client";
   import { filter as topoFilter } from "topojson-simplify";
   import { afterUpdate, onMount } from "svelte";
@@ -11,6 +16,18 @@
   let borderData;
   let canvas;
   let context;
+  let smoke;
+
+  let thresholds = [0, 1, 4, 7, 11, 15, 20, 25, 30, 40, 50, 75, 150, 250, 500];
+
+  $: if ($verticallyIntegrated) {
+    smoke = contours().size(
+        [$verticallyIntegrated.columns, $verticallyIntegrated.rows]
+      )
+      .thresholds(thresholds)($verticallyIntegrated.massden)
+      .filter((multiPolygon) => multiPolygon.value > 0);
+    console.log(smoke);
+  }
 
   $: xsectionPath = $path ? {
     type: "LineString",
@@ -80,6 +97,39 @@
     context.beginPath();
     p(states);
     context.stroke();
+
+    if (!$verticallyIntegrated) return;
+
+    const fillColor = scaleThreshold(thresholds, thresholds.map((_, idx, arr) => {
+      return interpolateRdPu(idx / (arr.length - 1));
+    }));
+    const smokePath = geoPath(geoTransform({
+      point: function (x, y) {
+        const i = Math.max(0, Math.min($verticallyIntegrated.columns, Math.floor(x)));
+        const j = Math.max(0, Math.min($verticallyIntegrated.rows, Math.floor(y)));
+
+        if (i >= $verticallyIntegrated.columns || j >= $verticallyIntegrated.rows) return;
+
+        const [px, py] = projection([
+          $verticallyIntegrated.longitude[j][i],
+          $verticallyIntegrated.latitude[j][i],
+        ]);
+
+        if ([px, py].every(isFinite)) {
+          this.stream.point(px, py);
+        }
+      },
+    }), context);
+
+    context.lineWidth = 0;
+    context.globalAlpha = 0.6;
+    smoke.forEach(function (d) {
+      context.fillStyle = fillColor(d.value);
+      context.beginPath();
+      smokePath(d);
+      context.fill();
+    });
+    context.globalAlpha = 1;
 
     if (!xsectionPath) return;
 

@@ -31,6 +31,15 @@ const emptyXSection = {
   columns: 0,
 };
 
+export const verticallyIntegrated = derived(
+  [runHour, validTime],
+  ([$runHour, $validTime], set) => {
+    if ($runHour === null || $validTime === null) return;
+
+    api.vertical($runHour, $validTime).then((data) => set(data));
+  }
+);
+
 /**
  * Cross-section of smoke density
  *

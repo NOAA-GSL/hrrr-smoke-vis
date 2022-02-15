@@ -7,6 +7,13 @@ export function forecasts() {
     .then((response) => response.json());
 }
 
+export function vertical(runHour, validTime) {
+  const query = new URLSearchParams({ runHour, validTime });
+
+  return fetch(`${HRRR_XSECTION_API}/vertical/?${query.toString()}`)
+    .then((response) => response.json());
+}
+
 export function xsection(forecast) {
   const query = new URLSearchParams(forecast);
 

@@ -88,12 +88,12 @@ def vertical():
 
     current_app.logger.debug(f"dataset: {dataset}")
 
-    rows, columns = dataset.massden.shape
+    rows, columns = dataset.colmd.shape
     return jsonify(
         columns=columns,
-        latitude=np.ravel(dataset.latitude).tolist(),
-        longitude=np.ravel(dataset.longitude).tolist(),
-        massden=np.ravel(sanitize(dataset.massden)).tolist(),
+        latitude=sanitize(dataset.latitude).tolist(),
+        longitude=sanitize(dataset.longitude).tolist(),
+        massden=np.ravel(sanitize(dataset.massden) * 1e9).tolist(),
         rows=rows,
     )
 
