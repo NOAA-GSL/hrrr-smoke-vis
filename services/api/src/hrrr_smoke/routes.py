@@ -102,7 +102,7 @@ def vertical():
 def xsection():
     current_app.logger.debug("GET /xsection/")
 
-    run_hour = datetime.strptime(request.args["runHour"], "%Y-%m-%dT%H:%M:%S")
+    run_hour = datetime.strptime(request.args["runHour"], "%Y-%m-%dT%H:%M:%SZ")
     valid_time = int(request.args["validTime"])
 
     current_app.logger.debug(f"runHour: {run_hour}")
