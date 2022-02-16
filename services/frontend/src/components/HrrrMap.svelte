@@ -17,8 +17,11 @@
   let canvas;
   let context;
   let smoke;
+  let startPoint = null;
 
   let thresholds = [0, 1, 4, 7, 11, 15, 20, 25, 30, 40, 50, 75, 150, 250, 500];
+
+  let projection = geoAlbers();
 
   $: if ($verticallyIntegrated) {
     smoke = contours().size(
@@ -74,11 +77,10 @@
     const counties = mesh(borderData, borderData.objects.counties);
     const states = mesh(borderData, borderData.objects.states);
 
-    const projection = geoAlbers()
-      .fitExtent(
-        [[5, 5], [width - 10, height - 10]],
-        xsectionPath || states
-      );
+    projection.fitExtent(
+      [[5, 5], [width - 10, height - 10]],
+      xsectionPath || states
+    );
 
     const p = geoPath(projection, context);
 
@@ -152,11 +154,33 @@
     );
   }
 
+  function handleClick(event) {
+    const { left, top } = canvas.getBoundingClientRect();
+    const x = event.clientX - left;
+    const y = event.clientY - top;
+    const coords = projection.invert([x, y]);
+
+    if (!startPoint) {
+      startPoint = coords;
+      return;
+    }
+
+    path.set({
+      startLat: startPoint[1],
+      startLng: startPoint[0],
+      endLat: coords[1],
+      endLng: coords[0],
+    });
+
+    startPoint = null;
+  }
+
   afterUpdate(render);
 </script>
 
 <canvas
-  bind:this="{canvas}"
+  bind:this={canvas}
+  on:click={handleClick}
   class="hrrr-map"
   width={width}
   height={height}
