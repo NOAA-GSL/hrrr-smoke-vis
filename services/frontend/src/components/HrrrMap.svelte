@@ -6,7 +6,7 @@
   import { contours } from "d3-contour";
   import { geoPath, geoAlbers, geoCircle, geoStream, geoTransform } from "d3-geo";
   import { scaleLinear, scaleSqrt, scaleThreshold } from "d3-scale";
-  import { interpolateRdPu } from "d3-scale-chromatic";
+  import { interpolateOrRd } from "d3-scale-chromatic";
   import { mesh } from "topojson-client";
   import { afterUpdate, onMount } from "svelte";
 
@@ -103,7 +103,7 @@
     if (!$verticallyIntegrated) return;
 
     const fillColor = scaleThreshold(thresholds, thresholds.map((_, idx, arr) => {
-      return interpolateRdPu(idx / (arr.length - 1));
+      return interpolateOrRd(idx / (arr.length - 1));
     }));
     const smokePath = geoPath(geoTransform({
       point: function (x, y) {

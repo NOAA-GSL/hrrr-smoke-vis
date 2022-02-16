@@ -11,7 +11,7 @@
     extent,
     geoPath,
     geoTransform,
-    interpolateRdPu,
+    interpolateOrRd,
     scaleLinear,
     scaleThreshold,
   } from "d3";
@@ -32,7 +32,7 @@
     },
   }));
   $: fillScale = scaleThreshold(thresholds, thresholds.map((_, idx, arr) => {
-    return interpolateRdPu(idx / (arr.length - 1));
+    return interpolateOrRd(idx / (arr.length - 1));
   }));
 </script>
 
