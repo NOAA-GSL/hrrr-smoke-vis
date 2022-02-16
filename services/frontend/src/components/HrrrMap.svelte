@@ -28,7 +28,6 @@
       )
       .thresholds(thresholds)($verticallyIntegrated.massden)
       .filter((multiPolygon) => multiPolygon.value > 0);
-    console.log(smoke);
   }
 
   $: xsectionPath = $path ? {
@@ -92,12 +91,14 @@
     p(counties);
     context.stroke();
 
+    context.save();
     context.strokeStyle = style.getPropertyValue("--state-border-color");
     context.lineWidth = +style.getPropertyValue("--state-border-width");
 
     context.beginPath();
     p(states);
     context.stroke();
+    context.restore();
 
     if (!$verticallyIntegrated) return;
 
@@ -122,12 +123,17 @@
       },
     }), context);
 
+    context.save();
+    context.globalAlpha = 0.8;
     smoke.forEach(function (d) {
+
       context.fillStyle = fillColor(d.value);
       context.beginPath();
       smokePath(d);
       context.fill();
+
     });
+    context.restore();
 
     if (!xsectionPath) return;
 
