@@ -5,10 +5,8 @@
   import Contour from "./Contour.svelte";
   import HrrrMap from "./HrrrMap.svelte";
 
-  import { onMount } from "svelte";
   import {
     contours,
-    extent,
     geoPath,
     geoTransform,
     interpolateOrRd,
