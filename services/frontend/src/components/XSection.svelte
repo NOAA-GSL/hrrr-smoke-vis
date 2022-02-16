@@ -13,7 +13,7 @@
     geoTransform,
     interpolateRdPu,
     scaleLinear,
-    scaleSequentialSqrt,
+    scaleThreshold,
   } from "d3";
   import { mesh } from "topojson-client";
 
@@ -31,12 +31,15 @@
       this.stream.point(xScale(x), yScale(y));
     },
   }));
+  $: fillScale = scaleThreshold(thresholds, thresholds.map((_, idx, arr) => {
+    return interpolateRdPu(idx / (arr.length - 1));
+  }));
 </script>
 
 <div class="hrrr-xsection container">
   <div class="chart" bind:offsetWidth={width} bind:offsetHeight={height}>
     <svg class="x-section" viewBox="0 0 {width} {height}">
-      <Contour contours={smoke} fill={scaleSequentialSqrt(extent(thresholds), interpolateRdPu)} {path} />
+      <Contour contours={smoke} fill={fillScale} {path} />
       <g class="axis">
         <AxisLeft scale={yScale} />
       </g>
