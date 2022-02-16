@@ -123,15 +123,12 @@
       },
     }), context);
 
-    context.lineWidth = 0;
-    context.globalAlpha = 0.6;
     smoke.forEach(function (d) {
       context.fillStyle = fillColor(d.value);
       context.beginPath();
       smokePath(d);
       context.fill();
     });
-    context.globalAlpha = 1;
 
     if (!xsectionPath) return;
 
