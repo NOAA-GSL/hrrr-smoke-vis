@@ -130,12 +130,14 @@ def xsection():
         ("latitude", "longitude")
     )
 
+    current_app.logger.debug(f"cross: {cross}")
+
     rows, columns = cross.massden_isobaric.shape
 
     return jsonify(
         columns=columns,
         distance=distance(start, end),
         isobaricPressure=sanitize(cross.isobaric).tolist(),
-        massden=np.ravel(sanitize(cross.massden_isobaric)).tolist(),
+        massden=np.ravel(sanitize(cross.massden_isobaric * 1e9)).tolist(),
         rows=rows,
     )
