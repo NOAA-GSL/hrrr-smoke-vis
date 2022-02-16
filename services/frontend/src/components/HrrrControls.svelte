@@ -11,18 +11,8 @@
   export let end = { "lat": null, "lng": null };
 
   let forecasts = [];
-  let forecastIdx;
-  let forecastHour;
 
-  $: forecastHours = forecasts[forecastIdx]?.validTimes.map((forecastOffset) => {
-    const forecast = forecasts[forecastIdx];
-    const forecastHour = addTime(forecast.date, forecastOffset);
-
-    return {
-      value: forecastOffset,
-      text: `${readableDate(forecastHour)} (+${forecastOffset})`,
-    };
-  });
+  $: forecastHours = forecasts.find(({ value }) => value === $runHour)?.validTimes;
 
   onMount(async function () {
     forecasts = await api.forecasts()
@@ -31,27 +21,28 @@
           // are at the top of the dropdown.
           if (a.runHour < b.runHour) return 1;
           return -1;
-        }).map((forecast, idx) => {
+        }).map((forecast) => {
           let runHour = new Date(forecast.runHour);
           return {
-            value: idx,
+            value: forecast.runHour,
             text: readableDate(runHour),
             date: runHour,
-            dateStr: forecast.runHour,
-            validTimes: forecast.validTimes,
+            validTimes: forecast.validTimes.map((forecastOffset) => {
+              const forecastHour = addTime(runHour, forecastOffset);
+
+              return {
+                value: forecastOffset,
+                text: `${readableDate(forecastHour)} (+${forecastOffset})`,
+              };
+            }),
           };
         }));
-
-    // Default to the most recent forecast run
-    if (forecasts.length > 0) {
-      forecastIdx = 0;
-      forecastHour = 0;
+    if (!$runHour) {
+      runHour.set(forecasts[0].value);
     }
   });
 
   function update() {
-    runHour.set(forecasts[forecastIdx].dateStr);
-    validTime.set(forecastHour);
     path.set({
       startLat: parseFloat(start.lat),
       startLng: parseFloat(start.lng),
@@ -63,8 +54,8 @@
 
 <section class="hrrr-controls stack" aria-label="Controls">
   <h2>Forecast</h2>
-  <Dropdown id="run-hour" label="Run Hour" options={forecasts} bind:selected={forecastIdx} />
-  <Dropdown id="forecast-hour" label="Forecast Hour" options={forecastHours} bind:selected={forecastHour} />
+  <Dropdown id="run-hour" label="Run Hour" options={forecasts} bind:selected={$runHour} />
+  <Dropdown id="forecast-hour" label="Forecast Hour" options={forecastHours} bind:selected={$validTime} />
 
   <h2>Cross-section Path</h2>
   <CoordinateInput id="start" label="Start" coordinate={start} />

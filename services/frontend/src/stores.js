@@ -10,9 +10,9 @@ export const runHour = writable(null);
 
 /**
  * Offset in hours from the initialization time of the forecast.
- * @type {?number}
+ * @type {number}
  */
-export const validTime = writable(null);
+export const validTime = writable(0);
 
 /**
  * Definition of the path across which the cross-section is calculated.
@@ -53,7 +53,6 @@ export const xsection = derived(
   ([$runHour, $validTime, $path], set) => {
     const ready =
       $runHour &&
-      $validTime !== null &&  // 0 is a possible validTime
       $path.startLat &&
       $path.startLng &&
       $path.endLat &&

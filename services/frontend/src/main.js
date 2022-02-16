@@ -10,7 +10,7 @@ for (let [k, v] of params.entries()) {
       runHour.set(v);
       break;
     case "validTime":
-      validTime.set(v);
+      validTime.set(+v);
       break;
     case "startLat":
     case "startLng":
