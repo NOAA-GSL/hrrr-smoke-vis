@@ -8,7 +8,6 @@
   import { scaleLinear, scaleSqrt, scaleThreshold } from "d3-scale";
   import { interpolateRdPu } from "d3-scale-chromatic";
   import { mesh } from "topojson-client";
-  import { filter as topoFilter } from "topojson-simplify";
   import { afterUpdate, onMount } from "svelte";
 
   export let width = 0;
