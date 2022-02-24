@@ -1,28 +1,30 @@
 <script>
-  import { forecast } from "./stores.js";
+  import { runHour, validTime, path } from "./stores.js";
   import Footer from "./components/Footer.svelte";
   import Header from "./components/Header.svelte";
   import HrrrControls from "./components/HrrrControls.svelte";
+  import HrrrMap from "./components/HrrrMap.svelte";
   import XSection from "./components/XSection.svelte";
 
+  let mapWidth = 0;
+  let mapHeight = 0;
+
   $: start = {
-    lat: $forecast.startLat,
-    lng: $forecast.startLng,
+    lat: $path?.startLat,
+    lng: $path?.startLng,
   };
 
   $: end = {
-    lat: $forecast.endLat,
-    lng: $forecast.endLng,
+    lat: $path?.endLat,
+    lng: $path?.endLng,
   };
 
   $: {
     // Initialize the state from our stores
     let state = {
-      forecast: $forecast.forecast,
-      startLat: $forecast.startLat,
-      startLng: $forecast.startLng,
-      endLat: $forecast.endLat,
-      endLng: $forecast.endLng,
+      runHour: $runHour,
+      validTime: $validTime,
+      ...$path
     };
 
     // Filter out any null state so we don't include those params in the URL
@@ -55,19 +57,40 @@
   function handlePopState(event) {
     const state = event.state || {};
 
-    forecast.set({
-      forecast: state.forecast || null,
-      startLat: state.startLat || null,
-      startLng: state.startLng || null,
-      endLat: state.endLat || null,
-      endLng: state.endLng || null,
-    });
+    if (state.runHour) {
+      runHour.set(state.runHour);
+    }
+
+    if (Number.isFinite(state.validTime)) {
+      validTime.set(state.validTime);
+    }
+
+    let pth = {};
+    let coordProps = [
+      'startLat', 'startLng', 'endLat', 'endLng',
+    ];
+
+    for (let coord of coordProps) {
+      if (Number.isFinite(state[coord])) {
+        pth[coord] = state[coord];
+      }
+    }
+
+    if (Object.keys(pth).length > 0) {
+      path.set(pth);
+    }
   }
 </script>
 
 <svelte:window on:popstate={handlePopState} />
 
 <Header />
-<HrrrControls validTime={$forecast.forecast} {start} {end} />
-<XSection />
+<HrrrControls {start} {end} />
+{#if $path}
+  <XSection />
+{:else}
+  <div class="main" bind:offsetWidth={mapWidth} bind:offsetHeight={mapHeight}>
+    <HrrrMap width={mapWidth} height={mapHeight} />
+  </div>
+{/if}
 <Footer />

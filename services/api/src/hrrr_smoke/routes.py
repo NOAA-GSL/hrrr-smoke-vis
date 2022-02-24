@@ -11,8 +11,6 @@ import numpy as np
 import xarray as xr
 import zarr
 
-from . import hrrr
-
 bp = Blueprint("api", __name__, url_prefix="/api")
 
 # Projection information
@@ -43,67 +41,103 @@ def distance(start, end):
 
 @bp.route("/forecasts/")
 def forecasts():
+    current_app.logger.debug("GET /forecasts/")
+
     forecast_format = "%Y%j%H%M%S"
     z = zarr.open(current_app.config.forecasts_array)
     forecast_list = [
-        datetime.strptime(forecast, forecast_format) for forecast, _ in z.groups()
+        (datetime.strptime(run_hour, forecast_format), list(map(int, forecast.valid_time)))
+        for run_hour, forecast in z.groups()
     ]
 
-    forecast_list.sort()
+    current_app.logger.debug(
+        f"Loaded {len(forecast_list)} runs from {current_app.config.forecasts_array}"
+    )
 
-    return jsonify(
-        [
+    forecast_list.sort(key=lambda t: t[0])
+
+    response = [
             {
-                "iso": dt.isoformat(),
-                "forecast": dt.strftime(forecast_format),
-                "display": dt.strftime("%d %b %Y %H:%M:%S"),
+                "runHour": run_hour.isoformat() + "Z",
+                "validTimes": valid_times,
             }
-            for dt in forecast_list
+            for run_hour, valid_times in forecast_list
         ]
+
+    try:
+        return jsonify(response)
+    except Exception as e:
+        current_app.logger.exception("Unable to serialize response")
+        raise e
+
+
+@bp.route("/vertical/")
+def vertical():
+    current_app.logger.debug("GET /vertical/")
+
+    run_hour = datetime.strptime(request.args["runHour"], "%Y-%m-%dT%H:%M:%SZ")
+    current_app.logger.debug(f"runHour: {run_hour}")
+
+    valid_time = int(request.args["validTime"])
+    current_app.logger.debug(f"validTime: {valid_time}")
+
+    dataset = xr.open_zarr(
+        f"{current_app.config.forecasts_array}/{run_hour.strftime('%Y%j%H%M%S')}"
+    )
+    dataset = dataset.isel(valid_time=valid_time).metpy.assign_crs(CF_ATTRS).metpy.parse_cf().squeeze()
+
+    current_app.logger.debug(f"dataset: {dataset}")
+
+    rows, columns = dataset.colmd.shape
+    return jsonify(
+        columns=columns,
+        latitude=sanitize(dataset.latitude).tolist(),
+        longitude=sanitize(dataset.longitude).tolist(),
+        massden=np.ravel(sanitize(dataset.massden) * 1e9).tolist(),
+        rows=rows,
     )
 
 
 @bp.route("/xsection/")
 def xsection():
-    forecast = request.args["forecast"]
+    current_app.logger.debug("GET /xsection/")
+
+    run_hour = datetime.strptime(request.args["runHour"], "%Y-%m-%dT%H:%M:%SZ")
+    valid_time = int(request.args["validTime"])
+
+    current_app.logger.debug(f"runHour: {run_hour}")
+    current_app.logger.debug(f"validTime: {valid_time}")
 
     # Start and end points of the path for the cross-section (latitude,
     # longitude)
     start = (float(request.args["startLat"]), float(request.args["startLng"]))
     end = (float(request.args["endLat"]), float(request.args["endLng"]))
 
+    current_app.logger.debug(f"start: {start}")
+    current_app.logger.debug(f"end: {end}")
+
     # Number of steps taken along the path
     steps = 1200
 
-    dataset = xr.open_zarr(current_app.config.forecasts_array, group=forecast)
-    dataset = dataset.metpy.assign_crs(CF_ATTRS).metpy.parse_cf().squeeze()
+    dataset = xr.open_zarr(
+        f"{current_app.config.forecasts_array}/{run_hour.strftime('%Y%j%H%M%S')}"
+    )
+    dataset = dataset.isel(valid_time=valid_time).metpy.assign_crs(CF_ATTRS).metpy.parse_cf().squeeze()
+
+    current_app.logger.debug(f"dataset: {dataset}")
 
     cross = cross_section(dataset, start, end, steps).set_coords(
         ("latitude", "longitude")
     )
-    plevs = np.arange(1000.0, 100, -20.0, dtype=np.float32) * units.hPa
-    temperature = units.Quantity(cross["t"].values, "degK")
-    pressure = units.Quantity(cross["pres"].values, "Pa")
-    potential_temperature = metpy.calc.potential_temperature(pressure, temperature)
 
-    potential_temperature, massden, temperature = log_interpolate_1d(
-        plevs,
-        pressure,
-        potential_temperature,
-        cross["massden"].values,
-        temperature,
-        axis=0,
-    )
+    current_app.logger.debug(f"cross: {cross}")
 
-    rows, columns = massden.shape
+    rows, columns = cross.massden_isobaric.shape
 
     return jsonify(
         columns=columns,
         distance=distance(start, end),
-        isobaricPressure=sanitize([quantity.magnitude for quantity in plevs]).tolist(),
-        massden=np.ravel(sanitize(massden)).tolist(),
-        potentialTemperature=sanitize(
-            [quantity.magnitude for quantity in np.ravel(potential_temperature)]
-        ).tolist(),
+        isobaricPressure=sanitize(cross.isobaric).tolist(),
+        massden=np.ravel(sanitize(cross.massden_isobaric * 1e9)).tolist(),
         rows=rows,
     )

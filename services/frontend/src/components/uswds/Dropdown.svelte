@@ -2,7 +2,6 @@
   import FormGroup from "./FormGroup.svelte";
 
   export let options = [];
-  export let placeholder = "- Select -";
   export let id;
   export let label;
   export let selected;

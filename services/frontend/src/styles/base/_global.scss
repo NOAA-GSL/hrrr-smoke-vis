@@ -18,7 +18,7 @@ body {
   grid-template-areas:
     "header"
     "controls"
-    "xsection"
+    "main"
     "footer";
   gap: 0 uswds.units(uswds.$theme-column-gap-md);
 
@@ -82,8 +82,9 @@ legend {
   color: uswds.color("base-lightest");
 }
 
-.hrrr-xsection {
-  grid-area: xsection;
+.hrrr-xsection,
+.main {
+  grid-area: main;
 }
 
 @media screen and (prefers-color-scheme: dark) {
@@ -102,9 +103,9 @@ legend {
     grid-template-columns: 2fr minmax(auto, #{uswds.units("mobile-lg")});
     grid-template-rows: min-content 1fr min-content;
     grid-template-areas:
-      "xsection header"
-      "xsection controls"
-      "xsection footer";
+      "main header"
+      "main controls"
+      "main footer";
     overflow: hidden;
   }
 }

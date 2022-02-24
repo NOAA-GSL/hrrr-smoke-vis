@@ -5,15 +5,13 @@
   import Contour from "./Contour.svelte";
   import HrrrMap from "./HrrrMap.svelte";
 
-  import { onMount } from "svelte";
   import {
     contours,
-    extent,
     geoPath,
     geoTransform,
-    interpolateRdPu,
+    interpolateOrRd,
     scaleLinear,
-    scaleSequentialSqrt,
+    scaleThreshold,
   } from "d3";
   import { mesh } from "topojson-client";
 
@@ -24,7 +22,6 @@
   let mapSize = 0;
 
   $: smoke = contours().size([$xsection.columns, $xsection.rows]).thresholds(thresholds)($xsection.massden);
-  $: potentialTemperature = contours().size([$xsection.columns, $xsection.rows])($xsection.potentialTemperature);
   $: xScale = scaleLinear().domain([0, $xsection.columns]).range([0, width]);
   $: yScale = scaleLinear().domain([0, $xsection.rows]).range([height, 0]);
   $: path = geoPath(geoTransform({
@@ -32,13 +29,15 @@
       this.stream.point(xScale(x), yScale(y));
     },
   }));
+  $: fillScale = scaleThreshold(thresholds, thresholds.map((_, idx, arr) => {
+    return interpolateOrRd(idx / (arr.length - 1));
+  }));
 </script>
 
 <div class="hrrr-xsection container">
   <div class="chart" bind:offsetWidth={width} bind:offsetHeight={height}>
     <svg class="x-section" viewBox="0 0 {width} {height}">
-      <Contour contours={smoke} fill={scaleSequentialSqrt(extent(thresholds), interpolateRdPu)} {path} />
-      <Contour contours={potentialTemperature} stroke={() => "black"} {path} />
+      <Contour contours={smoke} fill={fillScale} {path} />
       <g class="axis">
         <AxisLeft scale={yScale} />
       </g>
