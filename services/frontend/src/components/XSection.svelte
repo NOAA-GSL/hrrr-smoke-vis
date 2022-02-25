@@ -1,5 +1,5 @@
 <script>
-  import { xsection } from "../stores.js";
+  import { smokeScale, thresholds, xsection } from "../stores.js";
   import AxisBottom from "./AxisBottom.svelte";
   import AxisLeft from "./AxisLeft.svelte";
   import Contour from "./Contour.svelte";
@@ -9,19 +9,15 @@
     contours,
     geoPath,
     geoTransform,
-    interpolateOrRd,
     scaleLinear,
-    scaleThreshold,
   } from "d3";
   import { mesh } from "topojson-client";
-
-  let thresholds = [0, 1, 2, 4, 6, 8, 12, 16, 20, 25, 30, 40, 60, 100, 200, 210];
 
   let width = 0;
   let height = 0;
   let mapSize = 0;
 
-  $: smoke = contours().size([$xsection.columns, $xsection.rows]).thresholds(thresholds)($xsection.massden);
+  $: smoke = contours().size([$xsection.columns, $xsection.rows]).thresholds($thresholds)($xsection.massden);
   $: xScale = scaleLinear().domain([0, $xsection.columns]).range([0, width]);
   $: yScale = scaleLinear().domain([0, $xsection.rows]).range([height, 0]);
   $: path = geoPath(geoTransform({
@@ -29,15 +25,12 @@
       this.stream.point(xScale(x), yScale(y));
     },
   }));
-  $: fillScale = scaleThreshold(thresholds, thresholds.map((_, idx, arr) => {
-    return interpolateOrRd(idx / (arr.length - 1));
-  }));
 </script>
 
 <div class="hrrr-xsection container">
   <div class="chart" bind:offsetWidth={width} bind:offsetHeight={height}>
     <svg class="x-section" viewBox="0 0 {width} {height}">
-      <Contour contours={smoke} fill={fillScale} {path} />
+      <Contour contours={smoke} fill={$smokeScale} {path} />
       <g class="axis">
         <AxisLeft scale={yScale} />
       </g>

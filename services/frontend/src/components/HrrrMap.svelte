@@ -1,12 +1,10 @@
 <script>
-  import { path, verticallyIntegrated } from "../stores.js";
+  import { path, thresholds, smokeScale, verticallyIntegrated } from "../stores.js";
   import * as api from "../api.js";
 
   import { extent } from "d3-array";
   import { contours } from "d3-contour";
   import { geoPath, geoAlbers, geoCircle, geoStream, geoTransform } from "d3-geo";
-  import { scaleLinear, scaleSqrt, scaleThreshold } from "d3-scale";
-  import { interpolateOrRd } from "d3-scale-chromatic";
   import { mesh } from "topojson-client";
   import { afterUpdate, onMount } from "svelte";
 
@@ -18,15 +16,13 @@
   let smoke;
   let startPoint = null;
 
-  let thresholds = [0, 1, 4, 7, 11, 15, 20, 25, 30, 40, 50, 75, 150, 250, 500];
-
   let projection = geoAlbers();
 
   $: if ($verticallyIntegrated) {
     smoke = contours().size(
         [$verticallyIntegrated.columns, $verticallyIntegrated.rows]
       )
-      .thresholds(thresholds)($verticallyIntegrated.massden)
+      .thresholds($thresholds)($verticallyIntegrated.massden)
       .filter((multiPolygon) => multiPolygon.value > 0);
   }
 
@@ -102,9 +98,6 @@
 
     if (!$verticallyIntegrated) return;
 
-    const fillColor = scaleThreshold(thresholds, thresholds.map((_, idx, arr) => {
-      return interpolateOrRd(idx / (arr.length - 1));
-    }));
     const smokePath = geoPath(geoTransform({
       point: function (x, y) {
         const i = Math.max(0, Math.min($verticallyIntegrated.columns, Math.floor(x)));
@@ -127,7 +120,7 @@
     context.globalAlpha = 0.8;
     smoke.forEach(function (d) {
 
-      context.fillStyle = fillColor(d.value);
+      context.fillStyle = $smokeScale(d.value);
       context.beginPath();
       smokePath(d);
       context.fill();
