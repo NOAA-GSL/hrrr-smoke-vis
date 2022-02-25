@@ -18,12 +18,16 @@ export const validTime = writable(0);
 
 /**
  * Thresholds for the smoke concentration contour levels.
- * @type {Array[number]}
+ * @type {number[]}
  */
 export const thresholds = readable(
   [0, 1, 4, 7, 11, 15, 20, 25, 30, 40, 50, 75, 150, 250, 500]
 );
 
+/**
+ * D3 scaleThreshold for coloring smoke concentration.
+ * @type {Function}
+ */
 export const smokeScale = derived(
   thresholds,
   ($thresholds, set) => {
