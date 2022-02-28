@@ -20,6 +20,8 @@
     lng: $path?.endLng,
   };
 
+  $: units = $path ? 'µg / m³' : 'µg / m²';
+
   $: {
     // Initialize the state from our stores
     let state = {
@@ -94,5 +96,5 @@
     <HrrrMap width={mapWidth} height={mapHeight} />
   </div>
 {/if}
-  <Legend title="Smoke Concentration (µg / m³)"/>
+  <Legend title="Smoke Concentration ({units})" />
 <Footer />
