@@ -94,5 +94,5 @@
     <HrrrMap width={mapWidth} height={mapHeight} />
   </div>
 {/if}
-  <Legend />
+  <Legend title="Smoke Concentration (µg / m³)"/>
 <Footer />

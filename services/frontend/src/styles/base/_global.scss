@@ -14,7 +14,7 @@ html {
 body {
   display: grid;
   grid-auto-flow: row;
-  grid-template-columns: 1fr 5rem;
+  grid-template-columns: 1fr min-content;
   grid-template-rows: min-content min-content 1fr min-content;
   grid-template-areas:
     "header   header"
@@ -115,7 +115,7 @@ legend {
 
 @media screen and (min-height: #{uswds.units("tablet")}) and (min-aspect-ratio: 4/3) {
   body {
-    grid-template-columns: 2fr 5rem minmax(auto, #{uswds.units("mobile-lg")});
+    grid-template-columns: 2fr min-content minmax(auto, #{uswds.units("mobile-lg")});
     grid-template-rows: min-content 1fr min-content;
     grid-template-areas:
       "main ...... header"
