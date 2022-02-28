@@ -14,12 +14,13 @@ html {
 body {
   display: grid;
   grid-auto-flow: row;
+  grid-template-columns: 1fr 3rem;
   grid-template-rows: min-content min-content 1fr min-content;
   grid-template-areas:
-    "header"
-    "controls"
-    "main"
-    "footer";
+    "header   header"
+    "controls controls"
+    "main     legend"
+    "footer   footer";
   gap: 0 uswds.units(uswds.$theme-column-gap-md);
 
   font-size: uswds.size("ui", "md");
@@ -56,6 +57,10 @@ body {
       color: uswds.color("base-light");
     }
   }
+
+  > footer {
+    grid-area: footer;
+  }
 }
 
 label,
@@ -87,6 +92,10 @@ legend {
   grid-area: main;
 }
 
+.legend {
+  grid-area: legend;
+}
+
 @media screen and (prefers-color-scheme: dark) {
   html {
     --bg-color: #{uswds.color("primary-darker")};
@@ -100,12 +109,12 @@ legend {
 
 @media screen and (min-height: #{uswds.units("tablet")}) and (min-aspect-ratio: 4/3) {
   body {
-    grid-template-columns: 2fr minmax(auto, #{uswds.units("mobile-lg")});
+    grid-template-columns: 2fr 3rem minmax(auto, #{uswds.units("mobile-lg")});
     grid-template-rows: min-content 1fr min-content;
     grid-template-areas:
-      "main header"
-      "main controls"
-      "main footer";
+      "main ...... header"
+      "main legend controls"
+      "main ...... footer";
     overflow: hidden;
   }
 }

@@ -32,10 +32,12 @@ export const smokeScale = derived(
   thresholds,
   ($thresholds, set) => {
     const colors = $thresholds.map((_, idx, arr) => {
-      return interpolateOrRd(idx / (arr.length - 1));
+      return interpolateOrRd((idx + 1) / arr.length);
     });
 
-    set(scaleThreshold($thresholds, colors));
+    // Add one additional color because we need n+1 values in the output range
+    // for a threshold scale.
+    set(scaleThreshold($thresholds, [interpolateOrRd(0), ...colors]));
   }
 );
 
