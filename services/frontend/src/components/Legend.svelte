@@ -10,14 +10,19 @@
 </script>
 <div class="legend" bind:offsetWidth={width} bind:offsetHeight={height}>
   <svg viewBox="0 0 {width} {height}" {width} {height}>
-    {#each ticks as tick, idx}
-      {#if isFinite(tick[1])}
+    <g>
+      {#each ticks as tick, idx}
         <rect class="swatch"
               y={height - (idx + 1) * swatchHeight}
-              {width} height={swatchHeight}
+              width={width/2} height={swatchHeight}
               fill={$smokeScale(tick[0])} />
-      {/if}
-    {/each}
+      {/each}
+    </g>
+    <g transform="translate({width/2}, 0)">
+      {#each $thresholds as tick, idx}
+        <text class="tick-label" x=8 y={height - idx * swatchHeight}>{tick}</text>
+      {/each}
+    </g>
   </svg>
 </div>
 <style>
@@ -28,5 +33,10 @@
   .swatch {
     stroke: white;
     stroke-width: 1px;
+  }
+
+  text {
+    dominant-baseline: middle;
+    fill: currentColor;
   }
 </style>

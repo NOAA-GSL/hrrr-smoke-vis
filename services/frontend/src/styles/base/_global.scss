@@ -14,7 +14,7 @@ html {
 body {
   display: grid;
   grid-auto-flow: row;
-  grid-template-columns: 1fr 3rem;
+  grid-template-columns: 1fr 5rem;
   grid-template-rows: min-content min-content 1fr min-content;
   grid-template-areas:
     "header   header"
@@ -96,6 +96,12 @@ legend {
   grid-area: legend;
 }
 
+.tick-label {
+  font-size: uswds.size("ui", "3xs");
+  line-height: uswds.line-height("ui", 1);
+  color: uswds.color("base-dark");
+}
+
 @media screen and (prefers-color-scheme: dark) {
   html {
     --bg-color: #{uswds.color("primary-darker")};
@@ -109,7 +115,7 @@ legend {
 
 @media screen and (min-height: #{uswds.units("tablet")}) and (min-aspect-ratio: 4/3) {
   body {
-    grid-template-columns: 2fr 3rem minmax(auto, #{uswds.units("mobile-lg")});
+    grid-template-columns: 2fr 5rem minmax(auto, #{uswds.units("mobile-lg")});
     grid-template-rows: min-content 1fr min-content;
     grid-template-areas:
       "main ...... header"
