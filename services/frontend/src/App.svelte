@@ -4,6 +4,7 @@
   import Header from "./components/Header.svelte";
   import HrrrControls from "./components/HrrrControls.svelte";
   import HrrrMap from "./components/HrrrMap.svelte";
+  import Legend from "./components/Legend.svelte";
   import XSection from "./components/XSection.svelte";
 
   let mapWidth = 0;
@@ -18,6 +19,8 @@
     lat: $path?.endLat,
     lng: $path?.endLng,
   };
+
+  $: units = $path ? 'µg / m³' : 'µg / m²';
 
   $: {
     // Initialize the state from our stores
@@ -93,4 +96,5 @@
     <HrrrMap width={mapWidth} height={mapHeight} />
   </div>
 {/if}
+  <Legend title="Smoke Concentration ({units})" />
 <Footer />
