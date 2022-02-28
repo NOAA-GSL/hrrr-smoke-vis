@@ -16,10 +16,21 @@
     <svg viewBox="0 0 56 {height}" width="56" {height}>
       <g>
         {#each ticks as tick, idx}
-          <rect class="swatch"
-                y={height - (idx + 1) * swatchHeight}
-                width="24" height={swatchHeight}
-                fill={$smokeScale(tick[0])} />
+          {#if idx + 1 < ticks.length}
+            <rect class="swatch"
+                  y={height - (idx + 1) * swatchHeight}
+                  width="24" height={swatchHeight}
+                  fill={$smokeScale(tick[0])} />
+          {:else}
+            <path class="swatch"
+                  d="M 12,0
+                     l 12,20.8
+                     l 0,{swatchHeight - 20.8}
+                     l -24,0
+                     l 0,-{swatchHeight - 20.8}
+                     l 12,-20.8"
+                  fill={$smokeScale(tick[0])}></path>
+            {/if}
         {/each}
       </g>
       <g transform="translate(32, 0)">
