@@ -20,7 +20,7 @@
   let borderData;
   let canvas;
   let context;
-  let data;
+  let data = Promise.resolve(null);
   let smoke;
   let startPoint = null;
 
@@ -32,6 +32,7 @@
   }
 
   $: smoke = data.then(function (data) {
+    if (data === null) return;
     const contourGenerator = contours()
       .size([data.columns, data.rows])
       .thresholds($thresholds);
