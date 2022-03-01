@@ -1,6 +1,13 @@
 <script>
-  import { path, thresholds, smokeScale, verticallyIntegrated } from "../stores.js";
   import * as api from "../api.js";
+  import {
+    path,
+    runHour,
+    smokeScale,
+    thresholds,
+    validTime,
+  } from "../stores.js";
+  import Loading from "./Loading.svelte";
 
   import { extent } from "d3-array";
   import { contours } from "d3-contour";
@@ -13,18 +20,25 @@
   let borderData;
   let canvas;
   let context;
+  let data;
   let smoke;
   let startPoint = null;
 
   let projection = geoAlbers();
 
-  $: if ($verticallyIntegrated) {
-    smoke = contours().size(
-        [$verticallyIntegrated.columns, $verticallyIntegrated.rows]
-      )
-      .thresholds($thresholds)($verticallyIntegrated.massden)
-      .filter((multiPolygon) => multiPolygon.value > 0);
+  $: ready = $runHour !== null && $validTime !== null;
+  $: if (ready) {
+    data = api.vertical($runHour, $validTime)
   }
+
+  $: smoke = data.then(function (data) {
+    const contourGenerator = contours()
+      .size([data.columns, data.rows])
+      .thresholds($thresholds);
+
+    return contourGenerator(data.massden)
+      .filter((multiPolygon) => multiPolygon.value > 0);
+  });
 
   $: xsectionPath = $path ? {
     type: "LineString",
@@ -62,7 +76,7 @@
     context.fill();
   }
 
-  function render() {
+  async function render() {
     context = canvas.getContext("2d");
     context.clearRect(0, 0, width, height);
 
@@ -96,37 +110,37 @@
     context.stroke();
     context.restore();
 
-    if (!$verticallyIntegrated) return;
+    data.then(function (verticallyIntegrated) {
+      const smokePath = geoPath(geoTransform({
+        point: function (x, y) {
+          const i = Math.max(0, Math.min(verticallyIntegrated.columns, Math.floor(x)));
+          const j = Math.max(0, Math.min(verticallyIntegrated.rows, Math.floor(y)));
 
-    const smokePath = geoPath(geoTransform({
-      point: function (x, y) {
-        const i = Math.max(0, Math.min($verticallyIntegrated.columns, Math.floor(x)));
-        const j = Math.max(0, Math.min($verticallyIntegrated.rows, Math.floor(y)));
+          if (i >= verticallyIntegrated.columns || j >= verticallyIntegrated.rows) return;
 
-        if (i >= $verticallyIntegrated.columns || j >= $verticallyIntegrated.rows) return;
+          const [px, py] = projection([
+            verticallyIntegrated.longitude[j][i],
+            verticallyIntegrated.latitude[j][i],
+          ]);
 
-        const [px, py] = projection([
-          $verticallyIntegrated.longitude[j][i],
-          $verticallyIntegrated.latitude[j][i],
-        ]);
+          if ([px, py].every(isFinite)) {
+            this.stream.point(px, py);
+          }
+        },
+      }), context);
 
-        if ([px, py].every(isFinite)) {
-          this.stream.point(px, py);
-        }
-      },
-    }), context);
-
-    context.save();
-    context.globalAlpha = 0.8;
-    smoke.forEach(function (d) {
-
-      context.fillStyle = $smokeScale(d.value);
-      context.beginPath();
-      smokePath(d);
-      context.fill();
-
+      context.save();
+      context.globalAlpha = 0.8;
+      smoke.then(function (data) {
+        data.forEach(function (d) {
+          context.fillStyle = $smokeScale(d.value);
+          context.beginPath();
+          smokePath(d);
+          context.fill();
+        });
+      });
+      context.restore();
     });
-    context.restore();
 
     if (!xsectionPath) return;
 
@@ -173,10 +187,12 @@
   afterUpdate(render);
 </script>
 
-<canvas
-  bind:this={canvas}
-  on:click={handleClick}
-  class="hrrr-map"
-  width={width}
-  height={height}
-></canvas>
+<Loading promise={smoke}>
+  <canvas
+    bind:this={canvas}
+    on:click={handleClick}
+    class="hrrr-map"
+    width={width}
+    height={height}
+  ></canvas>
+</Loading>
