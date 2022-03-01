@@ -24,29 +24,37 @@
   let width = 0;
   let height = 0;
   let mapSize = 0;
-  let smoke = [];
+
+  let columns = 0;
+  let rows = 0;
+  let massden = [];
   let xScale = scaleLinear();
   let yScale = scaleLinear();
   let contourPath;
 
   $: ready = $runHour !== null && $validTime !== null && $path !== null;
   $: data = ready ? api.xsection({
-    runHour: $runHour,
-    validTime: $validTime,
-    ...$path
-  }) : Promise.resolve(null)
+      runHour: $runHour,
+      validTime: $validTime,
+      ...$path
+    }) : Promise.resolve(null);
 
   $: data.then(function (xsection) {
     if (xsection === null) return;
-    smoke = contours().size([xsection.columns, xsection.rows]).thresholds($thresholds)(xsection.massden);
-    xScale = scaleLinear().domain([0, xsection.columns]).range([0, width]);
-    yScale = scaleLinear().domain([0, xsection.rows]).range([height, 0]);
-    contourPath = geoPath(geoTransform({
-      point: function (x, y) {
-        this.stream.point(xScale(x), yScale(y));
-      },
-    }));
+
+    columns = xsection.columns;
+    rows = xsection.rows;
+    massden = xsection.massden;
   });
+
+  $: smoke = contours().size([columns, rows]).thresholds($thresholds)(massden);
+  $: xScale = scaleLinear().domain([0, columns]).range([0, width]);
+  $: yScale = scaleLinear().domain([0, rows]).range([height, 0]);
+  $: contourPath = geoPath(geoTransform({
+    point: function (x, y) {
+      this.stream.point(xScale(x), yScale(y));
+    },
+  }));
 </script>
 
 <div class="hrrr-xsection">
