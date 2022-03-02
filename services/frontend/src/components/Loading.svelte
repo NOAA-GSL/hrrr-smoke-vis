@@ -1,34 +1,20 @@
 <script>
   export let promise;
+  export let classNames;
 </script>
 
-<div class="container">
+<div class="stack {classNames}">
   <slot></slot>
   {#await promise}
-    <div class="spinner">
+    <div class="spinner stack">
       <span>Loading</span>
     </div>
   {/await}
 </div>
 
 <style>
-.container {
-  position: relative;
-}
-
-.spinner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-areas: "main";
-  place-items: center;
-}
-
 .spinner > * {
-  grid-area: main;
+  place-self: center;
   z-index: 1;
 }
 
@@ -37,9 +23,7 @@
   display: block;
   background-color: var(--bg-color);
   opacity: 0.6;
-  grid-area: main;
-  width: 100%;
-  height: 100%;
+  grid-area: stack;
   z-index: 0;
 }
 </style>

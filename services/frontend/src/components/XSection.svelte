@@ -57,28 +57,26 @@
   }));
 </script>
 
-<div class="hrrr-xsection">
-  <Loading promise={data}>
-    <div class="container">
-      <div class="chart" bind:offsetWidth={width} bind:offsetHeight={height}>
-        <svg class="x-section" viewBox="0 0 {width} {height}">
-          <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
-          <g class="axis">
-            <AxisLeft scale={yScale} />
-          </g>
-          <AxisBottom scale={xScale} transform="translate(0, {height})" />
-        </svg>
-      </div>
-
-      <div class="map" bind:offsetWidth={mapSize}>
-        <HrrrMap width={mapSize} height={mapSize} />
-      </div>
-
-      <small class="axis-title left">Pressure (mb, from Standard Atmosphere)</small>
-      <small class="axis-title bottom">Distance (km)</small>
+<Loading promise={data} classNames="hrrr-xsection">
+  <div class="container">
+    <div class="chart" bind:offsetWidth={width} bind:offsetHeight={height}>
+      <svg class="x-section" viewBox="0 0 {width} {height}">
+        <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
+        <g class="axis">
+          <AxisLeft scale={yScale} />
+        </g>
+        <AxisBottom scale={xScale} transform="translate(0, {height})" />
+      </svg>
     </div>
-  </Loading>
-</div>
+
+    <div class="map" bind:offsetWidth={mapSize}>
+      <HrrrMap width={mapSize} height={mapSize} />
+    </div>
+
+    <small class="axis-title left">Pressure (mb, from Standard Atmosphere)</small>
+    <small class="axis-title bottom">Distance (km)</small>
+  </div>
+</Loading>
 
 <style>
   .container {
