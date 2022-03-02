@@ -1,4 +1,5 @@
 <script>
+  import * as api from "./api.js";
   import { runHour, validTime, path } from "./stores.js";
   import Footer from "./components/Footer.svelte";
   import Header from "./components/Header.svelte";
@@ -21,6 +22,11 @@
   };
 
   $: units = $path ? 'µg / m³' : 'µg / m²';
+
+  $: ready = $runHour !== null && $validTime !== null;
+  $: verticallyIntegratedSmoke = !ready
+    ? Promise.resolve(null)
+    : api.vertical($runHour, $validTime)
 
   $: {
     // Initialize the state from our stores
@@ -90,10 +96,10 @@
 <Header />
 <HrrrControls {start} {end} />
 {#if $path}
-  <XSection />
+  <XSection mapData={verticallyIntegratedSmoke} />
 {:else}
   <div class="main" bind:offsetWidth={mapWidth} bind:offsetHeight={mapHeight}>
-    <HrrrMap width={mapWidth} height={mapHeight} />
+    <HrrrMap width={mapWidth} height={mapHeight} data={verticallyIntegratedSmoke} />
   </div>
 {/if}
   <Legend title="Smoke Concentration ({units})" />

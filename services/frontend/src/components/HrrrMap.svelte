@@ -1,11 +1,8 @@
 <script>
-  import * as api from "../api.js";
   import {
     path,
-    runHour,
     smokeScale,
     thresholds,
-    validTime,
   } from "../stores.js";
   import Loading from "./Loading.svelte";
 
@@ -15,6 +12,7 @@
   import { mesh } from "topojson-client";
   import { afterUpdate, onMount } from "svelte";
 
+  export let data;
   export let width = 0;
   export let height = 0;
 
@@ -29,11 +27,6 @@
   let startPoint = null;
 
   let projection = geoAlbers();
-
-  $: ready = $runHour !== null && $validTime !== null;
-  $: data = !ready
-    ? Promise.resolve(null)
-    : api.vertical($runHour, $validTime)
 
   $: data.then(function (data) {
     if (data === null) return;
