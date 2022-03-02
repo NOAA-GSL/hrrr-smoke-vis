@@ -52,7 +52,7 @@
   }
 </script>
 
-<section class="hrrr-controls stack" aria-label="Controls">
+<section class="hrrr-controls flow" aria-label="Controls">
   <h2>Forecast</h2>
   <Dropdown id="run-hour" label="Run Hour" options={forecasts} bind:selected={$runHour} />
   <Dropdown id="forecast-hour" label="Forecast Hour" options={forecastHours} bind:selected={$validTime} />

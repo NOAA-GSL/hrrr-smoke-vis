@@ -1,10 +1,9 @@
-@use "../uswds";
-
 .stack {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-areas: "stack";
+  place-items: stretch;
 
-  > * + * {
-    margin-top: var(--space, #{uswds.units(2)});
+  > * {
+    grid-area: stack;
   }
 }
