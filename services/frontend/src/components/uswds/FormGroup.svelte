@@ -3,7 +3,7 @@
   export let label;
 </script>
 
-<div class="stack">
+<div class="flow">
   <label for={id}>{label}</label>
   <slot></slot>
 </div>
