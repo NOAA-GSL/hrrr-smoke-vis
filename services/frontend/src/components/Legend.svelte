@@ -27,7 +27,7 @@
                      l 12,20.8
                      l 0,{swatchHeight - 20.8}
                      l -24,0
-                     l 0,-{swatchHeight - 20.8}
+                     l 0,{(swatchHeight - 20.8) * -1}
                      l 12,-20.8"
                   fill={$smokeScale(tick[0])}></path>
             {/if}
