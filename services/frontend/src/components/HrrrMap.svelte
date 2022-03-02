@@ -17,28 +17,36 @@
 
   export let width = 0;
   export let height = 0;
-  let borderData;
+
+  let counties;
+  let states;
   let canvas;
-  let context;
-  let data = Promise.resolve(null);
   let smoke;
+  let columns = 0;
+  let rows = 0;
+  let latitude;
+  let longitude;
   let startPoint = null;
 
   let projection = geoAlbers();
 
   $: ready = $runHour !== null && $validTime !== null;
-  $: if (ready) {
-    data = api.vertical($runHour, $validTime)
-  }
+  $: data = !ready
+    ? Promise.resolve(null)
+    : api.vertical($runHour, $validTime)
 
-  $: smoke = data.then(function (data) {
+  $: data.then(function (data) {
     if (data === null) return;
     const contourGenerator = contours()
       .size([data.columns, data.rows])
       .thresholds($thresholds);
 
-    return contourGenerator(data.massden)
+    smoke = contourGenerator(data.massden)
       .filter((multiPolygon) => multiPolygon.value > 0);
+    columns = data.columns;
+    rows = data.rows;
+    longitude = data.longitude;
+    latitude = data.latitude;
   });
 
   $: xsectionPath = $path ? {
@@ -49,16 +57,17 @@
     ],
   } : null;
 
+
   onMount(() => {
     fetch("/data/us.json")
       .then((res) => res.json())
       .then((geodata) => {
-        borderData = geodata;
-        render();
+        counties = mesh(geodata, geodata.objects.counties);
+        states = mesh(geodata, geodata.objects.states);
       });
   });
 
-  function drawPath(color, width, radius, p) {
+  function drawPath(context, color, width, radius, p) {
     const c = geoCircle().radius(radius);
 
     context.strokeStyle = color;
@@ -77,51 +86,57 @@
     context.fill();
   }
 
-  async function render() {
-    context = canvas.getContext("2d");
+  $: if (canvas && width > 0 && height > 0) {
+    const context = canvas.getContext("2d");
     context.clearRect(0, 0, width, height);
 
-    if (!borderData) return;
-
-    const counties = mesh(borderData, borderData.objects.counties);
-    const states = mesh(borderData, borderData.objects.states);
-
-    projection.fitExtent(
-      [[5, 5], [width - 10, height - 10]],
-      xsectionPath || states
-    );
+    if (xsectionPath || states) {
+      projection.fitExtent(
+        [[5, 5], [width - 10, height - 10]],
+        xsectionPath || states
+      );
+    }
 
     const p = geoPath(projection, context);
 
     const style = getComputedStyle(canvas);
 
-    context.strokeStyle = style.getPropertyValue("--county-border-color");
-    context.lineWidth = +style.getPropertyValue("--county-border-width");
+    if (counties) {
+      context.strokeStyle = style.getPropertyValue("--county-border-color");
+      context.lineWidth = +style.getPropertyValue("--county-border-width");
 
-    context.beginPath();
-    p(counties);
-    context.stroke();
+      context.beginPath();
+      p(counties);
+      context.stroke();
+    }
 
-    context.save();
-    context.strokeStyle = style.getPropertyValue("--state-border-color");
-    context.lineWidth = +style.getPropertyValue("--state-border-width");
+    if (states) {
+      context.save();
+      context.strokeStyle = style.getPropertyValue("--state-border-color");
+      context.lineWidth = +style.getPropertyValue("--state-border-width");
 
-    context.beginPath();
-    p(states);
-    context.stroke();
-    context.restore();
+      context.beginPath();
+      p(states);
+      context.stroke();
+      context.restore();
+    }
 
-    data.then(function (verticallyIntegrated) {
+    if (smoke) {
+      console.assert(columns > 0, 'columns must be > 0');
+      console.assert(rows > 0, 'rows must be > 0');
+      console.assert(longitude.length > 0, 'longitude.length must be > 0');
+      console.assert(latitude.length > 0, 'latitude.length must be > 0');
+
       const smokePath = geoPath(geoTransform({
         point: function (x, y) {
-          const i = Math.max(0, Math.min(verticallyIntegrated.columns, Math.floor(x)));
-          const j = Math.max(0, Math.min(verticallyIntegrated.rows, Math.floor(y)));
+          const i = Math.max(0, Math.min(columns, Math.floor(x)));
+          const j = Math.max(0, Math.min(rows, Math.floor(y)));
 
-          if (i >= verticallyIntegrated.columns || j >= verticallyIntegrated.rows) return;
+          if (i >= columns || j >= rows) return;
 
           const [px, py] = projection([
-            verticallyIntegrated.longitude[j][i],
-            verticallyIntegrated.latitude[j][i],
+            longitude[j][i],
+            latitude[j][i],
           ]);
 
           if ([px, py].every(isFinite)) {
@@ -132,36 +147,39 @@
 
       context.save();
       context.globalAlpha = 0.8;
-      smoke.then(function (data) {
-        data.forEach(function (d) {
-          context.fillStyle = $smokeScale(d.value);
-          context.beginPath();
-          smokePath(d);
-          context.fill();
-        });
+      smoke.forEach(function (d) {
+        context.fillStyle = $smokeScale(d.value);
+        context.beginPath();
+        smokePath(d);
+        context.fill();
       });
       context.restore();
-    });
+    }
 
-    if (!xsectionPath) return;
+    if (xsectionPath) {
+      console.assert(width > 0, 'width should be positive');
+      console.assert(height > 0, 'height should be positive');
 
-    const degPerPx = Math.max(
-      Math.abs($path.startLng - $path.endLng) / width,
-      Math.abs($path.startLat - $path.endLat) / height
-    );
+      const degPerPx = Math.max(
+        Math.abs($path.startLng - $path.endLng) / width,
+        Math.abs($path.startLat - $path.endLat) / height
+      );
 
-    drawPath(
-      style.getPropertyValue("background-color"),
-      +style.getPropertyValue("--path-width") + 6,
-      7 * degPerPx,
-      p,
-    );
-    drawPath(
-      style.getPropertyValue("--path-color"),
-      +style.getPropertyValue("--path-width"),
-      4 * degPerPx,
-      p,
-    );
+      drawPath(
+        context,
+        style.getPropertyValue("background-color"),
+        +style.getPropertyValue("--path-width") + 6,
+        7 * degPerPx,
+        p,
+      );
+      drawPath(
+        context,
+        style.getPropertyValue("--path-color"),
+        +style.getPropertyValue("--path-width"),
+        4 * degPerPx,
+        p,
+      );
+    }
   }
 
   function handleClick(event) {
@@ -184,11 +202,9 @@
 
     startPoint = null;
   }
-
-  afterUpdate(render);
 </script>
 
-<Loading promise={smoke}>
+<Loading promise={data}>
   <canvas
     bind:this={canvas}
     on:click={handleClick}
