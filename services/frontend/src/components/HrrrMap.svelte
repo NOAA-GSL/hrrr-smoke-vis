@@ -13,8 +13,8 @@
   import { afterUpdate, onMount } from "svelte";
 
   export let data;
-  export let width = 0;
-  export let height = 0;
+  let width = 0;
+  let height = 0;
 
   let counties;
   let states;
@@ -197,12 +197,22 @@
   }
 </script>
 
-<Loading promise={data}>
-  <canvas
-    bind:this={canvas}
-    on:click={handleClick}
-    class="hrrr-map"
-    width={width}
-    height={height}
-  ></canvas>
-</Loading>
+<div class="container" bind:offsetWidth={width} bind:offsetHeight={height}>
+  <Loading promise={data}>
+    <canvas
+      bind:this={canvas}
+      on:click={handleClick}
+      class="hrrr-map"
+      width={width}
+      height={height}
+    ></canvas>
+  </Loading>
+</div>
+
+<style>
+  .container {
+    aspect-ratio: 1/1;
+    width: 100%;
+    overflow: hidden;
+  }
+</style>

@@ -8,9 +8,6 @@
   import Legend from "./components/Legend.svelte";
   import XSection from "./components/XSection.svelte";
 
-  let mapWidth = 0;
-  let mapHeight = 0;
-
   $: start = {
     lat: $path?.startLat,
     lng: $path?.startLng,
@@ -95,12 +92,15 @@
 
 <Header />
 <HrrrControls {start} {end} />
-{#if $path}
-  <XSection mapData={verticallyIntegratedSmoke} />
-{:else}
-  <div class="main" bind:offsetWidth={mapWidth} bind:offsetHeight={mapHeight}>
-    <HrrrMap width={mapWidth} height={mapHeight} data={verticallyIntegratedSmoke} />
-  </div>
-{/if}
-  <Legend title="Smoke Concentration ({units})" />
+<div class="main">
+  <!--
+  {#if $path}
+    <XSection mapData={verticallyIntegratedSmoke} />
+  {:else}
+    <HrrrMap data={verticallyIntegratedSmoke} />
+  {/if}
+  -->
+  <HrrrMap data={verticallyIntegratedSmoke} />
+</div>
+<Legend title="Smoke Concentration ({units})" />
 <Footer />

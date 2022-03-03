@@ -115,12 +115,18 @@ legend {
 
 @media screen and (min-height: #{uswds.units("tablet")}) and (min-aspect-ratio: 4/3) {
   body {
-    grid-template-columns: 2fr min-content minmax(auto, #{uswds.units("mobile-lg")});
+    grid-template-columns: 1fr min-content #{uswds.units("mobile-lg")};
     grid-template-rows: min-content 1fr min-content;
     grid-template-areas:
       "main ...... header"
       "main legend controls"
       "main ...... footer";
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .main {
+    height: 100%;
     overflow: hidden;
   }
 }
