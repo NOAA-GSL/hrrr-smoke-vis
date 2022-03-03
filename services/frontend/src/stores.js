@@ -2,7 +2,29 @@
 import { scaleThreshold } from "d3-scale";
 import { interpolateOrRd } from "d3-scale-chromatic";
 import { derived, readable, writable } from "svelte/store";
+import { mesh } from "topojson-client";
 import * as api from "./api.js";
+
+let _borders;
+
+/**
+ * US state and county borders as GeoJSON.
+ */
+export const borders = readable(null, function (set) {
+  if (_borders) {
+    set(_borders);
+    return;
+  }
+
+  api.borders().then(function (borders) {
+    _borders = {
+      counties: mesh(borders, borders.objects.counties),
+      states: mesh(borders, borders.objects.states),
+    };
+
+    set(_borders);
+  });
+});
 
 /**
  * Forecast initialization time in ISO 8601 format.

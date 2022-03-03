@@ -1,23 +1,20 @@
 <script>
   import {
+    borders,
     path,
     smokeScale,
     thresholds,
   } from "../stores.js";
   import Loading from "./Loading.svelte";
 
-  import { extent } from "d3-array";
   import { contours } from "d3-contour";
   import { geoPath, geoAlbers, geoCircle, geoStream, geoTransform } from "d3-geo";
-  import { mesh } from "topojson-client";
-  import { afterUpdate, onMount } from "svelte";
+  import { afterUpdate } from "svelte";
 
   export let data;
-  export let width = 0;
-  export let height = 0;
+  let width = 0;
+  let height = 0;
 
-  let counties;
-  let states;
   let canvas;
   let smoke;
   let columns = 0;
@@ -26,7 +23,8 @@
   let longitude;
   let startPoint = null;
 
-  let projection = geoAlbers();
+  $: counties = $borders?.counties;
+  $: states = $borders?.states;
 
   $: data.then(function (data) {
     if (data === null) return;
@@ -50,15 +48,22 @@
     ],
   } : null;
 
+  $: projection = (width > 0 && height > 0 && (xsectionPath || states))
+    ? geoAlbers().fitExtent(
+      [[5, 5], [width - 10, height - 10]],
+      xsectionPath || states
+    )
+    : null;
 
-  onMount(() => {
-    fetch("/data/us.json")
-      .then((res) => res.json())
-      .then((geodata) => {
-        counties = mesh(geodata, geodata.objects.counties);
-        states = mesh(geodata, geodata.objects.states);
-      });
-  });
+  $: {
+    // Redraw the map whenever the smoke data or the projection change.
+    // Other changes that should trigger a redraw are handled by
+    // afterUpdate, because they should affect DOM.
+    smoke;
+    draw();
+  }
+
+  afterUpdate(draw);
 
   function drawPath(context, color, width, radius, p) {
     const c = geoCircle().radius(radius);
@@ -79,16 +84,12 @@
     context.fill();
   }
 
-  $: if (canvas && width > 0 && height > 0) {
-    const context = canvas.getContext("2d");
-    context.clearRect(0, 0, width, height);
+  function draw() {
+    if (!(canvas && projection)) return;
 
-    if (xsectionPath || states) {
-      projection.fitExtent(
-        [[5, 5], [width - 10, height - 10]],
-        xsectionPath || states
-      );
-    }
+    const context = canvas.getContext("2d");
+
+    context.clearRect(0, 0, width, height);
 
     const p = geoPath(projection, context);
 
@@ -115,11 +116,6 @@
     }
 
     if (smoke) {
-      console.assert(columns > 0, 'columns must be > 0');
-      console.assert(rows > 0, 'rows must be > 0');
-      console.assert(longitude.length > 0, 'longitude.length must be > 0');
-      console.assert(latitude.length > 0, 'latitude.length must be > 0');
-
       const smokePath = geoPath(geoTransform({
         point: function (x, y) {
           const i = Math.max(0, Math.min(columns, Math.floor(x)));
@@ -150,9 +146,6 @@
     }
 
     if (xsectionPath) {
-      console.assert(width > 0, 'width should be positive');
-      console.assert(height > 0, 'height should be positive');
-
       const degPerPx = Math.max(
         Math.abs($path.startLng - $path.endLng) / width,
         Math.abs($path.startLat - $path.endLat) / height
@@ -197,12 +190,22 @@
   }
 </script>
 
-<Loading promise={data}>
-  <canvas
-    bind:this={canvas}
-    on:click={handleClick}
-    class="hrrr-map"
-    width={width}
-    height={height}
-  ></canvas>
-</Loading>
+<div class="container" bind:offsetWidth={width} bind:offsetHeight={height}>
+  <Loading promise={data}>
+    <canvas
+      bind:this={canvas}
+      on:click={handleClick}
+      class="hrrr-map"
+      width={width}
+      height={height}
+    ></canvas>
+  </Loading>
+</div>
+
+<style>
+  .container {
+    aspect-ratio: 1/1;
+    width: 100%;
+    overflow: hidden;
+  }
+</style>

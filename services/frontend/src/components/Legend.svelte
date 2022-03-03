@@ -51,7 +51,12 @@
     padding: 0;
     display: grid;
     grid-template-columns: min-content min-content;
+    grid-template-rows: 100%;
     grid-template-areas: "axis title";
+
+    height: 100%;
+    overflow: hidden;
+    padding-block: 0.5rem;
   }
 
   .axis {

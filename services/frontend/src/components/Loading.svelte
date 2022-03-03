@@ -1,9 +1,9 @@
 <script>
   export let promise;
-  export let classNames;
+  export let classNames = "";
 </script>
 
-<div class="stack {classNames}">
+<div class="container stack {classNames}">
   <slot></slot>
   {#await promise}
     <div class="spinner stack">
@@ -13,6 +13,12 @@
 </div>
 
 <style>
+.container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 .spinner > * {
   place-self: center;
   z-index: 1;
