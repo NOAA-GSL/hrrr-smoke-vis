@@ -25,7 +25,6 @@
 
   let width = 0;
   let height = 0;
-  let mapSize = 0;
 
   let columns = 0;
   let rows = 0;
@@ -71,8 +70,8 @@
       </svg>
     </div>
 
-    <div class="map" bind:offsetWidth={mapSize}>
-      <HrrrMap width={mapSize} height={mapSize} data={mapData} />
+    <div class="map">
+      <HrrrMap data={mapData} />
     </div>
 
     <small class="axis-title left">Pressure (mb, from Standard Atmosphere)</small>
