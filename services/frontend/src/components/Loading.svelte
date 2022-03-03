@@ -1,6 +1,6 @@
 <script>
   export let promise;
-  export let classNames;
+  export let classNames = "";
 </script>
 
 <div class="container stack {classNames}">
