@@ -87,11 +87,8 @@
   function draw() {
     if (!(canvas && projection)) return;
 
-    console.log(`redraw map ${width}×${height}`);
     const context = canvas.getContext("2d");
 
-    console.log('clearing map');
-    console.log(context);
     context.clearRect(0, 0, width, height);
 
     const p = geoPath(projection, context);
@@ -99,7 +96,6 @@
     const style = getComputedStyle(canvas);
 
     if (counties) {
-      console.log("drawing counties");
       context.strokeStyle = style.getPropertyValue("--county-border-color");
       context.lineWidth = +style.getPropertyValue("--county-border-width");
 
@@ -109,7 +105,6 @@
     }
 
     if (states) {
-      console.log("drawing states");
       context.save();
       context.strokeStyle = style.getPropertyValue("--state-border-color");
       context.lineWidth = +style.getPropertyValue("--state-border-width");
@@ -121,12 +116,6 @@
     }
 
     if (smoke) {
-      console.assert(columns > 0, 'columns must be > 0');
-      console.assert(rows > 0, 'rows must be > 0');
-      console.assert(longitude.length > 0, 'longitude.length must be > 0');
-      console.assert(latitude.length > 0, 'latitude.length must be > 0');
-      console.log("drawing smoke");
-
       const smokePath = geoPath(geoTransform({
         point: function (x, y) {
           const i = Math.max(0, Math.min(columns, Math.floor(x)));
@@ -157,10 +146,6 @@
     }
 
     if (xsectionPath) {
-      console.assert(width > 0, 'width should be positive');
-      console.assert(height > 0, 'height should be positive');
-      console.log("drawing path");
-
       const degPerPx = Math.max(
         Math.abs($path.startLng - $path.endLng) / width,
         Math.abs($path.startLat - $path.endLat) / height
@@ -181,8 +166,6 @@
         p,
       );
     }
-
-    console.log("redraw complete");
   }
 
   function handleClick(event) {
