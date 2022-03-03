@@ -1,5 +1,6 @@
 <script>
   import {
+    borders,
     path,
     smokeScale,
     thresholds,
@@ -9,15 +10,12 @@
   import { extent } from "d3-array";
   import { contours } from "d3-contour";
   import { geoPath, geoAlbers, geoCircle, geoStream, geoTransform } from "d3-geo";
-  import { mesh } from "topojson-client";
-  import { afterUpdate, onMount } from "svelte";
+  import { afterUpdate } from "svelte";
 
   export let data;
   let width = 0;
   let height = 0;
 
-  let counties;
-  let states;
   let canvas;
   let smoke;
   let columns = 0;
@@ -25,6 +23,9 @@
   let latitude;
   let longitude;
   let startPoint = null;
+
+  $: counties = $borders?.counties;
+  $: states = $borders?.states;
 
   $: data.then(function (data) {
     if (data === null) return;
@@ -64,15 +65,6 @@
   }
 
   afterUpdate(draw);
-
-  onMount(() => {
-    fetch("/data/us.json")
-      .then((res) => res.json())
-      .then((geodata) => {
-        counties = mesh(geodata, geodata.objects.counties);
-        states = mesh(geodata, geodata.objects.states);
-      });
-  });
 
   function drawPath(context, color, width, radius, p) {
     const c = geoCircle().radius(radius);
