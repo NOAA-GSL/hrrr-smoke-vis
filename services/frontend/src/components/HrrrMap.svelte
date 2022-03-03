@@ -7,7 +7,6 @@
   } from "../stores.js";
   import Loading from "./Loading.svelte";
 
-  import { extent } from "d3-array";
   import { contours } from "d3-contour";
   import { geoPath, geoAlbers, geoCircle, geoStream, geoTransform } from "d3-geo";
   import { afterUpdate } from "svelte";
