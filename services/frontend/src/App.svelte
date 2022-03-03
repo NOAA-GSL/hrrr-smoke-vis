@@ -92,15 +92,12 @@
 
 <Header />
 <HrrrControls {start} {end} />
-<div class="main">
-  <!--
+<div class="main stack">
   {#if $path}
     <XSection mapData={verticallyIntegratedSmoke} />
   {:else}
     <HrrrMap data={verticallyIntegratedSmoke} />
   {/if}
-  -->
-  <HrrrMap data={verticallyIntegratedSmoke} />
 </div>
 <Legend title="Smoke Concentration ({units})" />
 <Footer />

@@ -81,6 +81,12 @@
 </Loading>
 
 <style>
+  .wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
   .container {
     display: grid;
     grid-template-columns: min-content 1fr min-content;
@@ -88,12 +94,19 @@
     grid-template-areas:
       "left-axis chart       right-axis"
       "......... bottom-axis ..........";
+
+    height: 100%;
+    overflow: hidden;
   }
 
   .chart,
   .map {
     grid-area: chart;
     overflow: hidden;
+  }
+
+  .chart {
+    height: 100%;
   }
 
   .map {
