@@ -214,6 +214,13 @@
     );
   }
 
+  function handleKeyUp(event) {
+    if (event.key !== "Escape") return;
+    startPoint = null;
+    pathCanvas.removeEventListener("mousemove", handleMouseMove);
+    pathCanvas.getContext("2d").clearRect(0, 0, width, height);
+  }
+
   function handleClick(event) {
     const { left, top } = pathCanvas.getBoundingClientRect();
     const x = event.clientX - left;
@@ -223,10 +230,12 @@
     if (!startPoint) {
       startPoint = coords;
       pathCanvas.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("keyup", handleKeyUp);
       return;
     }
 
     pathCanvas.removeEventListener("mousemove", handleMouseMove);
+    window.removeEventListener("keyup", handleKeyUp);
     pathCanvas.getContext("2d").clearRect(0, 0, width, height);
 
     path.set({
