@@ -64,7 +64,7 @@
   <h2>Cross-section Path</h2>
   <CoordinateInput id="start" label="Start" coordinate={start} />
   <CoordinateInput id="end" label="End" coordinate={end} />
-  <div class="cluster">
+  <div class="switcher">
     <button class="usa-button" disabled={$path === null} on:click={reset}>Clear Path</button>
     <button class="usa-button" on:click={update}>Get Cross-section</button>
   </div>
