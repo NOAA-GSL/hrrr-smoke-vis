@@ -271,5 +271,6 @@
     aspect-ratio: 1/1;
     width: 100%;
     overflow: hidden;
+    cursor: crosshair;
   }
 </style>
