@@ -266,11 +266,24 @@
   </Loading>
 </div>
 
-<style>
+<style lang="scss">
+  @use "uswds";
+
   .container {
     aspect-ratio: 1/1;
     width: 100%;
     overflow: hidden;
     cursor: crosshair;
+  }
+
+  .hrrr-map {
+    --county-border-color: #{uswds.color("base-light")};
+    --county-border-width: 1;
+    --state-border-color: #{uswds.color("base")};
+    --state-border-width: 1;
+    --path-color: #{uswds.color("ink")};
+    --path-width: 2;
+
+    background-color: var(--bg-color);
   }
 </style>
