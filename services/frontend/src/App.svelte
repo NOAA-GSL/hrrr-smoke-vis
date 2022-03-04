@@ -61,15 +61,15 @@
   };
 
   function handlePopState(event) {
-    const state = event.state || {};
+    const state = Object.assign({
+      validTime: 0,
+    }, event.state);
 
     if (state.runHour) {
       runHour.set(state.runHour);
     }
 
-    if (Number.isFinite(state.validTime)) {
-      validTime.set(state.validTime);
-    }
+    validTime.set(state.validTime);
 
     let pth = {};
     let coordProps = [
@@ -82,9 +82,7 @@
       }
     }
 
-    if (Object.keys(pth).length > 0) {
-      path.set(pth);
-    }
+    path.set(Object.keys(pth).length > 0 ? pth : null);
   }
 </script>
 
