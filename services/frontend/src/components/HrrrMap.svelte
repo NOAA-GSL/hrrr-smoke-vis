@@ -16,6 +16,7 @@
   let height = 0;
 
   let canvas;
+  let pathCanvas;
   let smoke;
   let columns = 0;
   let rows = 0;
@@ -65,7 +66,7 @@
 
   afterUpdate(draw);
 
-  function drawPath(context, color, width, radius, p) {
+  function drawPath(context, color, width, radius, p, path) {
     const c = geoCircle().radius(radius);
 
     context.strokeStyle = color;
@@ -73,13 +74,13 @@
     context.lineWidth = width;
 
     context.beginPath();
-    p(xsectionPath);
+    p(path);
     context.stroke();
 
     context.beginPath();
-    c.center(xsectionPath.coordinates[0]);
+    c.center(path.coordinates[0]);
     p(c());
-    c.center(xsectionPath.coordinates[1]);
+    c.center(path.coordinates[1]);
     p(c());
     context.fill();
   }
@@ -157,6 +158,7 @@
         +style.getPropertyValue("--path-width") + 6,
         7 * degPerPx,
         p,
+        xsectionPath,
       );
       drawPath(
         context,
@@ -164,20 +166,77 @@
         +style.getPropertyValue("--path-width"),
         4 * degPerPx,
         p,
+        xsectionPath,
       );
     }
   }
 
+  function handleMouseMove(event) {
+    if (!startPoint) return;
+
+    const { left, top } = pathCanvas.getBoundingClientRect();
+    const x = event.clientX - left;
+    const y = event.clientY - top;
+    const coords = projection.invert([x, y]);
+    const context = pathCanvas.getContext("2d");
+    const p = geoPath(projection, context);
+    const style = getComputedStyle(canvas);
+    const path = {
+      type: "LineString",
+      coordinates: [
+        startPoint,
+        coords,
+      ],
+    };
+
+    context.clearRect(0, 0, width, height);
+
+    const degPerPx = Math.max(
+      Math.abs(startPoint[0] - coords[0]) / width,
+      Math.abs(startPoint[1] - coords[1]) / height
+    );
+
+    drawPath(
+      context,
+      style.getPropertyValue("background-color"),
+      +style.getPropertyValue("--path-width") + 6,
+      7 * degPerPx,
+      p,
+      path,
+    );
+    drawPath(
+      context,
+      style.getPropertyValue("--path-color"),
+      +style.getPropertyValue("--path-width"),
+      4 * degPerPx,
+      p,
+      path,
+    );
+  }
+
+  function handleKeyUp(event) {
+    if (event.key !== "Escape") return;
+    startPoint = null;
+    pathCanvas.removeEventListener("mousemove", handleMouseMove);
+    pathCanvas.getContext("2d").clearRect(0, 0, width, height);
+  }
+
   function handleClick(event) {
-    const { left, top } = canvas.getBoundingClientRect();
+    const { left, top } = pathCanvas.getBoundingClientRect();
     const x = event.clientX - left;
     const y = event.clientY - top;
     const coords = projection.invert([x, y]);
 
     if (!startPoint) {
       startPoint = coords;
+      pathCanvas.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("keyup", handleKeyUp);
       return;
     }
+
+    pathCanvas.removeEventListener("mousemove", handleMouseMove);
+    window.removeEventListener("keyup", handleKeyUp);
+    pathCanvas.getContext("2d").clearRect(0, 0, width, height);
 
     path.set({
       startLat: startPoint[1],
@@ -194,10 +253,15 @@
   <Loading promise={data}>
     <canvas
       bind:this={canvas}
-      on:click={handleClick}
       class="hrrr-map"
       width={width}
       height={height}
+    ></canvas>
+    <canvas
+      bind:this={pathCanvas}
+      on:click={handleClick}
+      {width}
+      {height}
     ></canvas>
   </Loading>
 </div>
@@ -207,5 +271,6 @@
     aspect-ratio: 1/1;
     width: 100%;
     overflow: hidden;
+    cursor: crosshair;
   }
 </style>
