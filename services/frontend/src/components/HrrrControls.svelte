@@ -50,6 +50,10 @@
       endLng: parseFloat(end.lng),
     });
   }
+
+  function reset() {
+    path.set(null);
+  }
 </script>
 
 <section class="hrrr-controls flow" aria-label="Controls">
@@ -60,5 +64,8 @@
   <h2>Cross-section Path</h2>
   <CoordinateInput id="start" label="Start" coordinate={start} />
   <CoordinateInput id="end" label="End" coordinate={end} />
-  <button class="usa-button" on:click={update}>Update</button>
+  <div class="switcher">
+    <button class="usa-button" disabled={$path === null} on:click={reset}>Clear Path</button>
+    <button class="usa-button" on:click={update}>Get Cross-section</button>
+  </div>
 </section>
