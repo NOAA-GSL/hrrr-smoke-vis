@@ -103,6 +103,7 @@
 
   .chart {
     height: 100%;
+    z-index: 0;
   }
 
   .map {
@@ -110,6 +111,7 @@
     border: 1px solid var(--fg-color, black);
     aspect-ratio: 1 / 1;
     justify-self: end;
+    z-index: 1;
   }
 
   .axis-title {
