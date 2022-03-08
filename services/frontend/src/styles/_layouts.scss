@@ -1,0 +1,46 @@
+@use "./uswds";
+
+.cluster {
+  $space: uswds.units(uswds.$theme-column-gap-md);
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space, #{$space});
+
+  &.-center {
+    justify-content: center;
+  }
+}
+
+.flow {
+  display: flex;
+  flex-direction: column;
+
+  > * + * {
+    margin-top: var(--space, #{uswds.units(2)});
+  }
+}
+
+.stack {
+  display: grid;
+  grid-template-areas: "stack";
+  place-items: stretch;
+
+  > * {
+    grid-area: stack;
+  }
+}
+
+.switcher {
+  $space: uswds.units(uswds.$theme-column-gap-md);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space, #{$space});
+
+  > * {
+    flex-grow: 1;
+    flex-basis: calc((var(--threshold, 24rem) - 100%) * 999);
+  }
+}

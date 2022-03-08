@@ -6,14 +6,34 @@
   export let coordinate = { "lat": null, "lng": null };
 </script>
 
-<fieldset {id} class="coordinate-pair">
+<fieldset {id} class="coordinate-input">
   <legend>{label}</legend>
 
-  <FormGroup id="{id}-longitude" label="Longitude">
+  <FormGroup id="{id}-longitude" label="Longitude" labelClass="uppercase">
     <input id="{id}-longitude" type="number" bind:value={coordinate.lng}>
   </FormGroup>
 
-  <FormGroup id="{id}-latitude" label="Latitude">
+  <FormGroup id="{id}-latitude" label="Latitude" labelClass="uppercase">
     <input id="{id}-latitude" type="number" bind:value={coordinate.lat}>
   </FormGroup>
 </fieldset>
+
+
+<style type="text/scss">
+  @use "uswds";
+
+  .coordinate-input {
+    display: flex;
+    flex-wrap: wrap;
+    gap: uswds.units(2);
+  }
+
+  :global(.coordinate-input > *) {
+    flex: 1 0 6ch;
+    min-width: 6ch;
+  }
+
+  legend {
+    flex: 0 0 100%;
+  }
+</style>

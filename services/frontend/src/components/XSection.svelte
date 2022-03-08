@@ -7,8 +7,7 @@
     validTime
   } from "../stores.js";
   import * as api from "../api.js";
-  import AxisBottom from "./AxisBottom.svelte";
-  import AxisLeft from "./AxisLeft.svelte";
+  import Axis from "./Axis.svelte";
   import Contour from "./Contour.svelte";
   import HrrrMap from "./HrrrMap.svelte";
   import Loading from "./Loading.svelte";
@@ -63,10 +62,8 @@
     <div class="chart" bind:offsetWidth={width} bind:offsetHeight={height}>
       <svg class="x-section" viewBox="0 0 {width} {height}">
         <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
-        <g class="axis">
-          <AxisLeft scale={yScale} />
-        </g>
-        <AxisBottom scale={xScale} transform="translate(0, {height})" />
+        <Axis orientation="right" scale={yScale} />
+        <Axis orientation="top" scale={xScale} transform="translate(0, {height})" />
       </svg>
     </div>
 
@@ -106,6 +103,7 @@
 
   .chart {
     height: 100%;
+    z-index: 0;
   }
 
   .map {
@@ -113,6 +111,7 @@
     border: 1px solid var(--fg-color, black);
     aspect-ratio: 1 / 1;
     justify-self: end;
+    z-index: 1;
   }
 
   .axis-title {

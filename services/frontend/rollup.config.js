@@ -5,6 +5,8 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
+import { sass } from 'svelte-preprocess-sass';
+import * as path from 'path';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -39,6 +41,14 @@ export default {
 	},
 	plugins: [
 		svelte({
+			preprocess: {
+				style: sass({
+					includePaths: [
+						path.join(__dirname, 'src', 'styles'),
+						path.join(__dirname, 'node_modules', 'uswds', 'dist', 'scss'),
+					],
+				}),
+			},
 			compilerOptions: {
 				// enable run-time checks when not in production
 				dev: !production
