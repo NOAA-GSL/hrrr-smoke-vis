@@ -93,7 +93,9 @@ def vertical():
     try:
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        contour = ax.contourf(dataset.longitude, dataset.latitude, dataset.massden)
+        contour = ax.contourf(
+            dataset.longitude, dataset.latitude, dataset.massden * 1e9,
+        )
     except Exception as e:
         current_app.logger.exception("Failed to generate Matplotlib contours")
         raise e
