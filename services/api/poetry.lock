@@ -132,6 +132,28 @@ unicode = ["unicodedata2 (>=13.0.0)"]
 woff = ["zopfli (>=0.1.4)", "brotlicffi (>=0.8.0)", "brotli (>=1.0.1)"]
 
 [[package]]
+name = "geojson"
+version = "2.5.0"
+description = "Python bindings and utilities for GeoJSON"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "geojsoncontour"
+version = "0.4.0"
+description = "Convert matplotlib contour plots to geojson"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+geojson = "*"
+matplotlib = "*"
+numpy = "*"
+xarray = "*"
+
+[[package]]
 name = "idna"
 version = "3.3"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -572,7 +594,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "db4e2fb15ce0143016060591efe9616db8fd8b48b365aadf160605cd1989b460"
+content-hash = "9c381984e07f7cb56068d50e129523cd9d643f1e0ca85a13d52889156a02fb1e"
 
 [metadata.files]
 appdirs = [
@@ -616,6 +638,14 @@ flask = [
 fonttools = [
     {file = "fonttools-4.28.3-py3-none-any.whl", hash = "sha256:ca6ecc67e5a5620d31754f92147f22f48fd5461fd3fafe6afe031aa9ee079b0f"},
     {file = "fonttools-4.28.3.zip", hash = "sha256:edb48922873d3fda489ab400bd40888ac239ae8070b53f494b839bcdff0d01f6"},
+]
+geojson = [
+    {file = "geojson-2.5.0-py2.py3-none-any.whl", hash = "sha256:ccbd13368dd728f4e4f13ffe6aaf725b6e802c692ba0dde628be475040c534ba"},
+    {file = "geojson-2.5.0.tar.gz", hash = "sha256:6e4bb7ace4226a45d9c8c8b1348b3fc43540658359f93c3f7e03efa9f15f658a"},
+]
+geojsoncontour = [
+    {file = "geojsoncontour-0.4.0-py3-none-any.whl", hash = "sha256:a799c34d84e18d9fb1dc195dee41bf213693a0509c4635a6c6efe863916155ed"},
+    {file = "geojsoncontour-0.4.0.tar.gz", hash = "sha256:a344ec28baa1efd695b10da2972e91e5528265500dc9b29e2d1adab9cf1ea349"},
 ]
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
