@@ -83,6 +83,12 @@ def vertical():
     valid_time = int(request.args["validTime"])
     current_app.logger.debug(f"validTime: {valid_time}")
 
+    levels = list(map(int, request.args["levels"].split(",")))
+    current_app.logger.debug(f"levels: {levels}")
+
+    colors = list(request.args["colors"].split(","))
+    current_app.logger.debug(f"colors: {colors}")
+
     dataset = xr.open_zarr(
         f"{current_app.config.forecasts_array}/{run_hour.strftime('%Y%j%H%M%S')}"
     )
@@ -95,6 +101,7 @@ def vertical():
         ax = fig.add_subplot(111)
         contour = ax.contourf(
             dataset.longitude, dataset.latitude, dataset.massden * 1e9,
+            levels=levels, colors=colors,
         )
     except Exception as e:
         current_app.logger.exception("Failed to generate Matplotlib contours")
