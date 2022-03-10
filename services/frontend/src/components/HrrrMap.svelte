@@ -12,34 +12,16 @@
   import { afterUpdate } from "svelte";
 
   export let data;
+  let smoke;
   let width = 0;
   let height = 0;
 
   let canvas;
   let pathCanvas;
-  let smoke;
-  let columns = 0;
-  let rows = 0;
-  let latitude;
-  let longitude;
   let startPoint = null;
 
   $: counties = $borders?.counties;
   $: states = $borders?.states;
-
-  $: data.then(function (data) {
-    if (data === null) return;
-    const contourGenerator = contours()
-      .size([data.columns, data.rows])
-      .thresholds($thresholds);
-
-    smoke = contourGenerator(data.massden)
-      .filter((multiPolygon) => multiPolygon.value > 0);
-    columns = data.columns;
-    rows = data.rows;
-    longitude = data.longitude;
-    latitude = data.latitude;
-  });
 
   $: xsectionPath = $path ? {
     type: "LineString",
@@ -56,11 +38,16 @@
     )
     : null;
 
+  $: data.then(function (d) {
+    smoke = d;
+  });
+
   $: {
     // Redraw the map whenever the smoke data or the projection change.
     // Other changes that should trigger a redraw are handled by
     // afterUpdate, because they should affect DOM.
     smoke;
+    projection;
     draw();
   }
 
@@ -116,31 +103,13 @@
       context.restore();
     }
 
-    if (smoke) {
-      const smokePath = geoPath(geoTransform({
-        point: function (x, y) {
-          const i = Math.max(0, Math.min(columns, Math.floor(x)));
-          const j = Math.max(0, Math.min(rows, Math.floor(y)));
-
-          if (i >= columns || j >= rows) return;
-
-          const [px, py] = projection([
-            longitude[j][i],
-            latitude[j][i],
-          ]);
-
-          if ([px, py].every(isFinite)) {
-            this.stream.point(px, py);
-          }
-        },
-      }), context);
-
+    if (smoke?.features) {
       context.save();
-      context.globalAlpha = 0.8;
-      smoke.forEach(function (d) {
-        context.fillStyle = $smokeScale(d.value);
+      context.globalAlpha = 0.2;
+      smoke.features.forEach(function (feature) {
+        context.fillStyle = feature.properties.fill;
         context.beginPath();
-        smokePath(d);
+        p(feature);
         context.fill();
       });
       context.restore();
