@@ -8,7 +8,7 @@
   import Loading from "./Loading.svelte";
 
   import { contours } from "d3-contour";
-  import { geoPath, geoAlbers, geoCircle, geoStream, geoTransform } from "d3-geo";
+  import { geoPath, geoAlbers, geoCircle, geoTransform } from "d3-geo";
   import { afterUpdate } from "svelte";
 
   export let data;
