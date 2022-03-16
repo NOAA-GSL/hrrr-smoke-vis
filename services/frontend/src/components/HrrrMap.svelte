@@ -103,6 +103,20 @@
 
     const style = getComputedStyle(canvas);
 
+    context.save();
+    context.globalAlpha = 1;
+
+    if (smoke?.features) {
+      smoke.features.forEach(function (feature) {
+        context.fillStyle = feature.properties.fill;
+        context.beginPath();
+        p(feature);
+        context.fill();
+      });
+    }
+
+    context.restore();
+
     if (counties) {
       context.strokeStyle = style.getPropertyValue("--county-border-color");
       context.lineWidth = +style.getPropertyValue("--county-border-width");
@@ -120,18 +134,6 @@
       context.beginPath();
       p(states);
       context.stroke();
-      context.restore();
-    }
-
-    if (smoke?.features) {
-      context.save();
-      context.globalAlpha = 0.2;
-      smoke.features.forEach(function (feature) {
-        context.fillStyle = feature.properties.fill;
-        context.beginPath();
-        p(feature);
-        context.fill();
-      });
       context.restore();
     }
 
@@ -266,8 +268,8 @@
   }
 
   .hrrr-map {
-    --county-border-color: #{uswds.color("base-light")};
-    --county-border-width: 1;
+    --county-border-color: #{uswds.color("base-lighter")};
+    --county-border-width: 0.5;
     --state-border-color: #{uswds.color("base")};
     --state-border-width: 1;
     --path-color: #{uswds.color("ink")};
