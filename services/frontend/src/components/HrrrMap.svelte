@@ -79,7 +79,27 @@
 
     context.clearRect(0, 0, width, height);
 
-    const p = geoPath(projection, context);
+    // Use a geoTransform here instead of our geoAlbers projection because
+    // there is something wrong with the GeoJSON coming from the backend that
+    // causes D3 to just draw a polygon over the entire earth for all layers in
+    // the contour plot. I have a suspicion that geoTransform doesn't perform
+    // any clipping the way the projections do, and that whatever is unusual
+    // about the GoeJSON is throwing off the clipping calculations, which is
+    // why geoTransform works and projections don't. d3.geoBounds reports
+    // [[-180, -90], [180, 90]] for the smoke object, which is incorrect,
+    // because the HRRR data extends only a little ways beyond CONUS, so the
+    // bounds should be similar to the bounds of the state object:
+    // [[-124.848974, 24.396307999999998],
+    // [-66.88544399999999, 49.37948101090466]].
+    const p = geoPath(
+      geoTransform({
+        point: function (x, y) {
+          const [px, py] = projection([x, y]);
+          this.stream.point(px, py);
+        },
+      }),
+      context
+    );
 
     const style = getComputedStyle(canvas);
 
