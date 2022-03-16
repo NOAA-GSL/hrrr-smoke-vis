@@ -8,38 +8,20 @@
   import Loading from "./Loading.svelte";
 
   import { contours } from "d3-contour";
-  import { geoPath, geoAlbers, geoCircle, geoStream, geoTransform } from "d3-geo";
+  import { geoPath, geoAlbers, geoCircle, geoTransform } from "d3-geo";
   import { afterUpdate } from "svelte";
 
   export let data;
+  let smoke;
   let width = 0;
   let height = 0;
 
   let canvas;
   let pathCanvas;
-  let smoke;
-  let columns = 0;
-  let rows = 0;
-  let latitude;
-  let longitude;
   let startPoint = null;
 
   $: counties = $borders?.counties;
   $: states = $borders?.states;
-
-  $: data.then(function (data) {
-    if (data === null) return;
-    const contourGenerator = contours()
-      .size([data.columns, data.rows])
-      .thresholds($thresholds);
-
-    smoke = contourGenerator(data.massden)
-      .filter((multiPolygon) => multiPolygon.value > 0);
-    columns = data.columns;
-    rows = data.rows;
-    longitude = data.longitude;
-    latitude = data.latitude;
-  });
 
   $: xsectionPath = $path ? {
     type: "LineString",
@@ -56,11 +38,16 @@
     )
     : null;
 
+  $: data.then(function (d) {
+    smoke = d;
+  });
+
   $: {
     // Redraw the map whenever the smoke data or the projection change.
     // Other changes that should trigger a redraw are handled by
     // afterUpdate, because they should affect DOM.
     smoke;
+    projection;
     draw();
   }
 
@@ -92,9 +79,43 @@
 
     context.clearRect(0, 0, width, height);
 
-    const p = geoPath(projection, context);
+    // Use a geoTransform here instead of our geoAlbers projection because
+    // there is something wrong with the GeoJSON coming from the backend that
+    // causes D3 to just draw a polygon over the entire earth for all layers in
+    // the contour plot. I have a suspicion that geoTransform doesn't perform
+    // any clipping the way the projections do, and that whatever is unusual
+    // about the GoeJSON is throwing off the clipping calculations, which is
+    // why geoTransform works and projections don't. d3.geoBounds reports
+    // [[-180, -90], [180, 90]] for the smoke object, which is incorrect,
+    // because the HRRR data extends only a little ways beyond CONUS, so the
+    // bounds should be similar to the bounds of the state object:
+    // [[-124.848974, 24.396307999999998],
+    // [-66.88544399999999, 49.37948101090466]].
+    const p = geoPath(
+      geoTransform({
+        point: function (x, y) {
+          const [px, py] = projection([x, y]);
+          this.stream.point(px, py);
+        },
+      }),
+      context
+    );
 
     const style = getComputedStyle(canvas);
+
+    context.save();
+    context.globalAlpha = 1;
+
+    if (smoke?.features) {
+      smoke.features.forEach(function (feature) {
+        context.fillStyle = feature.properties.fill;
+        context.beginPath();
+        p(feature);
+        context.fill();
+      });
+    }
+
+    context.restore();
 
     if (counties) {
       context.strokeStyle = style.getPropertyValue("--county-border-color");
@@ -113,36 +134,6 @@
       context.beginPath();
       p(states);
       context.stroke();
-      context.restore();
-    }
-
-    if (smoke) {
-      const smokePath = geoPath(geoTransform({
-        point: function (x, y) {
-          const i = Math.max(0, Math.min(columns, Math.floor(x)));
-          const j = Math.max(0, Math.min(rows, Math.floor(y)));
-
-          if (i >= columns || j >= rows) return;
-
-          const [px, py] = projection([
-            longitude[j][i],
-            latitude[j][i],
-          ]);
-
-          if ([px, py].every(isFinite)) {
-            this.stream.point(px, py);
-          }
-        },
-      }), context);
-
-      context.save();
-      context.globalAlpha = 0.8;
-      smoke.forEach(function (d) {
-        context.fillStyle = $smokeScale(d.value);
-        context.beginPath();
-        smokePath(d);
-        context.fill();
-      });
       context.restore();
     }
 
@@ -277,8 +268,8 @@
   }
 
   .hrrr-map {
-    --county-border-color: #{uswds.color("base-light")};
-    --county-border-width: 1;
+    --county-border-color: #{uswds.color("base-lighter")};
+    --county-border-width: 0.5;
     --state-border-color: #{uswds.color("base")};
     --state-border-width: 1;
     --path-color: #{uswds.color("ink")};

@@ -7,6 +7,7 @@ authors = ["W. Evan Sheehan <evan.sheehan@noaa.gov>"]
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
 flask = "*"
+geojsoncontour = "^0.4.0"
 MetPy = "1.1.0"
 numpy = "^1.21.4"
 pyproj = "^3.2.1"

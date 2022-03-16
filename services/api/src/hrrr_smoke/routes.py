@@ -6,6 +6,8 @@ from flask import Blueprint, current_app, jsonify, request
 from metpy.interpolate import cross_section, log_interpolate_1d
 from metpy.units import units
 from pyproj import Geod
+import geojsoncontour
+import matplotlib.pyplot as plt
 import metpy.calc
 import numpy as np
 import xarray as xr
@@ -81,6 +83,12 @@ def vertical():
     valid_time = int(request.args["validTime"])
     current_app.logger.debug(f"validTime: {valid_time}")
 
+    levels = list(map(int, request.args["levels"].split(",")))
+    current_app.logger.debug(f"levels: {levels}")
+
+    colors = list(request.args["colors"].split(","))
+    current_app.logger.debug(f"colors: {colors}")
+
     dataset = xr.open_zarr(
         f"{current_app.config.forecasts_array}/{run_hour.strftime('%Y%j%H%M%S')}"
     )
@@ -88,14 +96,24 @@ def vertical():
 
     current_app.logger.debug(f"dataset: {dataset}")
 
-    rows, columns = dataset.colmd.shape
-    return jsonify(
-        columns=columns,
-        latitude=sanitize(dataset.latitude).tolist(),
-        longitude=sanitize(dataset.longitude).tolist(),
-        massden=np.ravel(sanitize(dataset.massden) * 1e9).tolist(),
-        rows=rows,
-    )
+    try:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        contour = ax.contourf(
+            dataset.longitude, dataset.latitude, dataset.massden * 1e9,
+            levels=levels, colors=colors,
+        )
+    except Exception as e:
+        current_app.logger.exception("Failed to generate Matplotlib contours")
+        raise e
+
+    current_app.logger.debug(f"contour: {contour}")
+
+    try:
+        return geojsoncontour.contourf_to_geojson(contour)
+    except Exception as e:
+        current_app.logger.exception("Failed to generate GeoJSON from Matplotlib Contours")
+        raise e
 
 
 @bp.route("/xsection/")

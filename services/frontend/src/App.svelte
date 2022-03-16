@@ -1,6 +1,6 @@
 <script>
   import * as api from "./api.js";
-  import { runHour, validTime, path } from "./stores.js";
+  import { runHour, validTime, path, smokeScale, thresholds } from "./stores.js";
   import Footer from "./components/Footer.svelte";
   import Header from "./components/Header.svelte";
   import HrrrControls from "./components/HrrrControls.svelte";
@@ -23,7 +23,7 @@
   $: ready = $runHour !== null && $validTime !== null;
   $: verticallyIntegratedSmoke = !ready
     ? Promise.resolve(null)
-    : api.vertical($runHour, $validTime)
+    : api.vertical($runHour, $validTime, $thresholds, $smokeScale.range())
 
   $: {
     // Initialize the state from our stores
