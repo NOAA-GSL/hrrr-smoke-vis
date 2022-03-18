@@ -62,10 +62,11 @@
   <Dropdown id="forecast-hour" label="Forecast Hour" options={forecastHours} bind:selected={$validTime} />
 
   <h2>Cross-section Path</h2>
+  <p><small>Click anywhere on the map to define a path, or enter the coordinates here.</small></p>
   <CoordinateInput id="start" label="Start" coordinate={start} />
   <CoordinateInput id="end" label="End" coordinate={end} />
   <div class="switcher">
-    <button class="usa-button" disabled={$path === null} on:click={reset}>Clear Path</button>
+    <button class="usa-button usa-button--outline usa-button--inverse" disabled={$path === null} on:click={reset}>Clear Path</button>
     <button class="usa-button" on:click={update}>Get Cross-section</button>
   </div>
 </section>

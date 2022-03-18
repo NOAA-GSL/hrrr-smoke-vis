@@ -27,7 +27,7 @@
 .spinner::before {
   content: '';
   display: block;
-  background-color: var(--bg-color);
+  background-color: var(--surface-3);
   opacity: 0.6;
   grid-area: stack;
   z-index: 0;
