@@ -1,6 +1,6 @@
 /** @module stores */
 import { scaleThreshold } from "d3-scale";
-import { interpolateOrRd } from "d3-scale-chromatic";
+import { interpolateMagma } from "d3-scale-chromatic";
 import { derived, readable, writable } from "svelte/store";
 import { mesh } from "topojson-client";
 import * as api from "./api.js";
@@ -54,12 +54,12 @@ export const smokeScale = derived(
   thresholds,
   ($thresholds, set) => {
     const colors = $thresholds.map((_, idx, arr) => {
-      return interpolateOrRd((idx + 1) / arr.length);
+      return interpolateMagma((idx + 1) / arr.length);
     });
 
     // Add one additional color because we need n+1 values in the output range
     // for a threshold scale.
-    set(scaleThreshold($thresholds, [interpolateOrRd(0), ...colors]));
+    set(scaleThreshold($thresholds, [interpolateMagma(0), ...colors]));
   }
 );
 
