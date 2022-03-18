@@ -68,7 +68,7 @@
     </div>
 
     <div class="map">
-      <HrrrMap data={mapData} />
+      <HrrrMap data={mapData} showCounties=true />
     </div>
 
     <small class="axis-title left">Pressure (mb, from Standard Atmosphere)</small>

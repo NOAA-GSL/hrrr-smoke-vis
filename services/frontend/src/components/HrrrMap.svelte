@@ -12,6 +12,8 @@
   import { afterUpdate } from "svelte";
 
   export let data;
+  export let showCounties = false;
+
   let smoke;
   let width = 0;
   let height = 0;
@@ -117,7 +119,7 @@
 
     context.restore();
 
-    if (counties) {
+    if (showCounties && counties) {
       context.strokeStyle = style.getPropertyValue("--county-border-color");
       context.lineWidth = +style.getPropertyValue("--county-border-width");
 
