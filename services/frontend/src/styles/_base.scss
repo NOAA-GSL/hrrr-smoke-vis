@@ -1,14 +1,23 @@
 @use "./uswds";
 
-html {
-  --bg-color: #{uswds.color("white")};
-  --fg-color: #{uswds.color("ink")};
+:root {
+  --text-1: #{uswds.color("white")};
+  --text-2: #{uswds.color("base-lightest")};
+  --text-3: #{uswds.color("base-lighter")};
 
-  background-color: var(--bg-color);
+  --surface-1: #{uswds.color("base-dark")};
+  --surface-2: #{uswds.color("base-darker")};
+  --surface-3: #{uswds.color("base-darkest")};
+
+  color-scheme: dark;
+}
+
+html {
+  background-color: var(--surface-3);
 
   font-family: uswds.family("ui");
   line-height: 1.5;
-  color: var(--fg-color);
+  color: var(--text-1);
 }
 
 body {
@@ -35,9 +44,9 @@ body {
     padding-top: uswds.units(2);
     padding-bottom: uswds.units(2);
 
-    background-color: uswds.color("primary-darker");
+    background-color: var(--surface-2);
     line-height: uswds.line-height("ui", 1);
-    color: uswds.color("base-lightest");
+    color: var(--text-2);
 
     h1 {
       font-size: inherit;
@@ -54,7 +63,7 @@ body {
       line-height: uswds.line-height("ui", 1);
       letter-spacing: 0.03em;
       text-transform: uppercase;
-      color: uswds.color("base-light");
+      color: var(--text-3);
     }
   }
 
@@ -125,8 +134,8 @@ button {
   grid-area: controls;
   padding-block: uswds.units(2);
   overflow-y: auto;
-  background-color: uswds.color("primary-darker");
-  color: uswds.color("base-lightest");
+  background-color: var(--surface-2);
+  color: var(--text-2);
 }
 
 .main {
@@ -140,18 +149,7 @@ button {
 .tick-label {
   font-size: uswds.size("ui", "3xs");
   line-height: uswds.line-height("ui", 1);
-  color: uswds.color("base-dark");
-}
-
-@media screen and (prefers-color-scheme: dark) {
-  html {
-    --bg-color: #{uswds.color("primary-darker")};
-    --fg-color: #{uswds.color("base-lightest")};
-  }
-
-  body > header {
-    border-bottom: uswds.units(1px) solid uswds.color("base");
-  }
+  color: var(--text-1);
 }
 
 @media screen and (min-height: #{uswds.units("tablet")}) and (min-aspect-ratio: 4/3) {

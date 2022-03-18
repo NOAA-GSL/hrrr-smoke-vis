@@ -108,7 +108,7 @@
 
   .map {
     width: 25%;
-    border: 1px solid var(--fg-color, black);
+    border: 1px solid var(--text-1);
     aspect-ratio: 1 / 1;
     justify-self: end;
     z-index: 1;

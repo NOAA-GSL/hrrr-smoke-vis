@@ -268,13 +268,13 @@
   }
 
   .hrrr-map {
-    --county-border-color: #{uswds.color("base-lighter")};
+    --county-border-color: var(--surface-2);
     --county-border-width: 0.5;
-    --state-border-color: #{uswds.color("base")};
+    --state-border-color: var(--surface-2);
     --state-border-width: 1;
-    --path-color: #{uswds.color("ink")};
+    --path-color: var(--text-1);
     --path-width: 2;
 
-    background-color: var(--bg-color);
+    background-color: var(--surface-3);
   }
 </style>

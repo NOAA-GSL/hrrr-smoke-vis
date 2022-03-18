@@ -36,11 +36,11 @@
 
 <style lang="scss">
   line {
-    stroke: var(--fg-color);
+    stroke: var(--text-1);
   }
 
   text {
-    fill: var(--fg-color);
+    fill: var(--text-1);
 
     &[x] {
       dominant-baseline: middle;
