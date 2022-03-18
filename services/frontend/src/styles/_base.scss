@@ -84,6 +84,14 @@ select {
   --space: #{uswds.units(2px)};
 }
 
+input {
+  /* USWDS isn't set up for dark mode, apparently, so to ensure that the values
+   * of the inputs are legible, we have to set a foreground and background color.
+   */
+  background-color: var(--text-1);
+  color: var(--surface-3);
+}
+
 :focus {
   outline: 2px solid #{uswds.color("primary")};
   outline-offset: #{uswds.units(0.5)};

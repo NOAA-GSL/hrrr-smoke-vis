@@ -10,11 +10,11 @@
   <legend>{label}</legend>
 
   <FormGroup id="{id}-longitude" label="Longitude" labelClass="uppercase">
-    <input id="{id}-longitude" type="number" bind:value={coordinate.lng}>
+    <input id="{id}-longitude" class="usa-input" type="number" bind:value={coordinate.lng}>
   </FormGroup>
 
   <FormGroup id="{id}-latitude" label="Latitude" labelClass="uppercase">
-    <input id="{id}-latitude" type="number" bind:value={coordinate.lat}>
+    <input id="{id}-latitude" class="usa-input" type="number" bind:value={coordinate.lat}>
   </FormGroup>
 </fieldset>
 
