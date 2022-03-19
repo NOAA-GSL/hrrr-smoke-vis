@@ -77,12 +77,6 @@
 </Loading>
 
 <style>
-  .wrapper {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
   .container {
     display: grid;
     grid-template-columns: min-content 1fr min-content;
