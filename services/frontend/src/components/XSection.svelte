@@ -31,6 +31,15 @@
   let xScale = scaleLinear();
   let yScale = scaleLinear();
   let contourPath;
+  let chartMargin = {
+    top: 24,
+    right: 24,
+    bottom: 32,
+    left: 32,
+  };
+
+  $: chartWidth = Math.max(width - chartMargin.left - chartMargin.right, 0);
+  $: chartHeight = Math.max(height - chartMargin.top - chartMargin.bottom, 0);
 
   $: ready = $runHour !== null && $validTime !== null && $path !== null;
   $: data = ready ? api.xsection({
@@ -48,8 +57,8 @@
   });
 
   $: smoke = contours().size([columns, rows]).thresholds($thresholds)(massden);
-  $: xScale = scaleLinear().domain([0, columns]).range([0, width]);
-  $: yScale = scaleLinear().domain([0, rows]).range([height, 0]);
+  $: xScale = scaleLinear().domain([0, columns]).range([0, chartWidth]);
+  $: yScale = scaleLinear().domain([0, rows]).range([chartHeight, 0]);
   $: contourPath = geoPath(geoTransform({
     point: function (x, y) {
       this.stream.point(xScale(x), yScale(y));
@@ -61,9 +70,11 @@
   <div class="container">
     <div class="chart" bind:offsetWidth={width} bind:offsetHeight={height}>
       <svg class="x-section" viewBox="0 0 {width} {height}">
-        <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
-        <Axis orientation="right" scale={yScale} />
-        <Axis orientation="top" scale={xScale} transform="translate(0, {height})" />
+        <g transform="translate({chartMargin.left}, {chartMargin.top})">
+          <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
+        </g>
+        <Axis orientation="left" scale={yScale} transform="translate({chartMargin.left}, {chartMargin.top})" />
+        <Axis orientation="bottom" scale={xScale} transform="translate({chartMargin.left}, {chartHeight + chartMargin.top})" />
       </svg>
     </div>
 
