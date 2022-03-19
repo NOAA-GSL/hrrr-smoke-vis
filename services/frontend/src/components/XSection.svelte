@@ -14,6 +14,7 @@
 
   import {
     contours,
+    extent,
     format,
     geoPath,
     geoTransform,
@@ -29,6 +30,7 @@
   let columns = 0;
   let rows = 0;
   let distance = 0;
+  let isobaricPressure = [];
   let massden = [];
   let xScale = scaleLinear();
   let yScale = scaleLinear();
@@ -37,7 +39,7 @@
     top: 24,
     right: 24,
     bottom: 32,
-    left: 32,
+    left: 64,
   };
 
   $: chartWidth = Math.max(width - chartMargin.left - chartMargin.right, 0);
@@ -55,6 +57,7 @@
 
     columns = xsection.columns;
     rows = xsection.rows;
+    isobaricPressure = xsection.isobaricPressure;
 
     // Convert distnace from meters to kilometers
     distance = xsection.distance / 1000;
@@ -66,6 +69,7 @@
   $: xScale = scaleLinear().domain([0, columns]).range([0, chartWidth]);
   $: yScale = scaleLinear().domain([0, rows]).range([chartHeight, 0]);
   $: distanceScale = scaleLinear().domain([0, distance]).range([0, chartWidth]);
+  $: pressureScale = scaleLinear().domain(extent(isobaricPressure)).range([chartHeight, 0]);
   $: contourPath = geoPath(geoTransform({
     point: function (x, y) {
       this.stream.point(xScale(x), yScale(y));
@@ -80,7 +84,7 @@
         <g transform="translate({chartMargin.left}, {chartMargin.top})">
           <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
         </g>
-        <Axis orientation="left" scale={yScale} transform="translate({chartMargin.left}, {chartMargin.top})" />
+        <Axis orientation="left" scale={pressureScale} transform="translate({chartMargin.left}, {chartMargin.top})" />
         <Axis orientation="bottom" scale={distanceScale} transform="translate({chartMargin.left}, {chartHeight + chartMargin.top})"
               format={format(",d")} />
       </svg>
