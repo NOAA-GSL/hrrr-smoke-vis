@@ -14,6 +14,7 @@
 
   import {
     contours,
+    format,
     geoPath,
     geoTransform,
     scaleLinear,
@@ -80,7 +81,8 @@
           <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
         </g>
         <Axis orientation="left" scale={yScale} transform="translate({chartMargin.left}, {chartMargin.top})" />
-        <Axis orientation="bottom" scale={distanceScale} transform="translate({chartMargin.left}, {chartHeight + chartMargin.top})" />
+        <Axis orientation="bottom" scale={distanceScale} transform="translate({chartMargin.left}, {chartHeight + chartMargin.top})"
+              format={format(",d")} />
       </svg>
     </div>
 
