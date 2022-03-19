@@ -4,6 +4,7 @@
   export let orientation = "bottom";
   export let tickLength = 8;
   export let tickPadding = 4;
+  export let format = (tick) => tick;
 
   $: isHorizontal = (["top", "bottom"].includes(orientation));
   $: tickEnd = (["top", "left"].includes(orientation))
@@ -12,6 +13,8 @@
   $: labelPos = (["top", "left"].includes(orientation))
     ? (tickLength + tickPadding) * -1
     : (tickLength + tickPadding);
+  $: labelAnchor = orientation === "left" ? "end" : "start";
+  $: labelBaseline = orientation === "bottom" ? "hanging" : "auto";
 
   function tickTransform(tick) {
     return isHorizontal
@@ -25,10 +28,10 @@
     <g class="tick" transform="{tickTransform(tick)}">
       {#if isHorizontal}
         <line y2="{tickEnd}" />
-        <text y="{labelPos}">{tick}</text>
+        <text y="{labelPos}" dominant-baseline={labelBaseline}>{format(tick)}</text>
       {:else}
         <line x2="{tickEnd}" />
-        <text x="{labelPos}">{tick}</text>
+        <text x="{labelPos}" text-anchor={labelAnchor}>{format(tick)}</text>
       {/if}
     </g>
   {/each}

@@ -14,6 +14,8 @@
 
   import {
     contours,
+    extent,
+    format,
     geoPath,
     geoTransform,
     scaleLinear,
@@ -27,10 +29,21 @@
 
   let columns = 0;
   let rows = 0;
+  let distance = 0;
+  let isobaricPressure = [];
   let massden = [];
   let xScale = scaleLinear();
   let yScale = scaleLinear();
   let contourPath;
+  let chartMargin = {
+    top: 24,
+    right: 24,
+    bottom: 32,
+    left: 64,
+  };
+
+  $: chartWidth = Math.max(width - chartMargin.left - chartMargin.right, 0);
+  $: chartHeight = Math.max(height - chartMargin.top - chartMargin.bottom, 0);
 
   $: ready = $runHour !== null && $validTime !== null && $path !== null;
   $: data = ready ? api.xsection({
@@ -44,12 +57,19 @@
 
     columns = xsection.columns;
     rows = xsection.rows;
+    isobaricPressure = xsection.isobaricPressure;
+
+    // Convert distnace from meters to kilometers
+    distance = xsection.distance / 1000;
+
     massden = xsection.massden;
   });
 
   $: smoke = contours().size([columns, rows]).thresholds($thresholds)(massden);
-  $: xScale = scaleLinear().domain([0, columns]).range([0, width]);
-  $: yScale = scaleLinear().domain([0, rows]).range([height, 0]);
+  $: xScale = scaleLinear().domain([0, columns]).range([0, chartWidth]);
+  $: yScale = scaleLinear().domain([0, rows]).range([chartHeight, 0]);
+  $: distanceScale = scaleLinear().domain([0, distance]).range([0, chartWidth]);
+  $: pressureScale = scaleLinear().domain(extent(isobaricPressure)).range([chartHeight, 0]);
   $: contourPath = geoPath(geoTransform({
     point: function (x, y) {
       this.stream.point(xScale(x), yScale(y));
@@ -61,9 +81,12 @@
   <div class="container">
     <div class="chart" bind:offsetWidth={width} bind:offsetHeight={height}>
       <svg class="x-section" viewBox="0 0 {width} {height}">
-        <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
-        <Axis orientation="right" scale={yScale} />
-        <Axis orientation="top" scale={xScale} transform="translate(0, {height})" />
+        <g transform="translate({chartMargin.left}, {chartMargin.top})">
+          <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
+        </g>
+        <Axis orientation="left" scale={pressureScale} transform="translate({chartMargin.left}, {chartMargin.top})" />
+        <Axis orientation="bottom" scale={distanceScale} transform="translate({chartMargin.left}, {chartHeight + chartMargin.top})"
+              format={format(",d")} />
       </svg>
     </div>
 
@@ -77,12 +100,6 @@
 </Loading>
 
 <style>
-  .wrapper {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
   .container {
     display: grid;
     grid-template-columns: min-content 1fr min-content;
