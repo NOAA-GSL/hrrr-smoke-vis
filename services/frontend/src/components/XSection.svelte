@@ -27,6 +27,7 @@
 
   let columns = 0;
   let rows = 0;
+  let distance = 0;
   let massden = [];
   let xScale = scaleLinear();
   let yScale = scaleLinear();
@@ -53,12 +54,17 @@
 
     columns = xsection.columns;
     rows = xsection.rows;
+
+    // Convert distnace from meters to kilometers
+    distance = xsection.distance / 1000;
+
     massden = xsection.massden;
   });
 
   $: smoke = contours().size([columns, rows]).thresholds($thresholds)(massden);
   $: xScale = scaleLinear().domain([0, columns]).range([0, chartWidth]);
   $: yScale = scaleLinear().domain([0, rows]).range([chartHeight, 0]);
+  $: distanceScale = scaleLinear().domain([0, distance]).range([0, chartWidth]);
   $: contourPath = geoPath(geoTransform({
     point: function (x, y) {
       this.stream.point(xScale(x), yScale(y));
@@ -74,7 +80,7 @@
           <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
         </g>
         <Axis orientation="left" scale={yScale} transform="translate({chartMargin.left}, {chartMargin.top})" />
-        <Axis orientation="bottom" scale={xScale} transform="translate({chartMargin.left}, {chartHeight + chartMargin.top})" />
+        <Axis orientation="bottom" scale={distanceScale} transform="translate({chartMargin.left}, {chartHeight + chartMargin.top})" />
       </svg>
     </div>
 
