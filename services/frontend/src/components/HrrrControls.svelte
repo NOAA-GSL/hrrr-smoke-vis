@@ -15,6 +15,9 @@
   let forecasts = [];
 
   $: forecastHours = forecasts.find(({ value }) => value === $runHour)?.validTimes;
+  $: if ($path) {
+    startError = endError = "";
+  }
 
   onMount(async function () {
     forecasts = await api.forecasts()
