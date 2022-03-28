@@ -89,7 +89,7 @@
 <svelte:window on:popstate={handlePopState} />
 
 <Header />
-<HrrrControls {start} {end} />
+<HrrrControls startLng={start.lng} startLat={start.lat} endLng={end.lng} endLat={end.lat} />
 <div class="main stack">
   {#if $path}
     <XSection mapData={verticallyIntegratedSmoke} />

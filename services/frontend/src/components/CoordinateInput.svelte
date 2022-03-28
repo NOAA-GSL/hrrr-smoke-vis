@@ -4,7 +4,8 @@
   export let id;
   export let label;
   export let err;
-  export let coordinate = { "lat": null, "lng": null };
+  export let lat;
+  export let lng;
 
   $: errId = `${id}-error-message`;
   $: attrs = err ? { "aria-describedby": errId } : {};
@@ -17,11 +18,11 @@
     <p id={errId} class="usa-error-message">{err}</p>
   {/if}
   <FormGroup id="{id}-longitude" label="Longitude" labelClass="uppercase">
-    <input id="{id}-longitude" class="usa-input" type="number" bind:value={coordinate.lng}>
+    <input id="{id}-longitude" class="usa-input" type="number" bind:value={lng}>
   </FormGroup>
 
   <FormGroup id="{id}-latitude" label="Latitude" labelClass="uppercase">
-    <input id="{id}-latitude" class="usa-input" type="number" bind:value={coordinate.lat}>
+    <input id="{id}-latitude" class="usa-input" type="number" bind:value={lat}>
   </FormGroup>
 </fieldset>
 
