@@ -37,6 +37,7 @@
 
   .usa-error-message {
     flex: 100% 0 0;
+    color: uswds.color("error-light");
   }
 
   :global(.coordinate-input > *) {
