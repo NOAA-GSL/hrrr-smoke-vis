@@ -10,6 +10,8 @@
   export let start = { "lat": null, "lng": null };
   export let end = { "lat": null, "lng": null };
 
+  let startError = "";
+  let endError = "";
   let forecasts = [];
 
   $: forecastHours = forecasts.find(({ value }) => value === $runHour)?.validTimes;
@@ -43,6 +45,11 @@
   });
 
   function update() {
+    startError = (start.lat && start.lng) ? "" : "Start coordinate is required";
+    endError = (end.lat && end.lng) ? "" : "End coordinate is required";
+
+    if (startError || endError) return;
+
     path.set({
       startLat: parseFloat(start.lat),
       startLng: parseFloat(start.lng),
@@ -52,6 +59,8 @@
   }
 
   function reset() {
+    startError = "";
+    endError = "";
     path.set(null);
   }
 </script>
@@ -63,8 +72,8 @@
 
   <h2>Cross-section Path</h2>
   <p><small>Click anywhere on the map to define a path, or enter the coordinates here.</small></p>
-  <CoordinateInput id="start" label="Start" coordinate={start} />
-  <CoordinateInput id="end" label="End" coordinate={end} />
+  <CoordinateInput id="start" label="Start" coordinate={start} err={startError} />
+  <CoordinateInput id="end" label="End" coordinate={end} err={endError} />
   <div class="switcher">
     <button class="usa-button usa-button--outline usa-button--inverse" disabled={$path === null} on:click={reset}>Clear Path</button>
     <button class="usa-button" on:click={update}>Get Cross-section</button>

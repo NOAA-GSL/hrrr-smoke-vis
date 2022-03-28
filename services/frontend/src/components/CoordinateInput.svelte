@@ -3,12 +3,19 @@
 
   export let id;
   export let label;
+  export let err;
   export let coordinate = { "lat": null, "lng": null };
+
+  $: errId = `${id}-error-message`;
+  $: attrs = err ? { "aria-describedby": errId } : {};
 </script>
 
-<fieldset {id} class="coordinate-input">
+<fieldset {id} class="coordinate-input" {...attrs} >
   <legend>{label}</legend>
 
+  {#if err}
+    <p id={errId} class="usa-error-message">{err}</p>
+  {/if}
   <FormGroup id="{id}-longitude" label="Longitude" labelClass="uppercase">
     <input id="{id}-longitude" class="usa-input" type="number" bind:value={coordinate.lng}>
   </FormGroup>
