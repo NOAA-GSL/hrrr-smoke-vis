@@ -7,12 +7,20 @@
   import CoordinateInput from "./CoordinateInput.svelte";
   import { Dropdown } from "./uswds";
 
-  export let start = { "lat": null, "lng": null };
-  export let end = { "lat": null, "lng": null };
+  export let startLat = null;
+  export let startLng = null;
+  export let endLat = null;
+  export let endLng = null;
 
+  let startError = "";
+  let endError = "";
   let forecasts = [];
 
   $: forecastHours = forecasts.find(({ value }) => value === $runHour)?.validTimes;
+  $: resetDisabled = ![startLat, startLng, endLat, endLng].some((c) => isFinite(parseFloat(c)));
+  $: if ($path) {
+    startError = endError = "";
+  }
 
   onMount(async function () {
     forecasts = await api.forecasts()
@@ -43,16 +51,27 @@
   });
 
   function update() {
+    startError = (startLat && startLng) ? "" : "Start coordinate is required";
+    endError = (endLat && endLng) ? "" : "End coordinate is required";
+
+    if (startError || endError) return;
+
     path.set({
-      startLat: parseFloat(start.lat),
-      startLng: parseFloat(start.lng),
-      endLat: parseFloat(end.lat),
-      endLng: parseFloat(end.lng),
+      startLat: parseFloat(startLat),
+      startLng: parseFloat(startLng),
+      endLat: parseFloat(endLat),
+      endLng: parseFloat(endLng),
     });
   }
 
   function reset() {
+    startError = "";
+    endError = "";
     path.set(null);
+    startLat = null;
+    startLng = null;
+    endLat = null;
+    endLng = null;
   }
 </script>
 
@@ -63,10 +82,10 @@
 
   <h2>Cross-section Path</h2>
   <p><small>Click anywhere on the map to define a path, or enter the coordinates here.</small></p>
-  <CoordinateInput id="start" label="Start" coordinate={start} />
-  <CoordinateInput id="end" label="End" coordinate={end} />
+  <CoordinateInput id="start" label="Start" bind:lat={startLat} bind:lng={startLng} err={startError} />
+  <CoordinateInput id="end" label="End" bind:lat={endLat} bind:lng={endLng} err={endError} />
   <div class="switcher">
-    <button class="usa-button usa-button--outline usa-button--inverse" disabled={$path === null} on:click={reset}>Clear Path</button>
+    <button class="usa-button usa-button--outline usa-button--inverse" disabled={resetDisabled} on:click={reset}>Clear Path</button>
     <button class="usa-button" on:click={update}>Get Cross-section</button>
   </div>
 </section>
