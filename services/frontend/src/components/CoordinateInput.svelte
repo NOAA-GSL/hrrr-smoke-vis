@@ -35,6 +35,10 @@
     gap: uswds.units(2);
   }
 
+  .usa-error-message {
+    flex: 100% 0 0;
+  }
+
   :global(.coordinate-input > *) {
     flex: 1 0 6ch;
     min-width: 6ch;
