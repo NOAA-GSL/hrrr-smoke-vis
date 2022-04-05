@@ -69,7 +69,7 @@
   $: xScale = scaleLinear().domain([0, columns]).range([0, chartWidth]);
   $: yScale = scaleLinear().domain([0, rows]).range([chartHeight, 0]);
   $: distanceScale = scaleLinear().domain([0, distance]).range([0, chartWidth]);
-  $: pressureScale = scaleLinear().domain(extent(isobaricPressure)).range([chartHeight, 0]);
+  $: pressureScale = scaleLinear().domain(extent(isobaricPressure)).range([0, chartHeight]);
   $: contourPath = geoPath(geoTransform({
     point: function (x, y) {
       this.stream.point(xScale(x), yScale(y));
