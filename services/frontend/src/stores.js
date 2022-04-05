@@ -43,7 +43,7 @@ export const validTime = writable(0);
  * @type {number[]}
  */
 export const thresholds = readable(
-  [0, 1, 4, 7, 11, 15, 20, 25, 30, 40, 50, 75, 150, 250, 500]
+  [0, 1, 2, 4, 6, 8, 12, 16, 20, 25, 30, 40, 100, 200]
 );
 
 /**
