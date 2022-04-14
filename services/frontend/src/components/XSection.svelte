@@ -37,7 +37,7 @@
   let contourPath;
   let chartMargin = {
     top: 24,
-    right: 24,
+    right: 64,
     bottom: 32,
     left: 64,
   };
@@ -84,7 +84,7 @@
         <g transform="translate({chartMargin.left}, {chartMargin.top})">
           <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
         </g>
-        <Axis orientation="left" scale={pressureScale} transform="translate({chartMargin.left}, {chartMargin.top})" />
+        <Axis orientation="right" scale={pressureScale} transform="translate({width - chartMargin.right}, {chartMargin.top})" />
         <Axis orientation="bottom" scale={distanceScale} transform="translate({chartMargin.left}, {chartHeight + chartMargin.top})"
               format={format(",d")} />
       </svg>
@@ -94,7 +94,7 @@
       <HrrrMap data={mapData} showCounties=true />
     </div>
 
-    <small class="axis-title left">Pressure (mb, from Standard Atmosphere)</small>
+    <small class="axis-title right">Pressure (mb, from Standard Atmosphere)</small>
     <small class="axis-title bottom">Distance (km)</small>
   </div>
 </Loading>
@@ -139,12 +139,17 @@
     grid-area: bottom-axis;
   }
 
-  .axis-title.left {
+  .axis-title.left,
+  .axis-title.right {
     writing-mode: vertical-rl;
   }
 
   .axis-title.left {
     grid-area: left-axis;
     transform: rotate(180deg);
+  }
+
+  .axis-title.right {
+    grid-area: right-axis;
   }
 </style>
