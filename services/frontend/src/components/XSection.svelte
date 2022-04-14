@@ -124,6 +124,11 @@
   }
 
   .map {
+    /* Push the map in so that it doesn't cover any axes we have bordering the
+     * chart.
+     */
+    margin-top: 32px;
+    margin-right: 72px;
     width: 25%;
     border: 1px solid var(--text-1);
     aspect-ratio: 1 / 1;
