@@ -11,6 +11,7 @@
   import Contour from "./Contour.svelte";
   import HrrrMap from "./HrrrMap.svelte";
   import Loading from "./Loading.svelte";
+  import { heightToPressure, pressureToHeight } from "../helpers/units.helpers.js";
 
   import {
     contours,
@@ -39,7 +40,7 @@
     top: 24,
     right: 64,
     bottom: 32,
-    left: 64,
+    left: 32,
   };
 
   $: chartWidth = Math.max(width - chartMargin.left - chartMargin.right, 0);
@@ -70,11 +71,18 @@
   $: yScale = scaleLinear().domain([0, rows]).range([chartHeight, 0]);
   $: distanceScale = scaleLinear().domain([0, distance]).range([0, chartWidth]);
   $: pressureScale = scaleLinear().domain(extent(isobaricPressure)).range([0, chartHeight]);
+  $: heightTicks = scaleLinear().domain(extent(isobaricPressure).map(pressureToHeight)).range([0, chartHeight]).ticks().map(heightToPressure);
+  $: heightScale = scaleLinear().domain(extent(isobaricPressure)).range([0, chartHeight]);
   $: contourPath = geoPath(geoTransform({
     point: function (x, y) {
       this.stream.point(xScale(x), yScale(y));
     },
   }));
+
+  function formatHeight(pressureTick) {
+    const fmt = format(".2");
+    return fmt(pressureToHeight(pressureTick));
+  }
 </script>
 
 <Loading promise={data} classNames="hrrr-xsection">
@@ -84,6 +92,7 @@
         <g transform="translate({chartMargin.left}, {chartMargin.top})">
           <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
         </g>
+        <Axis orientation="left" scale={heightScale} ticks={heightTicks} format={formatHeight} transform="translate({chartMargin.left}, {chartMargin.top})" />
         <Axis orientation="right" scale={pressureScale} transform="translate({width - chartMargin.right}, {chartMargin.top})" />
         <Axis orientation="bottom" scale={distanceScale} transform="translate({chartMargin.left}, {chartHeight + chartMargin.top})"
               format={format(",d")} />
@@ -94,6 +103,7 @@
       <HrrrMap data={mapData} showCounties=true />
     </div>
 
+    <small class="axis-title left">Height (km)</small>
     <small class="axis-title right">Pressure (mb, from Standard Atmosphere)</small>
     <small class="axis-title bottom">Distance (km)</small>
   </div>

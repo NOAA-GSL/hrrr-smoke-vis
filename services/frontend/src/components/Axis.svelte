@@ -2,6 +2,7 @@
   export let scale;
   export let transform = "";
   export let orientation = "bottom";
+  export let ticks = [];
   export let tickLength = 8;
   export let tickPadding = 4;
   export let format = (tick) => tick;
@@ -15,6 +16,7 @@
     : (tickLength + tickPadding);
   $: labelAnchor = orientation === "left" ? "end" : "start";
   $: labelBaseline = orientation === "bottom" ? "hanging" : "auto";
+  $: tickArray = ticks?.length > 0 ? ticks : scale.ticks();
 
   function tickTransform(tick) {
     return isHorizontal
@@ -24,7 +26,7 @@
 </script>
 
 <g class="axis" {transform}>
-  {#each scale.ticks() as tick}
+  {#each tickArray as tick}
     <g class="tick" transform="{tickTransform(tick)}">
       {#if isHorizontal}
         <line y2="{tickEnd}" />
