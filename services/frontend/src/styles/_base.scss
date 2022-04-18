@@ -24,7 +24,7 @@ body {
   display: grid;
   grid-auto-flow: row;
   grid-template-columns: 1fr min-content;
-  grid-template-rows: min-content min-content 1fr min-content;
+  grid-template-rows: min-content min-content min(100vw, 95vh) min-content;
   grid-template-areas:
     "header   header"
     "controls controls"
