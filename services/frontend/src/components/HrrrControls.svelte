@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
 
   import * as api from "../api.js";
-  import { runHour, validTime, path } from "../stores.js";
+  import { runHour, validTime, path, palette } from "../stores.js";
   import { readableDate, addTime } from "../utils.js";
   import CoordinateInput from "./CoordinateInput.svelte";
   import { Dropdown } from "./uswds";
@@ -11,6 +11,11 @@
   export let startLng = null;
   export let endLat = null;
   export let endLng = null;
+
+  let palettes = [ 
+     {value: "Smoke", text: "Smoke"}, 
+     {value: "Magma", text: "Magma"}
+  ];
 
   let startError = "";
   let endError = "";
@@ -84,6 +89,7 @@
   <p><small>Click anywhere on the map to define a path, or enter the coordinates here.</small></p>
   <CoordinateInput id="start" label="Start" bind:lat={startLat} bind:lng={startLng} err={startError} />
   <CoordinateInput id="end" label="End" bind:lat={endLat} bind:lng={endLng} err={endError} />
+  <Dropdown id="palette" label="Colormap" options={palettes} bind:selected={$palette}/>
   <div class="switcher">
     <button class="usa-button usa-button--outline usa-button--inverse" disabled={resetDisabled} on:click={reset}>Clear Path</button>
     <button class="usa-button" on:click={update}>Get Cross-section</button>
