@@ -2,8 +2,9 @@
   import {
     path,
     runHour,
-    smokeScale,
     thresholds,
+    palette,
+    palettes,
     validTime
   } from "../stores.js";
   import * as api from "../api.js";
@@ -31,6 +32,7 @@
   let columns = 0;
   let rows = 0;
   let distance = 0;
+  let colors = $palettes[$palette];
   let isobaricPressure = [];
   let massden = [];
   let xScale = scaleLinear();
@@ -52,6 +54,10 @@
       validTime: $validTime,
       ...$path
     }) : Promise.resolve(null);
+
+  $: if (palette) {
+       colors = $palettes[$palette]
+  }
 
   $: data.then(function (xsection) {
     if (xsection === null) return;
@@ -90,7 +96,7 @@
     <div class="chart" bind:offsetWidth={width} bind:offsetHeight={height}>
       <svg class="x-section" viewBox="0 0 {width} {height}">
         <g transform="translate({chartMargin.left}, {chartMargin.top})">
-          <Contour contours={smoke} fill={$smokeScale} path={contourPath} />
+          <Contour contours={smoke} fill={$colors} path={contourPath} />
         </g>
         <Axis orientation="left" scale={heightScale} ticks={heightTicks} format={formatHeight} transform="translate({chartMargin.left}, {chartMargin.top})" />
         <Axis orientation="right" scale={pressureScale} transform="translate({width - chartMargin.right}, {chartMargin.top})" />

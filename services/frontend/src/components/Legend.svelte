@@ -1,10 +1,16 @@
 <script>
   import { extent } from "d3-array";
-  import { smokeScale, thresholds } from "../stores.js";
+  import { palette, palettes, thresholds } from "../stores.js";
 
   export let title;
 
+  let colors = $palettes[$palette];
+
+
   let height = 0;
+  $: if (palette) {
+       colors = $palettes[$palette]
+  }
 
   $: swatchHeight = height / $thresholds.length;
   $: ticks = $thresholds.map((t, idx, arr) => [t, arr[idx + 1]]);
@@ -20,7 +26,7 @@
             <rect class="swatch"
                   y={height - (idx + 1) * swatchHeight}
                   width="24" height={swatchHeight}
-                  fill={$smokeScale(tick[0])} />
+                  fill={$colors(tick[0])} />
           {:else}
             <path class="swatch"
                   d="M 12,0
@@ -29,7 +35,7 @@
                      l -24,0
                      l 0,{(swatchHeight - 20.8) * -1}
                      l 12,-20.8"
-                  fill={$smokeScale(tick[0])}></path>
+                  fill={$colors(tick[0])}></path>
             {/if}
         {/each}
       </g>

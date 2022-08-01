@@ -1,4 +1,4 @@
-import { runHour, validTime, path } from "./stores.js";
+import { runHour, validTime, palette, path } from "./stores.js";
 import App from "./App.svelte";
 
 const params = new URLSearchParams(window.location.search);
@@ -11,6 +11,9 @@ for (let [k, v] of params.entries()) {
       break;
     case "validTime":
       validTime.set(+v);
+      break;
+    case "palette":
+      palette.set(v);
       break;
     case "startLat":
     case "startLng":
