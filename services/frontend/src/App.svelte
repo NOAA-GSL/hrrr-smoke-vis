@@ -1,6 +1,7 @@
 <script>
   import * as api from "./api.js";
   import { runHour, validTime, path, smokeScale, thresholds } from "./stores.js";
+  import Branding from "./components/Branding.svelte";
   import Footer from "./components/Footer.svelte";
   import Header from "./components/Header.svelte";
   import HrrrControls from "./components/HrrrControls.svelte";
@@ -96,6 +97,7 @@
   {:else}
     <HrrrMap data={verticallyIntegratedSmoke} />
   {/if}
+   <Branding />
 </div>
 <Legend title="Smoke Concentration ({units})" />
 <Footer />
