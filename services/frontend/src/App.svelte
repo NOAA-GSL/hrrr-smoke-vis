@@ -1,6 +1,6 @@
 <script>
   import * as api from "./api.js";
-  import { runHour, validTime, path, smokeScale, thresholds } from "./stores.js";
+  import { runHour, validTime, path, palette, palettes, thresholds } from "./stores.js";
   import Branding from "./components/Branding.svelte";
   import Footer from "./components/Footer.svelte";
   import Header from "./components/Header.svelte";
@@ -19,18 +19,29 @@
     lng: $path?.endLng,
   };
 
+  let colors = $palettes[$palette];
+
   $: units = $path ? 'µg / m³' : 'µg / m²';
 
   $: ready = $runHour !== null && $validTime !== null;
   $: verticallyIntegratedSmoke = !ready
     ? Promise.resolve(null)
-    : api.vertical($runHour, $validTime, $thresholds, $smokeScale.range())
+    : api.vertical($runHour, $validTime, $thresholds, $colors.range())
+
+  $: if (palette) {
+    colors = $palettes[$palette]
+    verticallyIntegratedSmoke = !ready
+      ? Promise.resolve(null)
+      : api.vertical($runHour, $validTime, $thresholds, $colors.range())
+
+  }
 
   $: {
     // Initialize the state from our stores
     let state = {
       runHour: $runHour,
       validTime: $validTime,
+      palette: $palette,
       ...$path
     };
 
@@ -71,6 +82,8 @@
     }
 
     validTime.set(state.validTime);
+
+    palette.set(state.palette);
 
     let pth = {};
     let coordProps = [
