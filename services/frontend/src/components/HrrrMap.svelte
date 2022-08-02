@@ -2,7 +2,6 @@
   import {
     borders,
     path,
-    smokeScale,
     thresholds,
   } from "../stores.js";
   import Loading from "./Loading.svelte";
@@ -257,6 +256,7 @@
       {height}
     ></canvas>
   </Loading>
+ 
 </div>
 
 <style lang="scss">
