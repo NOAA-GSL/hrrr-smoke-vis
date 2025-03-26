@@ -1,0 +1,272 @@
+---
+# Source: hrrr-smoke-viz/templates/public-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    volume.beta.kubernetes.io/storage-provisioner: vast1-data-depot
+  finalizers:
+  - kubernetes.io/pvc-protection
+  name: pvc-data-depot
+spec:
+  accessModes:
+  - ReadOnlyMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: vast1-data-depot
+---
+# Source: hrrr-smoke-viz/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hrrr-xs-storage
+  annotations:
+    pv.beta.kubernetes.io/gid: "25001"
+    pv.beta.kubernetes.io/uid: "25001"
+spec:
+  storageClassName: vast1-csi-driver
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 65Gi
+---
+# Source: hrrr-smoke-viz/templates/api.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    org.label-schema.group: hrrr-xs
+  labels:
+    at.io.service: hrrr-xs-api
+  name: hrrr-xs-api-service
+spec:
+  type: ClusterIP       
+  ports:
+  - name: api-svc-port
+    port: 9998
+    protocol: TCP
+    targetPort: api-svc
+  selector:
+    app: hrrr-xs-api
+---
+# Source: hrrr-smoke-viz/templates/ui.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    org.label-schema.group: hrrr-xs
+  labels:
+    at.io.service: hrrr-xs-web
+  name: hrrr-xs-web-service
+spec:
+  type: ClusterIP       
+  ports:
+  - name: web-svc-port
+    port: 9998
+    protocol: TCP
+    targetPort: web-svc
+  selector:
+    app: hrrr-xs-web
+---
+# Source: hrrr-smoke-viz/templates/api.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    org.label-schema.group: hrrr-xs
+  labels:
+    atd.iv.service: hrrr-xs
+  name: hrrr-xs-api
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hrrr-xs-api 
+  template:
+    metadata:
+      labels:
+        atd.iv.service: hrrr-xs-api 
+        app: hrrr-xs-api 
+    spec:
+      containers:
+      - image: "harbor-prod.gsd.esrl.noaa.gov/hrrr-xs/api:v0.0.17"
+        name: hrrr-xs-api
+        env:
+        - name: FORECASTS_ARRAY
+          value: "/data/wrfnat.zarr"
+        ports:
+        - containerPort: 8000
+          name: api-svc
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1.5Gi
+        volumeMounts:
+        - mountPath: /data
+          name: hrrr-xs-volume
+      restartPolicy: Always
+      volumes:
+        - name: hrrr-xs-volume
+          persistentVolumeClaim:
+            claimName: hrrr-xs-storage
+---
+# Source: hrrr-smoke-viz/templates/ui.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    org.label-schema.group: hrrr-xs
+  labels:
+    atd.iv.service: hrrr-xs
+  name: hrrr-xs-web
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hrrr-xs-web 
+  template:
+    metadata:
+      labels:
+        atd.iv.service: hrrr-xs-web 
+        app: hrrr-xs-web 
+    spec:
+      containers:
+      - image: "harbor-prod.gsd.esrl.noaa.gov/hrrr-xs/web:v0.0.19"
+        name: hrrr-xs-web
+        env:
+        - name: NPM_CONFIG_CACHE
+          value: "/home/node/app/.npm-cache-docker"
+        ports:
+        - containerPort: 80
+          name: web-svc
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 200m
+            memory: 250Mi
+      restartPolicy: Always
+---
+# Source: hrrr-smoke-viz/templates/data.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hrrr-processing
+spec:
+  schedule: "5 * * * *"
+  concurrencyPolicy: Forbid 
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 2400
+  jobTemplate:
+    spec:
+      # will kill job if it's still active after 50 minutes
+      activeDeadlineSeconds: 3000
+      template:
+        spec:
+          volumes:
+          - name: hrrr-xs-volume
+            persistentVolumeClaim:
+              claimName: hrrr-xs-storage
+          - name: pvc-data-depot
+            persistentVolumeClaim:
+              claimName: pvc-data-depot
+          containers:
+          - name: hrrr-download
+            image: "harbor-prod.gsd.esrl.noaa.gov/hrrr-xs/data:v0.0.6"
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+            - name: hrrr-xs-volume
+              mountPath: /app/output
+            - name: pvc-data-depot
+              mountPath: /data/public
+            args: ["python3", "-u", "-m", "data.run_ddrf", "-o", "2", "-c", "/app/configs/local_ddrf.json"]
+            resources:
+              requests:
+                memory: 6Gi
+                cpu: 2500m 
+          terminationGracePeriodSeconds: 30
+          restartPolicy: OnFailure
+---
+# Source: hrrr-smoke-viz/templates/data.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hrrr-xa-cleaner
+spec:
+  schedule: "50 */1 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 2400
+  jobTemplate:
+    spec:
+      # will kill job if it's still active after 50 minutes
+      activeDeadlineSeconds: 3000
+      template:
+        spec:
+          volumes:
+          - name: hrrr-xs-volume
+            persistentVolumeClaim:
+              claimName: hrrr-xs-storage
+          containers:
+          - name: clean-directories
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - find /data/wrfnat.zarr/ -mmin +400 -delete -print
+            volumeMounts:
+            - name: hrrr-xs-volume
+              mountPath: /data/
+          terminationGracePeriodSeconds: 30
+          restartPolicy: OnFailure
+---
+# Source: hrrr-smoke-viz/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  name: hrrr-xs-api 
+spec:
+  rules:
+  - host: apps.gsl.noaa.gov  
+    http:
+      paths:
+      - path: /xsection(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: hrrr-xs-api-service
+            port:
+              name: api-svc-port
+---
+# Source: hrrr-smoke-viz/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  name: hrrr-xs-web 
+spec:
+  rules:
+  - host: apps.gsl.noaa.gov  
+    http:
+      paths:
+      - path: /xsection/ui(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: hrrr-xs-web-service
+            port:
+              name: web-svc-port
+

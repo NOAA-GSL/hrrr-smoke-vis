@@ -1,0 +1,45 @@
+# I am reverse engineering the values and templates since it was never committed to the repo
+# For now, this was the origional values file, it is not used at ll in install.yaml
+api:
+    cpu:
+        limits: 1000m
+    forecastpath: /data/wrfnat.zarr
+    image:
+        repository: harbor-prod.gsd.esrl.noaa.gov/hrrr-xs/api
+        tag: v0.0.17
+    memory:
+        limits: 1.5Gi
+    replicas: 1
+data:
+    cleaner:
+        mtime: 400
+    cpu:
+        requests: 2500m
+    image:
+        repository: harbor-prod.gsd.esrl.noaa.gov/hrrr-xs/data
+        tag: v0.0.6
+    memory:
+        requests: 6Gi
+ingress:
+    annotations: {}
+    basepath: xsection
+    className: ""
+    enabled: true
+    host: apps.gsl.noaa.gov
+    hosts:
+        - host: chart-example.local
+          paths:
+              - path: /
+                pathType: ImplementationSpecific
+    tls: []
+pvc:
+    size: 65Gi
+web:
+    cpu:
+        limits: 200m
+    image:
+        repository: harbor-prod.gsd.esrl.noaa.gov/hrrr-xs/web
+        tag: v0.0.19
+    memory:
+        limits: 250Mi
+    replicas: 1
